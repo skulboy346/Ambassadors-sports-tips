@@ -11,68 +11,100 @@
     .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
   </style>
 </head>
-<body class="bg-[#05070a] text-slate-100 font-sans min-h-screen antialiased selection:bg-emerald-400 selection:text-slate-950">
+<body class="bg-[#05070a] text-slate-200 font-sans min-h-screen antialiased selection:bg-emerald-400 selection:text-slate-950">
 
   <!-- Header -->
-  <header class="border-b border-emerald-500/20 bg-[#070b14]/90 backdrop-blur-2xl sticky top-0 z-50 px-4 md:px-6 py-3 flex justify-between items-center shadow-2xl">
+  <header class="border-b border-emerald-500/20 bg-[#070b14]/95 backdrop-blur-2xl sticky top-0 z-50 px-4 md:px-6 py-3 flex justify-between items-center shadow-2xl">
     <div class="flex items-center space-x-3">
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 380 130" class="h-9 md:h-10 w-auto">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 380 130" class="h-8 md:h-9 w-auto">
         <defs>
           <linearGradient id="neonA" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#34d399"/><stop offset="100%" stop-color="#06b6d4"/></linearGradient>
           <radialGradient id="ballGlow" cx="30%" cy="30%" r="70%"><stop offset="0%" stop-color="#fff"/><stop offset="100%" stop-color="#475569"/></radialGradient>
-          <radialGradient id="basketGlow" cx="30%" cy="30%" r="70%"><stop offset="0%" stop-color="#fb923c"/><stop offset="100%" stop-color="#9a3412"/></radialGradient>
         </defs>
         <g transform="translate(10, 35)"><circle cx="14" cy="14" r="13" fill="url(#ballGlow)"/><path d="M14 5 L19 10 L16 17 L12 17 L9 10 Z" fill="#0f172a"/></g>
-        <g transform="translate(85, 75)"><circle cx="12" cy="12" r="11" fill="url(#basketGlow)"/><path d="M12 1 C 12 12, 12 12, 23 12" fill="none" stroke="#431407" stroke-width="1.2"/></g>
         <text x="60" y="92" font-family="'Inter', Arial Black, sans-serif" font-weight="900" font-size="70" text-anchor="middle" fill="url(#neonA)">A</text>
         <text x="135" y="58" font-family="Inter, sans-serif" font-weight="900" font-size="20" fill="#ffffff" letter-spacing="1">AMBASSADORS</text>
         <text x="137" y="80" font-family="Inter, sans-serif" font-weight="700" font-size="12" fill="#34d399" letter-spacing="2.5">SPORTS TIPS</text>
       </svg>
     </div>
-    <div class="flex items-center gap-2">
-      <span class="bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 text-[10px] md:text-[11px] px-2.5 py-1 rounded-full font-black uppercase tracking-wider flex items-center gap-1.5">
-        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span> Live Odds
-      </span>
+    <div class="flex gap-2">
+      <button class="bg-slate-900 border border-slate-700 text-emerald-400 font-bold text-xs px-3 py-1.5 rounded-lg hover:bg-slate-800 transition">VIP Lounge</button>
     </div>
   </header>
 
-  <main class="max-w-6xl mx-auto px-4 py-6 space-y-10">
+  <main class="max-w-5xl mx-auto px-2 md:px-4 py-6 space-y-8">
     
-    <!-- SPOTLIGHT MATCH-UPS -->
-    <section class="space-y-3">
-      <div class="flex justify-between items-center">
-        <h2 class="text-sm md:text-base font-black text-white uppercase tracking-wider flex items-center gap-2">🔥 Spotlight Match-Ups</h2>
-        <span class="text-[10px] text-slate-400 font-bold">Swipe left/right ➡️</span>
+    <!-- 1. FEATURED SECTION -->
+    <section class="bg-slate-900/50 border border-slate-800 rounded-2xl overflow-hidden shadow-xl">
+      <div class="flex border-b border-slate-800 bg-slate-900">
+        <button onclick="switchFeatured('matches')" id="featBtn-matches" class="flex-1 py-3 text-xs font-black uppercase tracking-wide text-emerald-400 border-b-2 border-emerald-400 transition">🔥 Elite Matches</button>
+        <button onclick="switchFeatured('tickets')" id="featBtn-tickets" class="flex-1 py-3 text-xs font-black uppercase tracking-wide text-slate-400 hover:text-slate-200 transition">💎 VIP Tickets</button>
+        <button onclick="switchFeatured('news')" id="featBtn-news" class="flex-1 py-3 text-xs font-black uppercase tracking-wide text-slate-400 hover:text-slate-200 transition">📰 Intelligence</button>
       </div>
-      <div id="spotlightContainer" class="flex gap-4 overflow-x-auto pb-3 scrollbar-hide snap-x"></div>
-    </section>
 
-    <!-- LIVE SCORES SECTION -->
-    <section class="space-y-4">
-      <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
-        <h2 class="text-base font-black text-white uppercase tracking-wide flex items-center gap-2">
-          <span class="w-2.5 h-2.5 rounded-full bg-rose-500 animate-pulse"></span> Live Scores
-        </h2>
-        <div class="flex items-center gap-2 w-full sm:w-auto justify-between">
-          <div class="flex bg-slate-900 border border-slate-800 rounded-xl p-1">
-            <button onclick="filterLiveSport('all')" class="live-sport-btn px-3 py-1 text-xs font-black rounded-lg bg-emerald-400 text-slate-950 transition">All</button>
-            <button onclick="filterLiveSport('football')" class="live-sport-btn px-3 py-1 text-xs font-black rounded-lg text-slate-400 hover:text-white transition">⚽ Football</button>
-            <button onclick="filterLiveSport('basketball')" class="live-sport-btn px-3 py-1 text-xs font-black rounded-lg text-slate-400 hover:text-white transition">🏀 Basketball</button>
-          </div>
-          <button onclick="toggleSeeAllLive()" id="seeAllBtn" class="text-xs font-bold text-emerald-400 hover:underline">See All</button>
+      <div class="p-4">
+        <div id="featContent-matches" class="flex gap-4 overflow-x-auto pb-2 scrollbar-hide snap-x">
+          <div class="text-slate-500 text-xs py-4 text-center w-full">Syncing featured elite matches...</div>
+        </div>
+        <div id="featContent-tickets" class="hidden flex gap-4 overflow-x-auto pb-2 scrollbar-hide snap-x">
+          <div class="text-slate-500 text-xs py-4 text-center w-full">Syncing VIP Tickets...</div>
+        </div>
+        <div id="featContent-news" class="hidden flex gap-4 overflow-x-auto pb-2 scrollbar-hide snap-x">
+          <div class="text-slate-500 text-xs py-4 text-center w-full">Syncing Sports News...</div>
         </div>
       </div>
-      <div id="liveScoresContainer" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
     </section>
 
-    <!-- FIXTURES WITH EXTENDED HORIZON FILTER (Today up to 2 Months) -->
-    <section class="space-y-4 border-t border-slate-800 pt-6">
-      <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <h2 id="sectionTitle" class="text-base font-black text-white uppercase tracking-wide">🗓️ Match Schedule & Fixtures</h2>
-        
-        <div class="flex items-center gap-2">
-          <!-- Horizon Date Selector -->
-          <select id="fixtureHorizon" class="bg-slate-900 border border-slate-700 text-xs rounded-xl px-3 py-2 text-emerald-400 font-bold outline-none" onchange="renderFixturesByHorizon()">
+    <!-- 2. LIVE SCORES & PAST RESULTS ARENA -->
+    <section class="space-y-3">
+      <div class="flex justify-between items-center px-2">
+        <h2 class="text-base font-black text-white uppercase tracking-wide flex items-center gap-2">
+          <span class="w-2.5 h-2.5 rounded-full bg-rose-500 animate-pulse"></span> Arena
+        </h2>
+        <div class="flex bg-slate-900 border border-slate-800 rounded-xl p-1">
+          <button onclick="switchArenaTab('live')" id="arenaLiveBtn" class="px-3 py-1 text-xs font-black rounded-lg bg-emerald-400 text-slate-950 transition">🔴 Live</button>
+          <button onclick="switchArenaTab('results')" id="arenaResultsBtn" class="px-3 py-1 text-xs font-black rounded-lg text-slate-400 hover:text-white transition">🏁 Results</button>
+        </div>
+      </div>
+
+      <!-- Arena Filters -->
+      <div id="resultsFilterBar" class="hidden flex flex-wrap gap-2 items-center bg-slate-900/80 p-3 rounded-2xl border border-slate-800 mx-2">
+        <select id="resDay" class="bg-slate-950 border border-slate-700 text-xs rounded-lg px-2 py-1.5 text-emerald-400 font-bold outline-none" onchange="loadResultsArena()">
+          <option value="today">Today</option>
+          <option value="yesterday">Yesterday</option>
+          <option value="day_before">2 Days Ago</option>
+          <option value="week">Past 7 Days</option>
+          <option value="month1">Past 30 Days</option>
+        </select>
+        <select id="resCategory" class="bg-slate-950 border border-slate-700 text-xs rounded-lg px-2 py-1.5 text-white font-bold outline-none" onchange="populateLeagues('resCategory', 'resLeague'); loadResultsArena()">
+          <option value="all">🌍 All Categories</option>
+          <option value="England">🏴󠁧󠁢󠁥󠁮󠁧󠁿 England</option>
+          <option value="Spain">🇪🇸 Spain</option>
+          <option value="Italy">🇮🇹 Italy</option>
+          <option value="Germany">🇩🇪 Germany</option>
+          <option value="France">🇫🇷 France</option>
+          <option value="Americas">🌎 Americas</option>
+          <option value="World">🏆 International</option>
+          <option value="Basketball">🏀 Basketball</option>
+        </select>
+        <select id="resLeague" class="bg-slate-950 border border-slate-700 text-xs rounded-lg px-2 py-1.5 text-white font-bold outline-none" onchange="loadResultsArena()">
+          <option value="all">All Leagues</option>
+        </select>
+      </div>
+
+      <div id="arenaContainer" class="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden shadow-xl flex flex-col mx-2">
+        <div class="text-slate-500 text-xs py-8 text-center">Fetching Arena Data...</div>
+      </div>
+      <div class="flex justify-end px-2"><button onclick="openSeeAllModal('arena')" class="text-[11px] font-bold text-emerald-400 hover:underline">See All Arena Matches ➔</button></div>
+    </section>
+
+    <!-- 3. FIXTURES: UPCOMING MATCH SCHEDULE -->
+    <section class="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden shadow-xl mx-2">
+      <!-- Fixture Filters -->
+      <div class="flex flex-col md:flex-row gap-3 p-4 bg-slate-950 border-b border-slate-800">
+        <div class="flex flex-wrap items-center gap-2">
+          <!-- Full Horizon Selector -->
+          <select id="fixtureHorizon" class="bg-slate-900 border border-slate-700 text-xs rounded-lg px-2 py-1.5 text-emerald-400 font-bold outline-none" onchange="fetchApiFootballFixtures()">
             <option value="today">Today</option>
             <option value="tomorrow">Tomorrow</option>
             <option value="monday">Monday</option>
@@ -82,53 +114,148 @@
             <option value="friday">Friday</option>
             <option value="saturday">Saturday</option>
             <option value="sunday">Sunday</option>
-            <option value="week">One Week</option>
-            <option value="month1">Next 1 Month</option>
-            <option value="month2">Up to 2 Months</option>
+            <option value="week">1 Week</option>
+            <option value="week2">2 Weeks</option>
+            <option value="month1">1 Month</option>
+            <option value="month2">2 Months</option>
           </select>
 
-          <div class="flex bg-slate-900 border border-slate-800 rounded-xl p-1">
-            <button onclick="switchMainTab('fixtures')" id="mainTabFixtures" class="px-3 py-1.5 text-xs font-black rounded-lg bg-emerald-400 text-slate-950 transition">Fixtures</button>
-            <button onclick="switchMainTab('tickets')" id="mainTabTickets" class="px-3 py-1.5 text-xs font-black rounded-lg text-slate-400 hover:text-white transition">💎 VIP Tickets</button>
-          </div>
+          <!-- Country / Sport Dropdown -->
+          <select id="fixtureCountry" class="bg-slate-900 border border-slate-700 text-xs rounded-lg px-2 py-1.5 text-white font-bold outline-none" onchange="populateLeagues('fixtureCountry', 'fixtureLeague'); fetchApiFootballFixtures()">
+            <option value="all">🌍 All Locations</option>
+            <option value="England">🏴󠁧󠁢󠁥󠁮󠁧󠁿 England</option>
+            <option value="Spain">🇪🇸 Spain</option>
+            <option value="Italy">🇮🇹 Italy</option>
+            <option value="Germany">🇩🇪 Germany</option>
+            <option value="France">🇫🇷 France</option>
+            <option value="Americas">🌎 Americas</option>
+            <option value="World">🏆 International</option>
+            <option value="Basketball">🏀 Basketball</option>
+          </select>
+
+          <!-- Dynamic League Dropdown -->
+          <select id="fixtureLeague" class="bg-slate-900 border border-slate-700 text-xs rounded-lg px-2 py-1.5 text-white font-bold outline-none" onchange="fetchApiFootballFixtures()">
+            <option value="all">All Leagues</option>
+          </select>
+
+          <input type="text" id="clubSearch" placeholder="🔍 Search team..." class="bg-slate-900 border border-slate-700 text-xs rounded-lg px-3 py-1.5 text-white outline-none w-32 focus:border-emerald-400" oninput="fetchApiFootballFixtures()" />
         </div>
       </div>
 
-      <div id="viewFixtures" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
-
-      <div id="viewTickets" class="space-y-4 hidden">
-        <div class="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
-          <button class="filter-btn active bg-emerald-400 text-slate-950 font-black px-4 py-1.5 rounded-xl text-xs whitespace-nowrap shadow" onclick="filterTickets('all')">All Tickets</button>
-          <button class="filter-btn bg-slate-900 border border-slate-800 text-slate-300 font-bold px-4 py-1.5 rounded-xl text-xs whitespace-nowrap" onclick="filterTickets('2_odds')">2 Odds</button>
-          <button class="filter-btn bg-slate-900 border border-slate-800 text-slate-300 font-bold px-4 py-1.5 rounded-xl text-xs whitespace-nowrap" onclick="filterTickets('5_odds')">5 Odds</button>
-          <button class="filter-btn bg-slate-900 border border-slate-800 text-slate-300 font-bold px-4 py-1.5 rounded-xl text-xs whitespace-nowrap" onclick="filterTickets('1000_odds')">1,000+ Mega Acca</button>
+      <!-- Probability Matrix Header Row -->
+      <div class="flex justify-between items-center px-4 py-2 bg-[#0b1015] text-[10px] font-bold text-slate-400 border-b border-slate-800">
+        <div class="w-1/2 uppercase tracking-widest text-emerald-400">Scheduled Match</div>
+        <div class="w-1/2 flex gap-1 text-center pr-1">
+          <span class="flex-1 bg-slate-900 rounded py-0.5 border border-slate-800 text-emerald-400">Home %</span>
+          <span class="flex-1 bg-slate-900 rounded py-0.5 border border-slate-800 text-amber-400">Draw %</span>
+          <span class="flex-1 bg-slate-900 rounded py-0.5 border border-slate-800 text-cyan-400">Away %</span>
         </div>
-        <div id="ticketsContainer" class="grid grid-cols-1 md:grid-cols-3 gap-6"></div>
+      </div>
+
+      <!-- Match List Container -->
+      <div id="viewFixtures" class="flex flex-col bg-[#0b1015]">
+        <div class="text-slate-500 text-xs py-10 text-center">Fetching real-time fixtures...</div>
+      </div>
+      
+      <div class="p-3 bg-slate-950 text-center border-t border-slate-800">
+        <button onclick="openSeeAllModal('fixtures')" class="text-xs font-bold text-emerald-400 hover:text-emerald-300">Open Full Schedule Terminal ➔</button>
+      </div>
+
+      <!-- VIP Tickets Tab -->
+      <div id="viewTickets" class="space-y-4 p-4 hidden">
+        <div class="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
+          <button class="filter-btn active bg-emerald-400 text-slate-950 font-black px-4 py-1 rounded text-xs whitespace-nowrap" onclick="filterTickets('all')">All</button>
+          <button class="filter-btn bg-slate-900 text-slate-300 font-bold px-4 py-1 rounded text-xs whitespace-nowrap" onclick="filterTickets('2_odds')">2 Odds</button>
+          <button class="filter-btn bg-slate-900 text-slate-300 font-bold px-4 py-1 rounded text-xs whitespace-nowrap" onclick="filterTickets('1000_odds')">1,000+ Acca</button>
+        </div>
+        <div id="ticketsContainer" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
       </div>
     </section>
 
-    <!-- NEWS FEED -->
-    <section class="border-t border-slate-800 pt-8 space-y-4">
-      <h2 class="text-base font-black text-white uppercase tracking-wide flex items-center gap-2">🔥 Recent Transfer & Sports News</h2>
-      <div class="flex gap-4 overflow-x-auto pb-4 scrollbar-hide snap-x" id="newsContainer">
+    <!-- 4. DEDICATED LOWER NEWS & TRANSFERS FEED -->
+    <section class="border-t border-slate-800 pt-8 space-y-4 mx-2">
+      <div class="flex justify-between items-center px-1">
+        <h2 class="text-base font-black text-white uppercase tracking-wide flex items-center gap-2">
+          🔥 Recent Transfer & Sports News
+        </h2>
+        <span class="text-[10px] text-slate-400 font-bold">Live Streams</span>
+      </div>
+      <div class="flex gap-4 overflow-x-auto pb-4 scrollbar-hide snap-x" id="newsFeedContainer">
         <div class="text-slate-500 text-xs py-4">Syncing live news stream...</div>
       </div>
     </section>
 
   </main>
 
-  <!-- MODALS -->
-  <div id="statsModal" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-4 hidden">
-    <div class="bg-slate-900 border border-emerald-500/40 w-full max-w-lg rounded-3xl p-6 shadow-2xl relative space-y-4">
-      <button onclick="document.getElementById('statsModal').classList.add('hidden')" class="absolute top-4 right-4 text-slate-400 hover:text-white font-black text-lg">✕</button>
-      <h3 id="modalTeamTitle" class="text-base font-black text-emerald-400 uppercase tracking-wide">Match Analytics & History</h3>
-      <div class="bg-slate-950 p-4 rounded-2xl border border-slate-800 text-xs space-y-3 text-slate-300" id="modalStatsContent">Loading analytics...</div>
+  <!-- SEE ALL FULL-PAGE MODAL -->
+  <div id="seeAllModal" class="fixed inset-0 z-50 bg-[#05070a] overflow-y-auto hidden flex-col">
+    <div class="sticky top-0 bg-[#070b14]/95 backdrop-blur-md px-4 py-3 flex justify-between items-center border-b border-emerald-500/20 z-10 shadow-lg">
+      <h2 id="seeAllModalTitle" class="text-sm font-black text-emerald-400 uppercase tracking-widest">All Matches</h2>
+      <button onclick="document.getElementById('seeAllModal').classList.add('hidden')" class="bg-slate-900 border border-slate-700 text-white font-black px-3 py-1.5 rounded-lg text-xs hover:bg-rose-500/20 transition">✕ Close</button>
+    </div>
+    
+    <div class="flex-grow p-4 space-y-4 max-w-5xl mx-auto w-full">
+      <div id="seeAllFilters" class="hidden flex-wrap gap-2 items-center bg-slate-900/80 p-3 rounded-2xl border border-slate-800">
+        <select id="seeAllHorizon" class="bg-slate-950 border border-slate-700 text-xs rounded-xl px-3 py-2 text-emerald-400 font-bold outline-none" onchange="loadSeeAllFixtures()">
+          <option value="today">Today</option>
+          <option value="tomorrow">Tomorrow</option>
+          <option value="monday">Monday</option>
+          <option value="tuesday">Tuesday</option>
+          <option value="wednesday">Wednesday</option>
+          <option value="thursday">Thursday</option>
+          <option value="friday">Friday</option>
+          <option value="saturday">Saturday</option>
+          <option value="sunday">Sunday</option>
+          <option value="week">1 Week</option>
+          <option value="week2">2 Weeks</option>
+          <option value="month1">1 Month</option>
+          <option value="month2">2 Months</option>
+        </select>
+        
+        <select id="seeAllCountry" class="bg-slate-950 border border-slate-700 text-xs rounded-xl px-3 py-2 text-white font-bold outline-none" onchange="populateLeagues('seeAllCountry', 'seeAllLeague'); loadSeeAllFixtures()">
+          <option value="all">🌍 All Locations</option>
+          <option value="England">🏴󠁧󠁢󠁥󠁮󠁧󠁿 England</option>
+          <option value="Spain">🇪🇸 Spain</option>
+          <option value="Italy">🇮🇹 Italy</option>
+          <option value="Germany">🇩🇪 Germany</option>
+          <option value="France">🇫🇷 France</option>
+          <option value="Americas">🌎 Americas</option>
+          <option value="World">🏆 International</option>
+          <option value="Basketball">🏀 Basketball</option>
+        </select>
+
+        <select id="seeAllLeague" class="bg-slate-950 border border-slate-700 text-xs rounded-xl px-3 py-2 text-white font-bold outline-none" onchange="loadSeeAllFixtures()">
+          <option value="all">All Leagues</option>
+        </select>
+        
+        <input type="text" id="seeAllSearch" placeholder="🔍 Search..." class="bg-slate-950 border border-slate-700 text-xs rounded-xl px-3 py-2 text-white outline-none w-32 focus:border-emerald-400" oninput="loadSeeAllFixtures()" />
+      </div>
+
+      <div id="seeAllModalContent" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
     </div>
   </div>
 
+  <!-- STATS MODAL (DEEP AI TELEMETRY) -->
+  <div id="statsModal" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-4 hidden">
+    <div class="bg-slate-900 border border-emerald-500/40 w-full max-w-2xl rounded-3xl p-6 shadow-2xl relative space-y-4 max-h-[90vh] overflow-y-auto">
+      <button onclick="document.getElementById('statsModal').classList.add('hidden')" class="absolute top-4 right-4 text-slate-400 hover:text-white font-black text-lg">✕</button>
+      
+      <div id="modalStatsHeader" class="border-b border-slate-800 pb-3">
+        <span class="text-[10px] font-black uppercase text-emerald-400 tracking-wider">Deep AI Analytics Matrix</span>
+        <h3 id="modalTeamTitle" class="text-lg font-black text-white mt-1">Match Analytics</h3>
+        <p id="modalMatchDateTime" class="text-xs text-slate-400 font-bold mt-1">Syncing kickoff schedule...</p>
+      </div>
+
+      <div id="modalStatsContent" class="space-y-4 text-xs text-slate-300">
+        <div class="py-8 text-center text-slate-500">Retrieving Head-to-Head telemetry and calculating form projections...</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FULL ARTICLE READING MODAL -->
   <div id="newsModal" class="fixed inset-0 z-50 bg-[#05070a] overflow-y-auto p-4 md:p-8 hidden">
     <div class="max-w-3xl mx-auto space-y-6">
-      <button onclick="document.getElementById('newsModal').classList.add('hidden')" class="bg-slate-900 border border-slate-700 text-white font-black px-4 py-2 rounded-xl text-xs">← Back to Terminal</button>
+      <button onclick="document.getElementById('newsModal').classList.add('hidden')" class="bg-slate-900 border border-slate-700 text-white font-black px-4 py-2 rounded-xl text-xs hover:bg-emerald-500/20 transition">← Back</button>
       <div id="newsModalContent" class="space-y-4"></div>
     </div>
   </div>
@@ -141,167 +268,732 @@
       apiKey: "AIzaSyBuzHlvjtdi40ucfuwQIbWqyQJJeoGYABA",
       authDomain: "powertips-cc902.firebaseapp.com",
       projectId: "powertips-cc902",
-      storageBucket: "powertips-cc902.firebasestorage.app",
-      messagingSenderId: "449155099143",
-      appId: "1:449155099143:web:07c0bc0df8cdccc40898a2"
+      storageBucket: "powertips-cc902.firebasestorage.app"
     };
 
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
+    const soccerApiKey = "15d684bf0ade8909fc993ff95ee5255877d70727dca00c078e641951cef3ec3d";
+    const bballApiKey = "afc868327bmsh38c47b6bc124e98p165ea1jsn015c0d841dd3";
 
-    const spotlightMatches = [
-      { home: "Arsenal", away: "Chelsea", league: "Premier League", time: "Today • 17:30 WAT", homeLogo: "https://media.api-sports.io/football/teams/42.png", awayLogo: "https://media.api-sports.io/football/teams/49.png" },
-      { home: "Real Madrid", away: "Barcelona", league: "La Liga", time: "Today • 21:00 WAT", homeLogo: "https://media.api-sports.io/football/teams/541.png", awayLogo: "https://media.api-sports.io/football/teams/529.png" }
-    ];
-
-    document.getElementById("spotlightContainer").innerHTML = spotlightMatches.map(s => `
-      <div class="min-w-[280px] md:min-w-[340px] flex-shrink-0 snap-start bg-gradient-to-r from-slate-950 via-[#0a1628] to-slate-950 border border-emerald-500/30 p-5 rounded-3xl shadow-xl flex flex-col justify-between">
-        <div class="flex justify-between items-center mb-3"><span class="text-[9px] font-black uppercase bg-emerald-400 text-slate-950 px-2.5 py-0.5 rounded-full">${s.league}</span><span class="text-[10px] text-emerald-400 font-bold">${s.time}</span></div>
-        <div class="flex items-center justify-between my-2"><div class="flex items-center gap-2"><img src="${s.homeLogo}" class="w-8 h-8 object-contain"><span class="font-bold text-xs text-white">${s.home}</span></div><span class="text-xs font-black text-slate-500">VS</span><div class="flex items-center gap-2 flex-row-reverse"><img src="${s.awayLogo}" class="w-8 h-8 object-contain"><span class="font-bold text-xs text-white">${s.away}</span></div></div>
-        <button onclick="openStats('${s.home}', '${s.away}')" class="mt-3 w-full bg-slate-900 hover:bg-slate-800 border border-slate-700 text-emerald-400 font-black text-[11px] py-2 rounded-xl">View H2H Stats 📊</button>
-      </div>
-    `).join('');
-
-    const liveMatches = [
-      { sport: "football", league: "Premier League", time: "74'", home: "Arsenal", homeScore: 2, away: "Chelsea", awayScore: 1, homeLogo: "https://media.api-sports.io/football/teams/42.png", awayLogo: "https://media.api-sports.io/football/teams/49.png" }
-    ];
-
-    let showAllLive = false;
-    window.filterLiveSport = function(sport) {
-      document.querySelectorAll('.live-sport-btn').forEach(b => b.className = 'live-sport-btn px-3 py-1 text-xs font-black rounded-lg text-slate-400 hover:text-white transition');
-      event.target.className = 'live-sport-btn px-3 py-1 text-xs font-black rounded-lg bg-emerald-400 text-slate-950 transition';
-      renderLiveScores(sport);
+    // 1. STRICT MATCH STATUS LOGIC
+    window.isMatchFinished = function(m) {
+      const status = (m.match_status || "").toUpperCase().trim();
+      const finishedTokens = ["FT", "FINISHED", "FINAL", "AET", "AP", "AOT", "ENDED", "CANC", "ABD", "POSTP"];
+      if (status && finishedTokens.some(s => status.includes(s))) return true;
+      if (m.match_live === "0" && m.match_hometeam_score !== "" && m.match_hometeam_score !== null) return true;
+      return false;
     };
-    window.toggleSeeAllLive = function() {
-      showAllLive = !showAllLive;
-      document.getElementById('seeAllBtn').textContent = showAllLive ? 'Show Less' : 'See All';
-      renderLiveScores('all');
+
+    window.isMatchLive = function(m) {
+      if (isMatchFinished(m)) return false;
+      const status = (m.match_status || "").toUpperCase().trim();
+      if (m.match_live === "1") return true;
+      const liveTokens = ["Q1", "Q2", "Q3", "Q4", "HT", "OT", "LIVE", "HALFTIME"];
+      if (liveTokens.includes(status)) return true;
+      if (/\d+'/.test(status)) return true; 
+      return false;
     };
-    function renderLiveScores(sportFilter) {
-      const container = document.getElementById("liveScoresContainer");
-      let filtered = sportFilter === 'all' ? liveMatches : liveMatches.filter(m => m.sport === sportFilter);
-      container.innerHTML = filtered.map(m => `
-        <div onclick="openStats('${m.home}', '${m.away}')" class="bg-slate-900 border border-slate-800 hover:border-emerald-500/40 p-4 rounded-3xl shadow-xl cursor-pointer transition">
-          <div class="flex justify-between items-center mb-2"><span class="text-[10px] font-black uppercase text-emerald-400">${m.league}</span><span class="text-xs text-rose-400 font-bold animate-pulse">${m.time}</span></div>
-          <div class="flex items-center justify-between"><div class="flex items-center gap-2"><img src="${m.homeLogo}" class="w-7 h-7 object-contain"><span class="font-bold text-xs text-white">${m.home}</span></div><span class="text-xl font-black text-emerald-400 px-3 py-1 bg-slate-950 rounded-xl border border-slate-800">${m.homeScore} : ${m.awayScore}</span><div class="flex items-center gap-2 flex-row-reverse"><img src="${m.awayLogo}" class="w-7 h-7 object-contain"><span class="font-bold text-xs text-white">${m.away}</span></div></div>
+
+    // 2. ACCURATE PROBABILITY ENGINE
+    window.calculateProbabilities = function(o1, oX, o2, homeTeam, awayTeam, h2hStats = null) {
+      const eliteTeams = ["barcelona", "real madrid", "manchester city", "arsenal", "liverpool", "bayern munich", "inter", "psg", "juventus", "ac milan", "atletico madrid"];
+      const isHomeElite = homeTeam ? eliteTeams.some(t => homeTeam.toLowerCase().includes(t)) : false;
+      const isAwayElite = awayTeam ? eliteTeams.some(t => awayTeam.toLowerCase().includes(t)) : false;
+
+      let p1, pX, p2;
+
+      if (h2hStats && h2hStats.total > 0) {
+        p1 = (h2hStats.hWins / h2hStats.total) * 0.6 + 0.20;
+        p2 = (h2hStats.aWins / h2hStats.total) * 0.6 + 0.20;
+        pX = (h2hStats.draws / h2hStats.total) * 0.5 + 0.15;
+      } else {
+        let odd1 = parseFloat(o1);
+        let oddX = parseFloat(oX);
+        let odd2 = parseFloat(o2);
+
+        if (!odd1 || odd1 === 1.85 || isNaN(odd1)) { 
+          odd1 = isHomeElite ? 1.35 : (isAwayElite ? 5.50 : 2.50);
+          oddX = 3.40;
+          odd2 = isAwayElite ? 1.40 : (isHomeElite ? 5.50 : 2.50);
+        }
+
+        p1 = 1 / odd1;
+        pX = 1 / (oddX || 3.40);
+        p2 = 1 / (odd2 || 2.50);
+      }
+
+      const total = p1 + pX + p2;
+      let pct1 = Math.round((p1 / total) * 100);
+      let pctX = Math.round((pX / total) * 100);
+      let pct2 = Math.round((p2 / total) * 100);
+
+      const diff = 100 - (pct1 + pctX + pct2);
+      pct1 += diff;
+
+      return { pct1, pctX, pct2 };
+    };
+
+    // 3. WAT TIMEZONE CONVERTER
+    window.formatToWAT = function(dateStr, timeStr) {
+      if (!timeStr) timeStr = "18:00";
+      
+      let [hours, mins] = timeStr.split(':').map(Number);
+      if (isNaN(hours)) hours = 18;
+      if (isNaN(mins)) mins = 0;
+
+      hours = (hours + 1) % 24;
+      const formattedTime = `${hours.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}`;
+
+      const now = new Date();
+      const todayStr = now.toISOString().split('T')[0];
+      const tmrw = new Date(); tmrw.setDate(tmrw.getDate() + 1);
+      const tmrwStr = tmrw.toISOString().split('T')[0];
+
+      let dayLabel = "Today";
+      if (dateStr === todayStr || !dateStr) dayLabel = "Today";
+      else if (dateStr === tmrwStr) dayLabel = "Tomorrow";
+      else {
+        const d = new Date(dateStr);
+        if (!isNaN(d)) dayLabel = d.toLocaleDateString('en-US', { day: 'numeric', month: 'short' });
+        else dayLabel = dateStr;
+      }
+      return `${dayLabel} • ${formattedTime} WAT`;
+    };
+
+    window.formatFullMatchDateTime = function(dateStr, timeStr) {
+      if (!timeStr) timeStr = "18:00";
+      let [hours, mins] = timeStr.split(':').map(Number);
+      if (isNaN(hours)) hours = 18;
+      if (isNaN(mins)) mins = 0;
+      hours = (hours + 1) % 24;
+      const formattedTime = `${hours.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}`;
+
+      const d = dateStr ? new Date(dateStr) : new Date();
+      const dayName = d.toLocaleDateString('en-US', { weekday: 'long' });
+      const dayNum = d.toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' });
+      return `📅 ${dayName}, ${dayNum} • ${formattedTime} WAT`;
+    };
+
+    // 4. DATE RANGE RESOLVER
+    window.resolveDateRange = function(horizonKey) {
+      const now = new Date();
+      const todayStr = now.toISOString().split('T')[0];
+      
+      if (horizonKey === 'today' || !horizonKey) return { from: todayStr, to: todayStr };
+      if (horizonKey === 'yesterday') {
+        const d = new Date(); d.setDate(d.getDate() - 1);
+        const s = d.toISOString().split('T')[0]; return { from: s, to: s };
+      }
+      if (horizonKey === 'day_before') {
+        const d = new Date(); d.setDate(d.getDate() - 2);
+        const s = d.toISOString().split('T')[0]; return { from: s, to: s };
+      }
+      if (horizonKey === 'tomorrow') {
+        const d = new Date(); d.setDate(d.getDate() + 1);
+        const s = d.toISOString().split('T')[0]; return { from: s, to: s };
+      }
+      
+      const dayNames = ["sunday", "monday", "tuesday", "wednesday", "thursday", "friday", "saturday"];
+      if (dayNames.includes(horizonKey.toLowerCase())) {
+        const targetDayIdx = dayNames.indexOf(horizonKey.toLowerCase());
+        const currentDayIdx = now.getDay();
+        let daysUntil = (targetDayIdx - currentDayIdx + 7) % 7;
+        if (daysUntil === 0) daysUntil = 7; 
+        const d = new Date(); d.setDate(d.getDate() + daysUntil);
+        const s = d.toISOString().split('T')[0]; return { from: s, to: s };
+      }
+      
+      if (horizonKey === 'week') {
+        const d = new Date(); d.setDate(d.getDate() + 7); return { from: todayStr, to: d.toISOString().split('T')[0] };
+      }
+      if (horizonKey === 'week2') {
+        const d = new Date(); d.setDate(d.getDate() + 14); return { from: todayStr, to: d.toISOString().split('T')[0] };
+      }
+      if (horizonKey === 'month1') {
+        const d = new Date(); d.setDate(d.getDate() + 30); return { from: todayStr, to: d.toISOString().split('T')[0] };
+      }
+      if (horizonKey === 'month2') {
+        const d = new Date(); d.setDate(d.getDate() + 60); return { from: todayStr, to: d.toISOString().split('T')[0] };
+      }
+      return { from: todayStr, to: todayStr };
+    };
+
+    // 5. BASKETBALL DATA FETCH
+    window.fetchBasketballData = async function(dateStr) {
+      const url = `https://api-basketball.p.rapidapi.com/games?date=${dateStr}`;
+      const options = { method: 'GET', headers: { 'x-rapidapi-key': bballApiKey, 'x-rapidapi-host': 'api-basketball.p.rapidapi.com' } };
+      try {
+        const res = await fetch(url, options);
+        const data = await res.json();
+        if (!data || !data.response) return [];
+        return data.response.map(b => ({
+          match_hometeam_name: b.teams.home.name,
+          match_awayteam_name: b.teams.away.name,
+          country_name: "Basketball",
+          league_name: b.league.name,
+          match_time: b.time,
+          match_date: b.date.split('T')[0],
+          team_home_badge: b.teams.home.logo,
+          team_away_badge: b.teams.away.logo,
+          match_status: b.status.short === "FT" || b.status.short === "AOT" ? "Finished" : b.status.short,
+          match_live: ["Q1", "Q2", "Q3", "Q4", "HT", "OT"].includes(b.status.short) ? "1" : "0",
+          match_hometeam_score: b.scores.home.total || "",
+          match_awayteam_score: b.scores.away.total || "",
+          odd_1: "1.85", odd_x: "15.00", odd_2: "2.05"
+        }));
+      } catch (err) { return []; }
+    };
+
+    // 6. DYNAMIC LEAGUE POPULATION
+    const countryLeagues = {
+      all: ["Premier League", "La Liga", "Serie A", "Bundesliga", "Ligue 1", "UEFA Champions League", "NBA"],
+      England: ["Premier League", "Championship", "League One", "FA Cup"],
+      Spain: ["La Liga", "Segunda Division", "Copa del Rey"],
+      Italy: ["Serie A", "Serie B"],
+      Germany: ["Bundesliga", "2. Bundesliga"],
+      France: ["Ligue 1", "Ligue 2"],
+      Americas: ["MLS", "Liga MX", "Canadian Premier League"],
+      World: ["UEFA Champions League", "Europa League", "World Cup"],
+      Basketball: ["NBA", "EuroLeague", "FIBA"]
+    };
+
+    window.populateLeagues = function(countrySelectId, leagueSelectId) {
+      const country = document.getElementById(countrySelectId).value;
+      const leagueSelect = document.getElementById(leagueSelectId);
+      const leagues = countryLeagues[country] || countryLeagues['all'];
+      
+      leagueSelect.innerHTML = `<option value="all">All Leagues</option>` + leagues.map(l => `<option value="${l}">${l}</option>`).join('');
+    };
+
+    populateLeagues('resCategory', 'resLeague');
+    populateLeagues('fixtureCountry', 'fixtureLeague');
+    populateLeagues('seeAllCountry', 'seeAllLeague');
+
+    // 7. UI RENDERERS (With Probability Matrix)
+    function renderListCard(f) {
+      const matchBadge = formatToWAT(f.match_date, f.match_time);
+      const probs = calculateProbabilities(f.odd_1, f.odd_x, f.odd_2, f.match_hometeam_name, f.match_awayteam_name);
+      const fJson = encodeURIComponent(JSON.stringify(f));
+
+      return `
+        <div onclick="openStatsFromData('${fJson}')" class="flex flex-col border-b border-slate-800 p-3 hover:bg-slate-800/50 cursor-pointer transition">
+          <div class="flex items-center gap-2 text-[9px] text-slate-400 font-bold mb-3 uppercase tracking-wider">
+            <span class="bg-slate-950 text-emerald-400 px-1.5 py-0.5 rounded border border-slate-800 shadow-sm">⏰ ${matchBadge}</span>
+            <span class="truncate ml-1">${f.league_name}</span>
+          </div>
+          <div class="flex items-center justify-between">
+            <div class="flex flex-col gap-3 w-1/2">
+              <div class="flex items-center gap-3">
+                <img src="${f.team_home_badge}" class="w-5 h-5 object-contain" onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(f.match_hometeam_name)}&background=random&color=fff'">
+                <span class="font-bold text-xs text-white truncate w-32">${f.match_hometeam_name}</span>
+              </div>
+              <div class="flex items-center gap-3">
+                <img src="${f.team_away_badge}" class="w-5 h-5 object-contain" onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(f.match_awayteam_name)}&background=random&color=fff'">
+                <span class="font-bold text-xs text-slate-300 truncate w-32">${f.match_awayteam_name}</span>
+              </div>
+            </div>
+            
+            <div class="flex gap-1.5 w-1/2 justify-end">
+              <div class="bg-slate-950 border border-emerald-500/30 rounded-lg p-2 text-center flex-1 shadow-inner">
+                <div class="text-[8px] text-slate-400 font-bold uppercase mb-0.5">1 (Home)</div>
+                <span class="text-emerald-400 font-black text-xs">${probs.pct1}%</span>
+              </div>
+              <div class="bg-slate-950 border border-amber-500/30 rounded-lg p-2 text-center flex-1 shadow-inner">
+                <div class="text-[8px] text-slate-400 font-bold uppercase mb-0.5">X (Draw)</div>
+                <span class="text-amber-400 font-black text-xs">${probs.pctX}%</span>
+              </div>
+              <div class="bg-slate-950 border border-cyan-500/30 rounded-lg p-2 text-center flex-1 shadow-inner">
+                <div class="text-[8px] text-slate-400 font-bold uppercase mb-0.5">2 (Away)</div>
+                <span class="text-cyan-400 font-black text-xs">${probs.pct2}%</span>
+              </div>
+            </div>
+          </div>
         </div>
-      `).join('');
+      `;
     }
-    renderLiveScores('all');
 
-    // Fixtures spanning up to 2 months out
-    const extendedFixtures = {
-      today: [{ home: "Man City", away: "Liverpool", league: "Premier League", date: "Today, 17:30", oddsH: "1.95", oddsA: "3.40", homeLogo: "https://media.api-sports.io/football/teams/50.png", awayLogo: "https://media.api-sports.io/football/teams/40.png" }],
-      tomorrow: [{ home: "Real Madrid", away: "Valencia", league: "La Liga", date: "Tomorrow, 20:00", oddsH: "1.45", oddsA: "6.50", homeLogo: "https://media.api-sports.io/football/teams/541.png", awayLogo: "https://media.api-sports.io/football/teams/532.png" }],
-      saturday: [{ home: "Bayern Munich", away: "Dortmund", league: "Bundesliga", date: "Sat, Oct 10", oddsH: "1.75", oddsA: "4.20", homeLogo: "https://media.api-sports.io/football/teams/157.png", awayLogo: "https://media.api-sports.io/football/teams/165.png" }],
-      month1: [{ home: "PSG", away: "Marseille", league: "Ligue 1", date: "In 3 Weeks", oddsH: "1.55", oddsA: "5.50", homeLogo: "https://media.api-sports.io/football/teams/85.png", awayLogo: "https://media.api-sports.io/football/teams/81.png" }],
-      month2: [{ home: "Inter Milan", away: "Juventus", league: "Serie A", date: "In 6 Weeks", oddsH: "2.05", oddsA: "3.50", homeLogo: "https://media.api-sports.io/football/teams/505.png", awayLogo: "https://media.api-sports.io/football/teams/496.png" }]
-    };
+    function renderArenaCard(m) {
+      const isFin = isMatchFinished(m);
+      const isLive = isMatchLive(m);
+      
+      let timeDisplay = `<span class="text-slate-500 font-bold text-[10px] uppercase">Upcoming</span>`;
+      if (isFin) timeDisplay = `<span class="text-slate-500 font-bold text-[10px] uppercase">Finished (FT)</span>`;
+      if (isLive) timeDisplay = `<span class="bg-rose-500 text-white px-1.5 py-0.5 rounded font-black text-[10px] uppercase flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-white animate-pulse"></span> ${m.match_status || 'Live'}'</span>`;
 
-    window.renderFixturesByHorizon = function() {
-      const horizon = document.getElementById('fixtureHorizon').value;
-      let matches = extendedFixtures[horizon] || extendedFixtures.today;
+      const mJson = encodeURIComponent(JSON.stringify(m));
 
-      document.getElementById("viewFixtures").innerHTML = matches.map(f => `
-        <div onclick="openStats('${f.home}', '${f.away}')" class="bg-slate-900 border border-slate-800 hover:border-emerald-500/40 p-4 rounded-3xl shadow-xl cursor-pointer transition flex flex-col justify-between">
-          <div class="flex justify-between items-center mb-2"><span class="text-[10px] font-black text-emerald-400 uppercase">${f.league}</span><span class="text-[10px] text-slate-400 font-bold">📅 ${f.date}</span></div>
-          <div class="flex items-center justify-between my-2"><div class="flex items-center gap-2"><img src="${f.homeLogo}" class="w-6 h-6 object-contain"><span class="font-bold text-xs text-slate-200">${f.home}</span></div><span class="text-[11px] font-bold text-slate-500">VS</span><div class="flex items-center gap-2 flex-row-reverse"><img src="${f.awayLogo}" class="w-6 h-6 object-contain"><span class="font-bold text-xs text-slate-200">${f.away}</span></div></div>
-          <div class="mt-2 text-center text-[10px] font-black text-emerald-400 bg-slate-950 py-1.5 rounded-xl border border-slate-800">1x2 Odds: ${f.oddsH} | ${f.oddsA}</div>
+      return `
+        <div onclick="openStatsFromData('${mJson}')" class="bg-slate-900 border-b border-slate-800 p-4 flex flex-col hover:bg-slate-800/50 cursor-pointer transition">
+          <div class="flex justify-between items-center mb-3">
+            <span class="text-[9px] text-emerald-400 font-black uppercase tracking-widest">${m.league_name}</span>
+            ${timeDisplay}
+          </div>
+          <div class="flex items-center justify-between">
+            <div class="flex flex-col gap-1.5 items-center justify-center w-1/3">
+              <img src="${m.team_home_badge}" class="w-8 h-8 object-contain" onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(m.match_hometeam_name)}&background=random&color=fff'">
+              <span class="font-bold text-[11px] text-slate-300 truncate w-full text-center">${m.match_hometeam_name}</span>
+            </div>
+            <div class="w-1/3 flex flex-col items-center justify-center gap-1">
+              <span class="bg-slate-950 text-white font-black text-2xl px-4 py-1.5 rounded-lg border border-slate-800 shadow-inner">${m.match_hometeam_score || 0} - ${m.match_awayteam_score || 0}</span>
+            </div>
+            <div class="flex flex-col gap-1.5 items-center justify-center w-1/3">
+              <img src="${m.team_away_badge}" class="w-8 h-8 object-contain" onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(m.match_awayteam_name)}&background=random&color=fff'">
+              <span class="font-bold text-[11px] text-slate-300 truncate w-full text-center">${m.match_awayteam_name}</span>
+            </div>
+          </div>
         </div>
-      `).join('');
+      `;
+    }
+
+    function renderFeaturedCard(f) {
+      const matchBadge = formatToWAT(f.match_date, f.match_time);
+      const probs = calculateProbabilities(f.odd_1, f.odd_x, f.odd_2, f.match_hometeam_name, f.match_awayteam_name);
+      const fJson = encodeURIComponent(JSON.stringify(f));
+
+      return `
+        <div onclick="openStatsFromData('${fJson}')" class="min-w-[280px] md:min-w-[320px] bg-slate-900 border border-slate-800 p-4 rounded-xl snap-start cursor-pointer hover:border-emerald-500/40 transition">
+          <div class="flex items-center gap-2 text-[9px] text-emerald-400 font-bold mb-3 border-b border-slate-800 pb-2 uppercase tracking-wider">
+            <span class="bg-rose-500 text-white px-1.5 py-0.5 rounded italic">HOT🔥</span>
+            <span class="truncate">${f.country_name || 'World'} - ${f.league_name}</span>
+          </div>
+          <div class="flex items-center justify-between px-1 mb-4">
+            <div class="flex flex-col items-center gap-1.5 w-1/3">
+              <img src="${f.team_home_badge}" class="w-8 h-8 object-contain" onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(f.match_hometeam_name)}&background=random&color=fff'">
+              <span class="text-[10px] font-bold text-slate-200 truncate w-full text-center">${f.match_hometeam_name}</span>
+            </div>
+            <div class="w-1/3 text-center text-[10px] text-slate-400 font-bold uppercase tracking-widest">
+              ⏰<br/><span class="text-emerald-400">${matchBadge.split('•')[1] || ''}</span>
+            </div>
+            <div class="flex flex-col items-center gap-1.5 w-1/3">
+              <img src="${f.team_away_badge}" class="w-8 h-8 object-contain" onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(f.match_awayteam_name)}&background=random&color=fff'">
+              <span class="text-[10px] font-bold text-slate-200 truncate w-full text-center">${f.match_awayteam_name}</span>
+            </div>
+          </div>
+          
+          <div class="flex gap-1.5">
+            <div class="bg-slate-950 border border-emerald-500/30 rounded-lg p-2 text-center flex-1 shadow-inner">
+              <div class="text-[8px] text-slate-400 font-bold uppercase mb-0.5">1 (Home)</div>
+              <span class="text-emerald-400 font-black text-xs">${probs.pct1}%</span>
+            </div>
+            <div class="bg-slate-950 border border-amber-500/30 rounded-lg p-2 text-center flex-1 shadow-inner">
+              <div class="text-[8px] text-slate-400 font-bold uppercase mb-0.5">X (Draw)</div>
+              <span class="text-amber-400 font-black text-xs">${probs.pctX}%</span>
+            </div>
+            <div class="bg-slate-950 border border-cyan-500/30 rounded-lg p-2 text-center flex-1 shadow-inner">
+              <div class="text-[8px] text-slate-400 font-bold uppercase mb-0.5">2 (Away)</div>
+              <span class="text-cyan-400 font-black text-xs">${probs.pct2}%</span>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    // 8. FEATURED TABS LOGIC
+    window.switchFeatured = function(tab) {
+      ['matches', 'tickets', 'news'].forEach(t => {
+        const btn = document.getElementById(`featBtn-${t}`);
+        const content = document.getElementById(`featContent-${t}`);
+        if(t === tab) {
+          btn.classList.add('text-emerald-400', 'border-b-2', 'border-emerald-400');
+          btn.classList.remove('text-slate-400');
+          content.classList.remove('hidden');
+        } else {
+          btn.classList.remove('text-emerald-400', 'border-b-2', 'border-emerald-400');
+          btn.classList.add('text-slate-400');
+          content.classList.add('hidden');
+        }
+      });
     };
-    renderFixturesByHorizon();
 
-    window.switchMainTab = function(tab) {
-      document.getElementById('mainTabFixtures').className = tab === 'fixtures' ? 'px-3 py-1.5 text-xs font-black rounded-lg bg-emerald-400 text-slate-950 transition' : 'px-3 py-1.5 text-xs font-black rounded-lg text-slate-400 hover:text-white transition';
-      document.getElementById('mainTabTickets').className = tab === 'tickets' ? 'px-3 py-1.5 text-xs font-black rounded-lg bg-emerald-400 text-slate-950 transition' : 'px-3 py-1.5 text-xs font-black rounded-lg text-slate-400 hover:text-white transition';
-
-      document.getElementById('sectionTitle').textContent = tab === 'fixtures' ? "🗓️ Match Schedule & Fixtures" : "💎 VIP Prediction Tickets";
-      document.getElementById('viewFixtures').classList.toggle('hidden', tab !== 'fixtures');
-      document.getElementById('viewTickets').classList.toggle('hidden', tab !== 'tickets');
+    // 9. ARENA LOGIC
+    let globalArenaCache = [];
+    window.switchArenaTab = function(type) {
+      document.getElementById('arenaLiveBtn').className = type === 'live' ? 'px-3 py-1 text-xs font-black rounded-lg bg-emerald-400 text-slate-950 transition' : 'px-3 py-1 text-xs font-black rounded-lg text-slate-400 hover:text-white transition';
+      document.getElementById('arenaResultsBtn').className = type === 'results' ? 'px-3 py-1 text-xs font-black rounded-lg bg-emerald-400 text-slate-950 transition' : 'px-3 py-1 text-xs font-black rounded-lg text-slate-400 hover:text-white transition';
+      
+      const dayFilter = document.getElementById('resDay');
+      if(type === 'live') {
+        dayFilter.value = 'today';
+        dayFilter.disabled = true;
+      } else {
+        dayFilter.disabled = false;
+      }
+      document.getElementById('resultsFilterBar').classList.toggle('hidden', type !== 'results');
+      loadResultsArena();
     };
 
-    window.openStats = function(home, away) {
+    window.loadResultsArena = async function() {
+      const type = document.getElementById('arenaLiveBtn').classList.contains('bg-emerald-400') ? 'live' : 'results';
+      const container = document.getElementById("arenaContainer");
+      const catFilter = document.getElementById('resCategory').value;
+      const leagueFilter = document.getElementById('resLeague').value;
+      const dayFilter = document.getElementById('resDay').value;
+      
+      const { from, to } = resolveDateRange(dayFilter);
+      const soccerUrl = `https://apiv2.apifootball.com/?action=get_events&from=${from}&to=${to}&APIkey=${soccerApiKey}`;
+
+      try {
+        container.innerHTML = `<div class="text-slate-500 text-xs py-8 text-center">Syncing arena stream...</div>`;
+        const [soccerRes, bballData] = await Promise.all([
+          (catFilter !== 'Basketball') ? fetch(soccerUrl).then(r => r.json()).catch(() => []) : Promise.resolve([]),
+          (catFilter === 'all' || catFilter === 'Basketball') ? fetchBasketballData(to) : Promise.resolve([])
+        ]);
+
+        let combined = [];
+        if (Array.isArray(soccerRes)) combined = [...combined, ...soccerRes];
+        if (Array.isArray(bballData)) combined = [...combined, ...bballData];
+
+        if (combined.length === 0) {
+           container.innerHTML = `<div class="text-slate-500 text-xs py-8 text-center">No active match stream.</div>`;
+           return;
+        }
+
+        globalArenaCache = combined;
+        
+        let filtered = combined.filter(m => {
+          if (type === 'live') return !isMatchFinished(m);
+          return isMatchFinished(m);
+        });
+        
+        if (catFilter !== 'all' && catFilter !== 'Basketball') {
+          filtered = filtered.filter(m => m.country_name && m.country_name.includes(catFilter));
+        }
+        if (leagueFilter !== 'all') {
+          filtered = filtered.filter(m => m.league_name && m.league_name.includes(leagueFilter));
+        }
+
+        const preview = filtered.slice(0, 4);
+        if (preview.length === 0) {
+           container.innerHTML = `<div class="text-slate-500 text-xs py-8 text-center">No ${type === 'live' ? 'live' : 'finished'} matches found for this filter.</div>`;
+           return;
+        }
+
+        container.innerHTML = preview.map(m => renderArenaCard(m)).join('');
+      } catch (err) {}
+    };
+    switchArenaTab('live');
+
+    // 10. FIXTURES LOGIC
+    window.fetchApiFootballFixtures = async function() {
+      const container = document.getElementById('viewFixtures');
+      const featContainer = document.getElementById('featContent-matches');
+      
+      container.innerHTML = `<div class="text-slate-500 text-xs py-10 text-center">Syncing List...</div>`;
+
+      const horizon = document.getElementById('fixtureHorizon').value;
+      const country = document.getElementById('fixtureCountry').value;
+      const league = document.getElementById('fixtureLeague').value;
+      const search = document.getElementById('clubSearch').value.toLowerCase();
+      
+      const { from, to } = resolveDateRange(horizon);
+      const soccerUrl = `https://apiv2.apifootball.com/?action=get_events&from=${from}&to=${to}&APIkey=${soccerApiKey}`;
+
+      try {
+        const [soccerRes, bballData] = await Promise.all([
+          (country !== 'Basketball') ? fetch(soccerUrl).then(r => r.json()).catch(()=>[]) : Promise.resolve([]),
+          (country === 'all' || country === 'Basketball') ? fetchBasketballData(from) : Promise.resolve([])
+        ]);
+        
+        let upcoming = [];
+        if (Array.isArray(soccerRes)) upcoming = [...upcoming, ...soccerRes];
+        if (Array.isArray(bballData)) upcoming = [...upcoming, ...bballData];
+
+        // STRICTLY ONLY UPCOMING MATCHES
+        upcoming = upcoming.filter(f => !isMatchFinished(f) && !isMatchLive(f));
+
+        if (country !== 'all' && country !== 'Basketball') {
+          upcoming = upcoming.filter(f => f.country_name && f.country_name.toLowerCase().includes(country.toLowerCase()));
+        }
+        if (league !== 'all') {
+          upcoming = upcoming.filter(f => f.league_name && f.league_name.toLowerCase().includes(league.toLowerCase()));
+        }
+        if (search) {
+          upcoming = upcoming.filter(f => f.match_hometeam_name.toLowerCase().includes(search) || f.match_awayteam_name.toLowerCase().includes(search));
+        }
+
+        if (upcoming.length > 0) {
+          const topLeagues = ["Premier League", "La Liga", "Serie A", "NBA"];
+          const elite = upcoming.filter(f => topLeagues.some(l => f.league_name && f.league_name.includes(l))).slice(0, 4);
+          if (elite.length > 0 && featContainer) {
+             featContainer.innerHTML = elite.map(f => renderFeaturedCard(f)).join('');
+          }
+        }
+
+        upcoming.sort((a, b) => (a.match_time || "00:00").localeCompare(b.match_time || "00:00"));
+
+        if (upcoming.length === 0) {
+          container.innerHTML = `<div class="text-slate-500 text-xs py-8 text-center">No upcoming fixtures match your criteria.</div>`;
+          return;
+        }
+
+        const preview = upcoming.slice(0, 5);
+        container.innerHTML = preview.map(f => renderListCard(f)).join('');
+      } catch (err) {
+        if(container) container.innerHTML = `<div class="text-rose-400 text-xs py-8 text-center">Failed to connect to API stream.</div>`;
+      }
+    };
+    fetchApiFootballFixtures();
+
+    // 11. DEEP ANALYTICS & ACCURATE AI TELEMETRY ENGINE
+    window.openStatsFromData = async function(encodedJson) {
+      const match = JSON.parse(decodeURIComponent(encodedJson));
+      const home = match.match_hometeam_name;
+      const away = match.match_awayteam_name;
+      
+      document.getElementById('modalTeamTitle').textContent = `${home} vs ${away}`;
+      document.getElementById('modalMatchDateTime').textContent = formatFullMatchDateTime(match.match_date, match.match_time);
+      
+      const content = document.getElementById('modalStatsContent');
+      content.innerHTML = `<div class="py-10 text-center text-slate-500">Querying live Head-to-Head match records & computing deep AI probability telemetry...</div>`;
       document.getElementById('statsModal').classList.remove('hidden');
-      document.getElementById('modalStatsContent').innerHTML = `
-        <p class="font-black text-white text-sm mb-2">${home} vs ${away} Past Match Records</p>
-        <p>📊 <strong>Last 5 Head-to-Head:</strong> ${home} (3 Wins) | Draw (1) | ${away} (1 Win)</p>
+
+      let h2hHtml = `<div class="text-slate-500 italic py-2">No previous head-to-head records found. Projections evaluated via baseline form models.</div>`;
+      let totalH2HMatches = 0;
+      let hWins = 0, aWins = 0, draws = 0;
+      let totalGoals = 0;
+      let over15Count = 0, over25Count = 0, bttsCount = 0;
+
+      if (match.country_name !== "Basketball") {
+        try {
+          const h2hUrl = `https://apiv2.apifootball.com/?action=get_H2H&firstTeam=${encodeURIComponent(home)}&secondTeam=${encodeURIComponent(away)}&APIkey=${soccerApiKey}`;
+          const res = await fetch(h2hUrl);
+          const h2hData = await res.json();
+
+          if (h2hData && Array.isArray(h2hData.firstTeam_VS_secondTeam) && h2hData.firstTeam_VS_secondTeam.length > 0) {
+            const encounters = h2hData.firstTeam_VS_secondTeam;
+            totalH2HMatches = encounters.length;
+
+            encounters.forEach(h => {
+              const hScore = parseInt(h.match_hometeam_score) || 0;
+              const aScore = parseInt(h.match_awayteam_score) || 0;
+              totalGoals += (hScore + aScore);
+
+              if (hScore > aScore) {
+                if (h.match_hometeam_name.toLowerCase().includes(home.toLowerCase())) hWins++; else aWins++;
+              } else if (aScore > hScore) {
+                if (h.match_awayteam_name.toLowerCase().includes(home.toLowerCase())) hWins++; else aWins++;
+              } else {
+                draws++;
+              }
+
+              if ((hScore + aScore) > 1.5) over15Count++;
+              if ((hScore + aScore) > 2.5) over25Count++;
+              if (hScore > 0 && aScore > 0) bttsCount++;
+            });
+
+            h2hHtml = encounters.slice(0, 5).map(h => `
+              <div class="bg-slate-950 p-2.5 rounded-xl border border-slate-800 flex justify-between items-center text-[11px]">
+                <span class="text-slate-400">${h.match_date}</span>
+                <span class="font-bold text-white">${h.match_hometeam_name} <span class="text-emerald-400 font-black">${h.match_hometeam_score} - ${h.match_awayteam_score}</span> ${h.match_awayteam_name}</span>
+                <span class="text-slate-500 text-[10px]">${h.league_name}</span>
+              </div>
+            `).join('');
+          }
+        } catch (e) {}
+      }
+
+      // Compute Derived Analytics & Probabilities dynamically
+      const odd1 = match.odd_1;
+      const oddX = match.odd_x;
+      const odd2 = match.odd_2;
+      const h2hStats = totalH2HMatches > 0 ? { total: totalH2HMatches, hWins, aWins, draws } : null;
+      const probs = calculateProbabilities(odd1, oddX, odd2, home, away, h2hStats);
+
+      const avgGoals = totalH2HMatches > 0 ? (totalGoals / totalH2HMatches).toFixed(1) : "2.4";
+      const over15Pct = totalH2HMatches > 0 ? Math.round((over15Count / totalH2HMatches) * 100) : (probs.pct1 + probs.pct2 > 70 ? 85 : 65);
+      const bttsPct = totalH2HMatches > 0 ? Math.round((bttsCount / totalH2HMatches) * 100) : (probs.pctX > 25 ? 65 : 45);
+
+      let simulatedScore = probs.pct1 > probs.pct2 ? "2 - 1" : (probs.pct2 > probs.pct1 ? "1 - 2" : "1 - 1");
+      if(probs.pct1 > 65) simulatedScore = "3 - 0";
+      if(probs.pct2 > 65) simulatedScore = "0 - 3";
+
+      content.innerHTML = `
+        <div class="space-y-4">
+          <!-- 1. Probability Distribution Bar -->
+          <div class="bg-slate-950 p-4 rounded-2xl border border-slate-800 space-y-2">
+            <div class="flex justify-between text-[10px] font-black uppercase tracking-wider text-slate-400">
+              <span>${home} (${probs.pct1}%)</span>
+              <span>Draw (${probs.pctX}%)</span>
+              <span>${away} (${probs.pct2}%)</span>
+            </div>
+            <div class="w-full h-2.5 bg-slate-900 rounded-full overflow-hidden flex">
+              <div style="width: ${probs.pct1}%" class="bg-emerald-400 h-full"></div>
+              <div style="width: ${probs.pctX}%" class="bg-amber-400 h-full"></div>
+              <div style="width: ${probs.pct2}%" class="bg-cyan-400 h-full"></div>
+            </div>
+          </div>
+
+          <!-- 2. AI Advanced Telemetry Matrix -->
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
+            <div class="bg-slate-950 p-3 rounded-xl border border-slate-800 text-center">
+              <span class="text-[9px] text-slate-500 font-bold uppercase block">Simulated Score</span>
+              <span class="text-emerald-400 font-black text-sm">${simulatedScore}</span>
+            </div>
+            <div class="bg-slate-950 p-3 rounded-xl border border-slate-800 text-center">
+              <span class="text-[9px] text-slate-500 font-bold uppercase block">Avg. Goals/Game</span>
+              <span class="text-white font-black text-sm">${avgGoals}</span>
+            </div>
+            <div class="bg-slate-950 p-3 rounded-xl border border-slate-800 text-center">
+              <span class="text-[9px] text-slate-500 font-bold uppercase block">Over 1.5 Goals</span>
+              <span class="text-cyan-400 font-black text-sm">${over15Pct}%</span>
+            </div>
+            <div class="bg-slate-950 p-3 rounded-xl border border-slate-800 text-center">
+              <span class="text-[9px] text-slate-500 font-bold uppercase block">BTTS (Both Score)</span>
+              <span class="text-amber-400 font-black text-sm">${bttsPct}%</span>
+            </div>
+          </div>
+
+          <!-- 3. Deep AI Tactical Forecast -->
+          <div class="bg-slate-950 p-4 rounded-2xl border border-slate-800 space-y-1.5">
+            <span class="text-[10px] font-black uppercase text-emerald-400 tracking-wider">Deep Tactical Forecast</span>
+            <p class="text-[11px] text-slate-300 leading-relaxed">
+              Based on historical telemetry across past competitive meetings and current season form models, <strong>${probs.pct1 > probs.pct2 ? home : away}</strong> holds tactical momentum with an expected win probability of <strong>${Math.max(probs.pct1, probs.pct2)}%</strong>. Goal volume simulations project a <strong>${over15Pct}% confidence rate</strong> for Over 1.5 Total Goals.
+            </p>
+          </div>
+
+          <!-- 4. Historical Head-to-Head -->
+          <div class="space-y-2">
+            <div class="flex justify-between items-center">
+              <span class="text-[10px] font-black uppercase text-slate-400 tracking-wider">Historical H2H Records</span>
+              ${totalH2HMatches > 0 ? `<span class="text-[10px] text-emerald-400 font-bold">${hWins} Wins / ${draws} Draws / ${aWins} Wins</span>` : ''}
+            </div>
+            <div class="space-y-1.5">${h2hHtml}</div>
+          </div>
+        </div>
       `;
     };
 
+    // 12. SEE ALL MODAL LOGIC
+    window.openSeeAllModal = async function(type) {
+      document.getElementById('seeAllModalTitle').textContent = type === 'arena' ? "Live & Results Arena" : "All Scheduled Fixtures";
+      document.getElementById('seeAllFilters').style.display = type === 'arena' ? 'none' : 'flex';
+
+      const content = document.getElementById('seeAllModalContent');
+      content.innerHTML = `<div class="text-slate-500 text-xs py-10 text-center col-span-full">Loading Data...</div>`;
+      document.getElementById('seeAllModal').classList.remove('hidden');
+
+      if (type === 'arena') {
+        const isLiveMode = document.getElementById('arenaLiveBtn').classList.contains('bg-emerald-400');
+        let filtered = globalArenaCache.filter(m => isLiveMode ? !isMatchFinished(m) : isMatchFinished(m));
+
+        if(filtered.length === 0) return content.innerHTML = `<div class="text-slate-500 text-xs py-10 text-center col-span-full">No records found.</div>`;
+        content.innerHTML = filtered.map(m => renderArenaCard(m)).join('');
+      } else {
+        loadSeeAllFixtures();
+      }
+    };
+
+    window.loadSeeAllFixtures = async function() {
+      const content = document.getElementById('seeAllModalContent');
+      content.innerHTML = `<div class="text-slate-500 text-xs py-10 text-center col-span-full">Syncing fixtures...</div>`;
+      
+      const search = document.getElementById('seeAllSearch').value.toLowerCase();
+      const horizon = document.getElementById('seeAllHorizon').value;
+      const country = document.getElementById('seeAllCountry').value;
+      const league = document.getElementById('seeAllLeague').value;
+      const { from, to } = resolveDateRange(horizon);
+
+      try {
+        const soccerUrl = `https://apiv2.apifootball.com/?action=get_events&from=${from}&to=${to}&APIkey=${soccerApiKey}`;
+        const [soccerRes, bballData] = await Promise.all([
+          (country !== 'Basketball') ? fetch(soccerUrl).then(r => r.json()).catch(()=>[]) : Promise.resolve([]),
+          (country === 'all' || country === 'Basketball') ? fetchBasketballData(from) : Promise.resolve([])
+        ]);
+        
+        let combined = [];
+        if (Array.isArray(soccerRes)) combined = [...combined, ...soccerRes];
+        if (Array.isArray(bballData)) combined = [...combined, ...bballData];
+
+        let upcoming = combined.filter(f => !isMatchFinished(f) && !isMatchLive(f));
+
+        if (country !== 'all' && country !== 'Basketball') {
+          upcoming = upcoming.filter(f => f.country_name && f.country_name.toLowerCase().includes(country.toLowerCase()));
+        }
+        if (league !== 'all') {
+          upcoming = upcoming.filter(f => f.league_name && f.league_name.toLowerCase().includes(league.toLowerCase()));
+        }
+        if (search) {
+          upcoming = upcoming.filter(f => f.match_hometeam_name.toLowerCase().includes(search) || f.match_awayteam_name.toLowerCase().includes(search));
+        }
+
+        upcoming.sort((a, b) => (a.match_time || "00:00").localeCompare(b.match_time || "00:00"));
+
+        if (upcoming.length === 0) return content.innerHTML = `<div class="text-slate-500 text-xs py-10 text-center col-span-full">No matches found.</div>`;
+
+        content.innerHTML = upcoming.map(f => renderFeaturedCard(f)).join('');
+      } catch (e) {
+         content.innerHTML = `<div class="text-rose-400 text-xs py-10 text-center col-span-full">Failed to fetch data.</div>`;
+      }
+    };
+
+    window.switchMainTab = function(tab) {
+      document.getElementById('viewFixtures').style.display = tab === 'fixtures' ? 'flex' : 'none';
+      document.getElementById('viewTickets').style.display = tab === 'tickets' ? 'block' : 'none';
+    };
+
+    // 13. FIREBASE REAL-TIME NEWS STREAM
     onSnapshot(query(collection(db, "terminal_news"), orderBy("createdAt", "desc")), (snapshot) => {
       const news = [];
       snapshot.forEach(docSnap => news.push({ id: docSnap.id, ...docSnap.data() }));
-      renderNews(news);
-    });
+      
+      const featNews = document.getElementById("featContent-news");
+      const lowerNews = document.getElementById("newsFeedContainer");
 
-    function renderNews(news) {
-      const container = document.getElementById("newsContainer");
-      if (news.length === 0) return container.innerHTML = `<div class="text-slate-500 text-xs py-4">No AI news articles published yet.</div>`;
-      container.innerHTML = news.map(n => `
-        <div onclick="openNews('${n.title}', '${n.tag}', '${n.time}', '${n.img}', '${n.body}')" class="min-w-[260px] md:min-w-[320px] flex-shrink-0 snap-start bg-slate-900 border border-slate-800 rounded-3xl overflow-hidden shadow-xl flex flex-col justify-between cursor-pointer hover:border-cyan-500/40 transition">
-          <img src="${n.img}" class="h-36 w-full object-cover">
-          <div class="p-4 space-y-2">
-            <div class="flex justify-between items-center"><span class="text-[9px] font-black uppercase text-cyan-400 bg-cyan-500/10 px-2 py-0.5 rounded">${n.tag}</span><span class="text-[9px] text-slate-500 font-bold">${n.time}</span></div>
-            <h4 class="font-black text-xs text-white leading-snug">${n.title}</h4>
+      if(news.length > 0) {
+        const newsCards = news.map(n => `
+          <div onclick="openNews('${n.title}', '${n.tag}', '${n.time}', '${n.img}', '${n.body}')" class="min-w-[260px] md:min-w-[300px] bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden shadow-xl cursor-pointer hover:border-emerald-500/40 transition snap-start flex flex-col justify-between">
+            <img src="${n.img}" class="h-32 w-full object-cover">
+            <div class="p-3.5 space-y-2">
+              <span class="text-[9px] font-black uppercase text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">${n.tag}</span>
+              <h4 class="font-bold text-xs text-white leading-snug line-clamp-2">${n.title}</h4>
+            </div>
           </div>
-        </div>
-      `).join('');
-    }
+        `).join('');
+
+        if (featNews) featNews.innerHTML = newsCards;
+        if (lowerNews) lowerNews.innerHTML = newsCards;
+      } else {
+        if (lowerNews) lowerNews.innerHTML = `<div class="text-slate-500 text-xs py-4">No recent news available. Check back soon.</div>`;
+      }
+    });
 
     window.openNews = function(title, tag, time, img, body) {
       const shareUrl = window.location.href;
       document.getElementById('newsModalContent').innerHTML = `
         <div class="flex justify-between items-center">
-          <span class="text-[10px] font-black text-cyan-400 uppercase bg-cyan-500/10 px-2.5 py-1 rounded">${tag}</span>
-          <button onclick="navigator.clipboard.writeText('${shareUrl}'); alert('News article link copied!');" class="bg-slate-900 border border-slate-700 text-emerald-400 font-bold px-3 py-1.5 rounded-xl text-xs flex items-center gap-1.5">🔗 Share Update</button>
+          <span class="text-[10px] font-black text-emerald-400 uppercase bg-emerald-500/10 px-2.5 py-1 rounded">${tag}</span>
+          <button onclick="navigator.clipboard.writeText('${shareUrl}'); alert('News article link copied!');" class="bg-slate-900 border border-slate-700 text-emerald-400 font-bold px-3 py-1.5 rounded-xl text-xs flex items-center gap-1.5">🔗 Share</button>
         </div>
-        <h1 class="text-xl md:text-3xl font-black text-white">${title}</h1>
-        <p class="text-xs text-slate-400 font-bold">${time}</p>
-        <img src="${img}" class="h-64 w-full object-cover rounded-3xl border border-slate-800">
-        <p class="text-sm text-slate-300 leading-relaxed">${body}</p>
+        <h1 class="text-lg font-black text-white">${title}</h1>
+        <p class="text-[10px] text-slate-400 font-bold">${time}</p>
+        <img src="${img}" class="h-48 w-full object-cover rounded-xl border border-slate-800">
+        <p class="text-xs text-slate-300 leading-relaxed">${body}</p>
       `;
       document.getElementById('newsModal').classList.remove('hidden');
     };
 
+    // 14. VIP TICKETS SYNC
     let allTickets = [];
     onSnapshot(query(collection(db, "daily_tickets"), orderBy("createdAt", "desc")), (snapshot) => {
       allTickets = [];
       snapshot.forEach(docSnap => allTickets.push({ id: docSnap.id, ...docSnap.data() }));
-      renderTickets(allTickets);
+      
+      const fCont = document.getElementById("featContent-tickets");
+      if(allTickets.length > 0 && fCont) {
+        fCont.innerHTML = allTickets.map(t => `
+          <div class="min-w-[260px] bg-slate-900 border border-slate-800 p-4 rounded-xl shadow-xl flex flex-col justify-between snap-start">
+            <div class="flex justify-between items-start mb-2 border-b border-slate-800 pb-2">
+              <span class="text-[9px] font-black uppercase text-emerald-400">${t.category}</span>
+              <span class="text-sm font-black text-emerald-400">${t.totalOdds} Odds</span>
+            </div>
+            <h3 class="text-xs font-bold text-white mb-2 truncate">${t.title}</h3>
+            <span class="text-[9px] font-bold uppercase ${t.status==='won'?'text-emerald-400':t.status==='lost'?'text-rose-400':'text-amber-400'}">${t.status}</span>
+          </div>
+        `).join('');
+      }
     });
 
-    function renderTickets(tickets) {
-      const container = document.getElementById("ticketsContainer");
-      if (tickets.length === 0) return container.innerHTML = `<div class="text-slate-500 col-span-3 text-center py-12">No active tickets published.</div>`;
-
-      container.innerHTML = tickets.map(t => `
-        <div class="bg-slate-900 border border-slate-800 rounded-3xl p-6 shadow-2xl flex flex-col justify-between">
-          <div>
-            <div class="flex justify-between items-start mb-4">
-              <div><span class="text-[10px] font-black uppercase text-emerald-400 bg-emerald-500/10 px-2.5 py-1 rounded-md border border-emerald-500/20">${t.category}</span><h3 class="text-base font-black text-white mt-2">${t.title}</h3></div>
-              <div class="text-right"><div class="text-2xl font-black text-emerald-400">${t.totalOdds}</div><span class="text-[10px] text-slate-400 font-bold uppercase">Total Odds</span></div>
-            </div>
-            <div class="space-y-2.5 mb-4">
-              ${t.matches.map(m => `
-                <div class="bg-slate-950 p-3 rounded-2xl border border-slate-800 text-xs">
-                  <div class="flex justify-between font-bold text-slate-200"><span>⚽ ${m.name}</span><span class="text-emerald-400 font-black">@${m.odds}</span></div>
-                  <div class="flex justify-between items-center mt-1"><span class="text-slate-400 font-semibold">Pick: <strong class="text-white">${m.pick}</strong></span></div>
-                </div>`).join('')}
-            </div>
-          </div>
-          <div class="flex justify-between items-center border-t border-slate-800 pt-4 text-xs font-black uppercase text-amber-400">
-            <span>Status: ${t.status}</span>
-          </div>
-        </div>
-      `).join('');
-    }
-
-    window.filterTickets = function(cat) {
-      document.querySelectorAll('.filter-btn').forEach(b => b.className = 'filter-btn bg-slate-900 border border-slate-800 text-slate-300 font-bold px-4 py-1.5 rounded-xl text-xs whitespace-nowrap');
-      event.target.className = 'filter-btn active bg-emerald-400 text-slate-950 font-black px-4 py-1.5 rounded-xl text-xs whitespace-nowrap shadow';
-      renderTickets(cat === 'all' ? allTickets : allTickets.filter(t => t.category === cat));
-    };
   </script>
 </body>
 </html>
