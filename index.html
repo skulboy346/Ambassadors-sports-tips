@@ -98,9 +98,9 @@
       <div class="flex justify-end px-2"><button onclick="openSeeAllModal('arena')" class="text-[11px] font-bold text-emerald-400 hover:underline">See All Arena Matches ➔</button></div>
     </section>
 
-    <!-- 3. FIXTURES: UPCOMING MATCH SCHEDULE -->
+    <!-- 3. FIXTURES & VIP TICKETS SCHEDULE -->
     <section class="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden shadow-xl mx-2">
-      <!-- Fixture Filters -->
+      <!-- Top Filters -->
       <div class="flex flex-col md:flex-row gap-3 p-4 bg-slate-950 border-b border-slate-800">
         <div class="flex flex-wrap items-center gap-2">
           <!-- Full Horizon Selector -->
@@ -142,33 +142,45 @@
         </div>
       </div>
 
-      <!-- Probability Matrix Header Row -->
-      <div class="flex justify-between items-center px-4 py-2 bg-[#0b1015] text-[10px] font-bold text-slate-400 border-b border-slate-800">
-        <div class="w-1/2 uppercase tracking-widest text-emerald-400">Scheduled Match</div>
-        <div class="w-1/2 flex gap-1 text-center pr-1">
-          <span class="flex-1 bg-slate-900 rounded py-0.5 border border-slate-800 text-emerald-400">Home %</span>
-          <span class="flex-1 bg-slate-900 rounded py-0.5 border border-slate-800 text-amber-400">Draw %</span>
-          <span class="flex-1 bg-slate-900 rounded py-0.5 border border-slate-800 text-cyan-400">Away %</span>
-        </div>
+      <!-- MAIN TABS: FIXTURES vs TICKETS -->
+      <div class="flex border-b border-slate-800 bg-[#0b1015]">
+        <button onclick="switchMainTab('fixtures')" id="mainTabFixtures" class="flex-1 py-3 text-[10px] font-black uppercase tracking-widest text-emerald-400 border-b border-emerald-400 transition">Scheduled Matches</button>
+        <button onclick="switchMainTab('tickets')" id="mainTabTickets" class="flex-1 py-3 text-[10px] font-black uppercase tracking-widest text-slate-500 hover:text-slate-300 transition">VIP Prediction Tickets</button>
       </div>
 
-      <!-- Match List Container -->
+      <!-- FIXTURES VIEW -->
       <div id="viewFixtures" class="flex flex-col bg-[#0b1015]">
-        <div class="text-slate-500 text-xs py-10 text-center">Fetching real-time fixtures...</div>
-      </div>
-      
-      <div class="p-3 bg-slate-950 text-center border-t border-slate-800">
-        <button onclick="openSeeAllModal('fixtures')" class="text-xs font-bold text-emerald-400 hover:text-emerald-300">Open Full Schedule Terminal ➔</button>
+        <!-- Probability Matrix Header Row -->
+        <div class="flex justify-between items-center px-4 py-2 bg-[#0b1015] text-[10px] font-bold text-slate-400 border-b border-slate-800">
+          <div class="w-1/2 uppercase tracking-widest text-slate-500">Live Odds Matrix</div>
+          <div class="w-1/2 flex gap-1 text-center pr-1">
+            <span class="flex-1 bg-slate-900 rounded py-0.5 border border-slate-800 text-emerald-400">Home %</span>
+            <span class="flex-1 bg-slate-900 rounded py-0.5 border border-slate-800 text-amber-400">Draw %</span>
+            <span class="flex-1 bg-slate-900 rounded py-0.5 border border-slate-800 text-cyan-400">Away %</span>
+          </div>
+        </div>
+
+        <div id="fixturesListContainer" class="flex flex-col">
+          <div class="text-slate-500 text-xs py-10 text-center">Fetching real-time fixtures...</div>
+        </div>
+        
+        <div class="p-3 bg-slate-950 text-center border-t border-slate-800">
+          <button onclick="openSeeAllModal('fixtures')" class="text-xs font-bold text-emerald-400 hover:text-emerald-300">Open Full Schedule Terminal ➔</button>
+        </div>
       </div>
 
-      <!-- VIP Tickets Tab -->
-      <div id="viewTickets" class="space-y-4 p-4 hidden">
+      <!-- TICKETS VIEW (Fully Synced Grid) -->
+      <div id="viewTickets" class="space-y-4 p-4 hidden bg-[#0b1015]">
         <div class="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
-          <button class="filter-btn active bg-emerald-400 text-slate-950 font-black px-4 py-1 rounded text-xs whitespace-nowrap" onclick="filterTickets('all')">All</button>
-          <button class="filter-btn bg-slate-900 text-slate-300 font-bold px-4 py-1 rounded text-xs whitespace-nowrap" onclick="filterTickets('2_odds')">2 Odds</button>
-          <button class="filter-btn bg-slate-900 text-slate-300 font-bold px-4 py-1 rounded text-xs whitespace-nowrap" onclick="filterTickets('1000_odds')">1,000+ Acca</button>
+          <button class="filter-btn active bg-emerald-400 text-slate-950 font-black px-4 py-1.5 rounded-lg text-xs whitespace-nowrap shadow" onclick="filterTickets('all')">All Tickets</button>
+          <button class="filter-btn bg-slate-900 border border-slate-700 text-slate-300 font-bold px-4 py-1.5 rounded-lg text-xs whitespace-nowrap" onclick="filterTickets('2_odds')">2 Odds Banker</button>
+          <button class="filter-btn bg-slate-900 border border-slate-700 text-slate-300 font-bold px-4 py-1.5 rounded-lg text-xs whitespace-nowrap" onclick="filterTickets('5_odds')">5 Odds Value</button>
+          <button class="filter-btn bg-slate-900 border border-slate-700 text-slate-300 font-bold px-4 py-1.5 rounded-lg text-xs whitespace-nowrap" onclick="filterTickets('1000_odds')">1,000+ Mega Acca</button>
         </div>
-        <div id="ticketsContainer" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+        
+        <div id="ticketsContainer" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+           <div class="text-slate-500 text-xs py-10 text-center col-span-full">Syncing Tickets...</div>
+        </div>
       </div>
     </section>
 
@@ -191,7 +203,7 @@
   <div id="seeAllModal" class="fixed inset-0 z-50 bg-[#05070a] overflow-y-auto hidden flex-col">
     <div class="sticky top-0 bg-[#070b14]/95 backdrop-blur-md px-4 py-3 flex justify-between items-center border-b border-emerald-500/20 z-10 shadow-lg">
       <h2 id="seeAllModalTitle" class="text-sm font-black text-emerald-400 uppercase tracking-widest">All Matches</h2>
-      <button onclick="document.getElementById('seeAllModal').classList.add('hidden')" class="bg-slate-900 border border-slate-700 text-white font-black px-3 py-1.5 rounded-lg text-xs hover:bg-rose-500/20 transition">✕ Close</button>
+      <button onclick="document.getElementById('seeAllModal').classList.add('hidden')" class="bg-slate-900 border border-slate-700 text-white font-black px-3 py-1.5 rounded-lg text-xs hover:bg-rose-500/20 transition">✕ Close Terminal</button>
     </div>
     
     <div class="flex-grow p-4 space-y-4 max-w-5xl mx-auto w-full">
@@ -262,7 +274,7 @@
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-    import { getFirestore, collection, query, orderBy, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+    import { getFirestore, collection, getDocs, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyBuzHlvjtdi40ucfuwQIbWqyQJJeoGYABA",
@@ -276,7 +288,6 @@
     const soccerApiKey = "15d684bf0ade8909fc993ff95ee5255877d70727dca00c078e641951cef3ec3d";
     const bballApiKey = "afc868327bmsh38c47b6bc124e98p165ea1jsn015c0d841dd3";
 
-    // 1. STRICT MATCH STATUS LOGIC
     window.isMatchFinished = function(m) {
       const status = (m.match_status || "").toUpperCase().trim();
       const finishedTokens = ["FT", "FINISHED", "FINAL", "AET", "AP", "AOT", "ENDED", "CANC", "ABD", "POSTP"];
@@ -295,14 +306,12 @@
       return false;
     };
 
-    // 2. ACCURATE PROBABILITY ENGINE
     window.calculateProbabilities = function(o1, oX, o2, homeTeam, awayTeam, h2hStats = null) {
       const eliteTeams = ["barcelona", "real madrid", "manchester city", "arsenal", "liverpool", "bayern munich", "inter", "psg", "juventus", "ac milan", "atletico madrid"];
       const isHomeElite = homeTeam ? eliteTeams.some(t => homeTeam.toLowerCase().includes(t)) : false;
       const isAwayElite = awayTeam ? eliteTeams.some(t => awayTeam.toLowerCase().includes(t)) : false;
 
       let p1, pX, p2;
-
       if (h2hStats && h2hStats.total > 0) {
         p1 = (h2hStats.hWins / h2hStats.total) * 0.6 + 0.20;
         p2 = (h2hStats.aWins / h2hStats.total) * 0.6 + 0.20;
@@ -311,37 +320,29 @@
         let odd1 = parseFloat(o1);
         let oddX = parseFloat(oX);
         let odd2 = parseFloat(o2);
-
         if (!odd1 || odd1 === 1.85 || isNaN(odd1)) { 
           odd1 = isHomeElite ? 1.35 : (isAwayElite ? 5.50 : 2.50);
           oddX = 3.40;
           odd2 = isAwayElite ? 1.40 : (isHomeElite ? 5.50 : 2.50);
         }
-
         p1 = 1 / odd1;
         pX = 1 / (oddX || 3.40);
         p2 = 1 / (odd2 || 2.50);
       }
-
       const total = p1 + pX + p2;
       let pct1 = Math.round((p1 / total) * 100);
       let pctX = Math.round((pX / total) * 100);
       let pct2 = Math.round((p2 / total) * 100);
-
       const diff = 100 - (pct1 + pctX + pct2);
       pct1 += diff;
-
       return { pct1, pctX, pct2 };
     };
 
-    // 3. WAT TIMEZONE CONVERTER
     window.formatToWAT = function(dateStr, timeStr) {
       if (!timeStr) timeStr = "18:00";
-      
       let [hours, mins] = timeStr.split(':').map(Number);
       if (isNaN(hours)) hours = 18;
       if (isNaN(mins)) mins = 0;
-
       hours = (hours + 1) % 24;
       const formattedTime = `${hours.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}`;
 
@@ -375,11 +376,9 @@
       return `📅 ${dayName}, ${dayNum} • ${formattedTime} WAT`;
     };
 
-    // 4. DATE RANGE RESOLVER
     window.resolveDateRange = function(horizonKey) {
       const now = new Date();
       const todayStr = now.toISOString().split('T')[0];
-      
       if (horizonKey === 'today' || !horizonKey) return { from: todayStr, to: todayStr };
       if (horizonKey === 'yesterday') {
         const d = new Date(); d.setDate(d.getDate() - 1);
@@ -393,7 +392,6 @@
         const d = new Date(); d.setDate(d.getDate() + 1);
         const s = d.toISOString().split('T')[0]; return { from: s, to: s };
       }
-      
       const dayNames = ["sunday", "monday", "tuesday", "wednesday", "thursday", "friday", "saturday"];
       if (dayNames.includes(horizonKey.toLowerCase())) {
         const targetDayIdx = dayNames.indexOf(horizonKey.toLowerCase());
@@ -403,7 +401,6 @@
         const d = new Date(); d.setDate(d.getDate() + daysUntil);
         const s = d.toISOString().split('T')[0]; return { from: s, to: s };
       }
-      
       if (horizonKey === 'week') {
         const d = new Date(); d.setDate(d.getDate() + 7); return { from: todayStr, to: d.toISOString().split('T')[0] };
       }
@@ -419,7 +416,6 @@
       return { from: todayStr, to: todayStr };
     };
 
-    // 5. BASKETBALL DATA FETCH
     window.fetchBasketballData = async function(dateStr) {
       const url = `https://api-basketball.p.rapidapi.com/games?date=${dateStr}`;
       const options = { method: 'GET', headers: { 'x-rapidapi-key': bballApiKey, 'x-rapidapi-host': 'api-basketball.p.rapidapi.com' } };
@@ -445,7 +441,6 @@
       } catch (err) { return []; }
     };
 
-    // 6. DYNAMIC LEAGUE POPULATION
     const countryLeagues = {
       all: ["Premier League", "La Liga", "Serie A", "Bundesliga", "Ligue 1", "UEFA Champions League", "NBA"],
       England: ["Premier League", "Championship", "League One", "FA Cup"],
@@ -462,7 +457,6 @@
       const country = document.getElementById(countrySelectId).value;
       const leagueSelect = document.getElementById(leagueSelectId);
       const leagues = countryLeagues[country] || countryLeagues['all'];
-      
       leagueSelect.innerHTML = `<option value="all">All Leagues</option>` + leagues.map(l => `<option value="${l}">${l}</option>`).join('');
     };
 
@@ -470,12 +464,10 @@
     populateLeagues('fixtureCountry', 'fixtureLeague');
     populateLeagues('seeAllCountry', 'seeAllLeague');
 
-    // 7. UI RENDERERS (With Probability Matrix)
     function renderListCard(f) {
       const matchBadge = formatToWAT(f.match_date, f.match_time);
       const probs = calculateProbabilities(f.odd_1, f.odd_x, f.odd_2, f.match_hometeam_name, f.match_awayteam_name);
       const fJson = encodeURIComponent(JSON.stringify(f));
-
       return `
         <div onclick="openStatsFromData('${fJson}')" class="flex flex-col border-b border-slate-800 p-3 hover:bg-slate-800/50 cursor-pointer transition">
           <div class="flex items-center gap-2 text-[9px] text-slate-400 font-bold mb-3 uppercase tracking-wider">
@@ -493,7 +485,6 @@
                 <span class="font-bold text-xs text-slate-300 truncate w-32">${f.match_awayteam_name}</span>
               </div>
             </div>
-            
             <div class="flex gap-1.5 w-1/2 justify-end">
               <div class="bg-slate-950 border border-emerald-500/30 rounded-lg p-2 text-center flex-1 shadow-inner">
                 <div class="text-[8px] text-slate-400 font-bold uppercase mb-0.5">1 (Home)</div>
@@ -516,13 +507,10 @@
     function renderArenaCard(m) {
       const isFin = isMatchFinished(m);
       const isLive = isMatchLive(m);
-      
       let timeDisplay = `<span class="text-slate-500 font-bold text-[10px] uppercase">Upcoming</span>`;
       if (isFin) timeDisplay = `<span class="text-slate-500 font-bold text-[10px] uppercase">Finished (FT)</span>`;
       if (isLive) timeDisplay = `<span class="bg-rose-500 text-white px-1.5 py-0.5 rounded font-black text-[10px] uppercase flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-white animate-pulse"></span> ${m.match_status || 'Live'}'</span>`;
-
       const mJson = encodeURIComponent(JSON.stringify(m));
-
       return `
         <div onclick="openStatsFromData('${mJson}')" class="bg-slate-900 border-b border-slate-800 p-4 flex flex-col hover:bg-slate-800/50 cursor-pointer transition">
           <div class="flex justify-between items-center mb-3">
@@ -550,7 +538,6 @@
       const matchBadge = formatToWAT(f.match_date, f.match_time);
       const probs = calculateProbabilities(f.odd_1, f.odd_x, f.odd_2, f.match_hometeam_name, f.match_awayteam_name);
       const fJson = encodeURIComponent(JSON.stringify(f));
-
       return `
         <div onclick="openStatsFromData('${fJson}')" class="min-w-[280px] md:min-w-[320px] bg-slate-900 border border-slate-800 p-4 rounded-xl snap-start cursor-pointer hover:border-emerald-500/40 transition">
           <div class="flex items-center gap-2 text-[9px] text-emerald-400 font-bold mb-3 border-b border-slate-800 pb-2 uppercase tracking-wider">
@@ -570,7 +557,6 @@
               <span class="text-[10px] font-bold text-slate-200 truncate w-full text-center">${f.match_awayteam_name}</span>
             </div>
           </div>
-          
           <div class="flex gap-1.5">
             <div class="bg-slate-950 border border-emerald-500/30 rounded-lg p-2 text-center flex-1 shadow-inner">
               <div class="text-[8px] text-slate-400 font-bold uppercase mb-0.5">1 (Home)</div>
@@ -589,7 +575,6 @@
       `;
     }
 
-    // 8. FEATURED TABS LOGIC
     window.switchFeatured = function(tab) {
       ['matches', 'tickets', 'news'].forEach(t => {
         const btn = document.getElementById(`featBtn-${t}`);
@@ -606,8 +591,6 @@
       });
     };
 
-    // 9. ARENA LOGIC
-    let globalArenaCache = [];
     window.switchArenaTab = function(type) {
       document.getElementById('arenaLiveBtn').className = type === 'live' ? 'px-3 py-1 text-xs font-black rounded-lg bg-emerald-400 text-slate-950 transition' : 'px-3 py-1 text-xs font-black rounded-lg text-slate-400 hover:text-white transition';
       document.getElementById('arenaResultsBtn').className = type === 'results' ? 'px-3 py-1 text-xs font-black rounded-lg bg-emerald-400 text-slate-950 transition' : 'px-3 py-1 text-xs font-black rounded-lg text-slate-400 hover:text-white transition';
@@ -650,11 +633,7 @@
         }
 
         globalArenaCache = combined;
-        
-        let filtered = combined.filter(m => {
-          if (type === 'live') return !isMatchFinished(m);
-          return isMatchFinished(m);
-        });
+        let filtered = combined.filter(m => type === 'live' ? !isMatchFinished(m) : isMatchFinished(m));
         
         if (catFilter !== 'all' && catFilter !== 'Basketball') {
           filtered = filtered.filter(m => m.country_name && m.country_name.includes(catFilter));
@@ -665,7 +644,7 @@
 
         const preview = filtered.slice(0, 4);
         if (preview.length === 0) {
-           container.innerHTML = `<div class="text-slate-500 text-xs py-8 text-center">No ${type === 'live' ? 'live' : 'finished'} matches found for this filter.</div>`;
+           container.innerHTML = `<div class="text-slate-500 text-xs py-8 text-center">No matches found for this filter.</div>`;
            return;
         }
 
@@ -674,11 +653,9 @@
     };
     switchArenaTab('live');
 
-    // 10. FIXTURES LOGIC
     window.fetchApiFootballFixtures = async function() {
-      const container = document.getElementById('viewFixtures');
+      const container = document.getElementById('fixturesListContainer');
       const featContainer = document.getElementById('featContent-matches');
-      
       container.innerHTML = `<div class="text-slate-500 text-xs py-10 text-center">Syncing List...</div>`;
 
       const horizon = document.getElementById('fixtureHorizon').value;
@@ -699,7 +676,6 @@
         if (Array.isArray(soccerRes)) upcoming = [...upcoming, ...soccerRes];
         if (Array.isArray(bballData)) upcoming = [...upcoming, ...bballData];
 
-        // STRICTLY ONLY UPCOMING MATCHES
         upcoming = upcoming.filter(f => !isMatchFinished(f) && !isMatchLive(f));
 
         if (country !== 'all' && country !== 'Basketball') {
@@ -712,12 +688,9 @@
           upcoming = upcoming.filter(f => f.match_hometeam_name.toLowerCase().includes(search) || f.match_awayteam_name.toLowerCase().includes(search));
         }
 
-        if (upcoming.length > 0) {
-          const topLeagues = ["Premier League", "La Liga", "Serie A", "NBA"];
-          const elite = upcoming.filter(f => topLeagues.some(l => f.league_name && f.league_name.includes(l))).slice(0, 4);
-          if (elite.length > 0 && featContainer) {
-             featContainer.innerHTML = elite.map(f => renderFeaturedCard(f)).join('');
-          }
+        if (upcoming.length > 0 && featContainer) {
+          const elite = upcoming.slice(0, 4);
+          featContainer.innerHTML = elite.map(f => renderFeaturedCard(f)).join('');
         }
 
         upcoming.sort((a, b) => (a.match_time || "00:00").localeCompare(b.match_time || "00:00"));
@@ -727,15 +700,13 @@
           return;
         }
 
-        const preview = upcoming.slice(0, 5);
-        container.innerHTML = preview.map(f => renderListCard(f)).join('');
+        container.innerHTML = upcoming.slice(0, 5).map(f => renderListCard(f)).join('');
       } catch (err) {
         if(container) container.innerHTML = `<div class="text-rose-400 text-xs py-8 text-center">Failed to connect to API stream.</div>`;
       }
     };
     fetchApiFootballFixtures();
 
-    // 11. DEEP ANALYTICS & ACCURATE AI TELEMETRY ENGINE
     window.openStatsFromData = async function(encodedJson) {
       const match = JSON.parse(decodeURIComponent(encodedJson));
       const home = match.match_hometeam_name;
@@ -745,14 +716,11 @@
       document.getElementById('modalMatchDateTime').textContent = formatFullMatchDateTime(match.match_date, match.match_time);
       
       const content = document.getElementById('modalStatsContent');
-      content.innerHTML = `<div class="py-10 text-center text-slate-500">Querying live Head-to-Head match records & computing deep AI probability telemetry...</div>`;
+      content.innerHTML = `<div class="py-10 text-center text-slate-500">Querying live H2H records & computing AI probability telemetry...</div>`;
       document.getElementById('statsModal').classList.remove('hidden');
 
-      let h2hHtml = `<div class="text-slate-500 italic py-2">No previous head-to-head records found. Projections evaluated via baseline form models.</div>`;
-      let totalH2HMatches = 0;
-      let hWins = 0, aWins = 0, draws = 0;
-      let totalGoals = 0;
-      let over15Count = 0, over25Count = 0, bttsCount = 0;
+      let h2hHtml = `<div class="text-slate-500 italic py-2">No previous head-to-head records found.</div>`;
+      let totalH2HMatches = 0, hWins = 0, aWins = 0, draws = 0, totalGoals = 0, over15Count = 0, bttsCount = 0;
 
       if (match.country_name !== "Basketball") {
         try {
@@ -763,25 +731,14 @@
           if (h2hData && Array.isArray(h2hData.firstTeam_VS_secondTeam) && h2hData.firstTeam_VS_secondTeam.length > 0) {
             const encounters = h2hData.firstTeam_VS_secondTeam;
             totalH2HMatches = encounters.length;
-
             encounters.forEach(h => {
               const hScore = parseInt(h.match_hometeam_score) || 0;
               const aScore = parseInt(h.match_awayteam_score) || 0;
               totalGoals += (hScore + aScore);
-
-              if (hScore > aScore) {
-                if (h.match_hometeam_name.toLowerCase().includes(home.toLowerCase())) hWins++; else aWins++;
-              } else if (aScore > hScore) {
-                if (h.match_awayteam_name.toLowerCase().includes(home.toLowerCase())) hWins++; else aWins++;
-              } else {
-                draws++;
-              }
-
+              if (hScore > aScore) hWins++; else if (aScore > hScore) aWins++; else draws++;
               if ((hScore + aScore) > 1.5) over15Count++;
-              if ((hScore + aScore) > 2.5) over25Count++;
               if (hScore > 0 && aScore > 0) bttsCount++;
             });
-
             h2hHtml = encounters.slice(0, 5).map(h => `
               <div class="bg-slate-950 p-2.5 rounded-xl border border-slate-800 flex justify-between items-center text-[11px]">
                 <span class="text-slate-400">${h.match_date}</span>
@@ -793,29 +750,17 @@
         } catch (e) {}
       }
 
-      // Compute Derived Analytics & Probabilities dynamically
-      const odd1 = match.odd_1;
-      const oddX = match.odd_x;
-      const odd2 = match.odd_2;
       const h2hStats = totalH2HMatches > 0 ? { total: totalH2HMatches, hWins, aWins, draws } : null;
-      const probs = calculateProbabilities(odd1, oddX, odd2, home, away, h2hStats);
-
+      const probs = calculateProbabilities(match.odd_1, match.odd_x, match.odd_2, home, away, h2hStats);
       const avgGoals = totalH2HMatches > 0 ? (totalGoals / totalH2HMatches).toFixed(1) : "2.4";
-      const over15Pct = totalH2HMatches > 0 ? Math.round((over15Count / totalH2HMatches) * 100) : (probs.pct1 + probs.pct2 > 70 ? 85 : 65);
-      const bttsPct = totalH2HMatches > 0 ? Math.round((bttsCount / totalH2HMatches) * 100) : (probs.pctX > 25 ? 65 : 45);
-
-      let simulatedScore = probs.pct1 > probs.pct2 ? "2 - 1" : (probs.pct2 > probs.pct1 ? "1 - 2" : "1 - 1");
-      if(probs.pct1 > 65) simulatedScore = "3 - 0";
-      if(probs.pct2 > 65) simulatedScore = "0 - 3";
+      const over15Pct = totalH2HMatches > 0 ? Math.round((over15Count / totalH2HMatches) * 100) : 75;
+      const bttsPct = totalH2HMatches > 0 ? Math.round((bttsCount / totalH2HMatches) * 100) : 55;
 
       content.innerHTML = `
         <div class="space-y-4">
-          <!-- 1. Probability Distribution Bar -->
           <div class="bg-slate-950 p-4 rounded-2xl border border-slate-800 space-y-2">
             <div class="flex justify-between text-[10px] font-black uppercase tracking-wider text-slate-400">
-              <span>${home} (${probs.pct1}%)</span>
-              <span>Draw (${probs.pctX}%)</span>
-              <span>${away} (${probs.pct2}%)</span>
+              <span>${home} (${probs.pct1}%)</span><span>Draw (${probs.pctX}%)</span><span>${away} (${probs.pct2}%)</span>
             </div>
             <div class="w-full h-2.5 bg-slate-900 rounded-full overflow-hidden flex">
               <div style="width: ${probs.pct1}%" class="bg-emerald-400 h-full"></div>
@@ -823,52 +768,20 @@
               <div style="width: ${probs.pct2}%" class="bg-cyan-400 h-full"></div>
             </div>
           </div>
-
-          <!-- 2. AI Advanced Telemetry Matrix -->
           <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
-            <div class="bg-slate-950 p-3 rounded-xl border border-slate-800 text-center">
-              <span class="text-[9px] text-slate-500 font-bold uppercase block">Simulated Score</span>
-              <span class="text-emerald-400 font-black text-sm">${simulatedScore}</span>
-            </div>
-            <div class="bg-slate-950 p-3 rounded-xl border border-slate-800 text-center">
-              <span class="text-[9px] text-slate-500 font-bold uppercase block">Avg. Goals/Game</span>
-              <span class="text-white font-black text-sm">${avgGoals}</span>
-            </div>
-            <div class="bg-slate-950 p-3 rounded-xl border border-slate-800 text-center">
-              <span class="text-[9px] text-slate-500 font-bold uppercase block">Over 1.5 Goals</span>
-              <span class="text-cyan-400 font-black text-sm">${over15Pct}%</span>
-            </div>
-            <div class="bg-slate-950 p-3 rounded-xl border border-slate-800 text-center">
-              <span class="text-[9px] text-slate-500 font-bold uppercase block">BTTS (Both Score)</span>
-              <span class="text-amber-400 font-black text-sm">${bttsPct}%</span>
-            </div>
+            <div class="bg-slate-950 p-3 rounded-xl border border-slate-800 text-center"><span class="text-[9px] text-slate-500 font-bold uppercase block">Avg. Goals</span><span class="text-white font-black text-sm">${avgGoals}</span></div>
+            <div class="bg-slate-950 p-3 rounded-xl border border-slate-800 text-center"><span class="text-[9px] text-slate-500 font-bold uppercase block">Over 1.5</span><span class="text-cyan-400 font-black text-sm">${over15Pct}%</span></div>
+            <div class="bg-slate-950 p-3 rounded-xl border border-slate-800 text-center"><span class="text-[9px] text-slate-500 font-bold uppercase block">BTTS</span><span class="text-amber-400 font-black text-sm">${bttsPct}%</span></div>
+            <div class="bg-slate-950 p-3 rounded-xl border border-slate-800 text-center"><span class="text-[9px] text-slate-500 font-bold uppercase block">Confidence</span><span class="text-emerald-400 font-black text-sm">${Math.max(probs.pct1, probs.pct2)}%</span></div>
           </div>
-
-          <!-- 3. Deep AI Tactical Forecast -->
-          <div class="bg-slate-950 p-4 rounded-2xl border border-slate-800 space-y-1.5">
-            <span class="text-[10px] font-black uppercase text-emerald-400 tracking-wider">Deep Tactical Forecast</span>
-            <p class="text-[11px] text-slate-300 leading-relaxed">
-              Based on historical telemetry across past competitive meetings and current season form models, <strong>${probs.pct1 > probs.pct2 ? home : away}</strong> holds tactical momentum with an expected win probability of <strong>${Math.max(probs.pct1, probs.pct2)}%</strong>. Goal volume simulations project a <strong>${over15Pct}% confidence rate</strong> for Over 1.5 Total Goals.
-            </p>
-          </div>
-
-          <!-- 4. Historical Head-to-Head -->
-          <div class="space-y-2">
-            <div class="flex justify-between items-center">
-              <span class="text-[10px] font-black uppercase text-slate-400 tracking-wider">Historical H2H Records</span>
-              ${totalH2HMatches > 0 ? `<span class="text-[10px] text-emerald-400 font-bold">${hWins} Wins / ${draws} Draws / ${aWins} Wins</span>` : ''}
-            </div>
-            <div class="space-y-1.5">${h2hHtml}</div>
-          </div>
+          <div class="space-y-2"><span class="text-[10px] font-black uppercase text-slate-400 tracking-wider">Historical H2H Records</span><div class="space-y-1.5">${h2hHtml}</div></div>
         </div>
       `;
     };
 
-    // 12. SEE ALL MODAL LOGIC
     window.openSeeAllModal = async function(type) {
       document.getElementById('seeAllModalTitle').textContent = type === 'arena' ? "Live & Results Arena" : "All Scheduled Fixtures";
       document.getElementById('seeAllFilters').style.display = type === 'arena' ? 'none' : 'flex';
-
       const content = document.getElementById('seeAllModalContent');
       content.innerHTML = `<div class="text-slate-500 text-xs py-10 text-center col-span-full">Loading Data...</div>`;
       document.getElementById('seeAllModal').classList.remove('hidden');
@@ -876,9 +789,7 @@
       if (type === 'arena') {
         const isLiveMode = document.getElementById('arenaLiveBtn').classList.contains('bg-emerald-400');
         let filtered = globalArenaCache.filter(m => isLiveMode ? !isMatchFinished(m) : isMatchFinished(m));
-
-        if(filtered.length === 0) return content.innerHTML = `<div class="text-slate-500 text-xs py-10 text-center col-span-full">No records found.</div>`;
-        content.innerHTML = filtered.map(m => renderArenaCard(m)).join('');
+        content.innerHTML = filtered.length ? filtered.map(m => renderArenaCard(m)).join('') : `<div class="text-slate-500 text-xs py-10 text-center col-span-full">No records found.</div>`;
       } else {
         loadSeeAllFixtures();
       }
@@ -887,7 +798,6 @@
     window.loadSeeAllFixtures = async function() {
       const content = document.getElementById('seeAllModalContent');
       content.innerHTML = `<div class="text-slate-500 text-xs py-10 text-center col-span-full">Syncing fixtures...</div>`;
-      
       const search = document.getElementById('seeAllSearch').value.toLowerCase();
       const horizon = document.getElementById('seeAllHorizon').value;
       const country = document.getElementById('seeAllCountry').value;
@@ -900,28 +810,17 @@
           (country !== 'Basketball') ? fetch(soccerUrl).then(r => r.json()).catch(()=>[]) : Promise.resolve([]),
           (country === 'all' || country === 'Basketball') ? fetchBasketballData(from) : Promise.resolve([])
         ]);
-        
         let combined = [];
         if (Array.isArray(soccerRes)) combined = [...combined, ...soccerRes];
         if (Array.isArray(bballData)) combined = [...combined, ...bballData];
 
         let upcoming = combined.filter(f => !isMatchFinished(f) && !isMatchLive(f));
-
-        if (country !== 'all' && country !== 'Basketball') {
-          upcoming = upcoming.filter(f => f.country_name && f.country_name.toLowerCase().includes(country.toLowerCase()));
-        }
-        if (league !== 'all') {
-          upcoming = upcoming.filter(f => f.league_name && f.league_name.toLowerCase().includes(league.toLowerCase()));
-        }
-        if (search) {
-          upcoming = upcoming.filter(f => f.match_hometeam_name.toLowerCase().includes(search) || f.match_awayteam_name.toLowerCase().includes(search));
-        }
+        if (country !== 'all' && country !== 'Basketball') upcoming = upcoming.filter(f => f.country_name && f.country_name.toLowerCase().includes(country.toLowerCase()));
+        if (league !== 'all') upcoming = upcoming.filter(f => f.league_name && f.league_name.includes(league.toLowerCase()));
+        if (search) upcoming = upcoming.filter(f => f.match_hometeam_name.toLowerCase().includes(search) || f.match_awayteam_name.toLowerCase().includes(search));
 
         upcoming.sort((a, b) => (a.match_time || "00:00").localeCompare(b.match_time || "00:00"));
-
-        if (upcoming.length === 0) return content.innerHTML = `<div class="text-slate-500 text-xs py-10 text-center col-span-full">No matches found.</div>`;
-
-        content.innerHTML = upcoming.map(f => renderFeaturedCard(f)).join('');
+        content.innerHTML = upcoming.length ? upcoming.map(f => renderFeaturedCard(f)).join('') : `<div class="text-slate-500 text-xs py-10 text-center col-span-full">No matches found.</div>`;
       } catch (e) {
          content.innerHTML = `<div class="text-rose-400 text-xs py-10 text-center col-span-full">Failed to fetch data.</div>`;
       }
@@ -930,16 +829,84 @@
     window.switchMainTab = function(tab) {
       document.getElementById('viewFixtures').style.display = tab === 'fixtures' ? 'flex' : 'none';
       document.getElementById('viewTickets').style.display = tab === 'tickets' ? 'block' : 'none';
+      document.getElementById('mainTabFixtures').className = tab === 'fixtures' ? 'flex-1 py-3 text-[10px] font-black uppercase tracking-widest text-emerald-400 border-b border-emerald-400 transition' : 'flex-1 py-3 text-[10px] font-black uppercase tracking-widest text-slate-500 hover:text-slate-300 transition';
+      document.getElementById('mainTabTickets').className = tab === 'tickets' ? 'flex-1 py-3 text-[10px] font-black uppercase tracking-widest text-emerald-400 border-b border-emerald-400 transition' : 'flex-1 py-3 text-[10px] font-black uppercase tracking-widest text-slate-500 hover:text-slate-300 transition';
     };
 
-    // 13. FIREBASE REAL-TIME NEWS STREAM
-    onSnapshot(query(collection(db, "terminal_news"), orderBy("createdAt", "desc")), (snapshot) => {
+    window.filterTickets = function(cat) {
+      document.querySelectorAll('.filter-btn').forEach(b => {
+        b.classList.remove('active', 'bg-emerald-400', 'text-slate-950');
+        b.classList.add('bg-slate-900', 'text-slate-300');
+      });
+      event.target.classList.add('active', 'bg-emerald-400', 'text-slate-950');
+      event.target.classList.remove('bg-slate-900', 'text-slate-300');
+      renderTickets(cat === 'all' ? allTickets : allTickets.filter(t => t.category === cat));
+    };
+
+    let allTickets = [];
+    function renderTickets(tickets) {
+      const container = document.getElementById("ticketsContainer");
+      if (!container) return;
+      if (tickets.length === 0) {
+        container.innerHTML = `<div class="text-slate-500 col-span-full text-center py-12">No active tickets available for this filter.</div>`;
+        return;
+      }
+      container.innerHTML = tickets.map(t => `
+        <div class="bg-slate-900 border border-slate-800 rounded-3xl p-6 shadow-2xl flex flex-col justify-between">
+          <div>
+            <div class="flex justify-between items-start mb-4">
+              <div><span class="text-[10px] font-black uppercase text-emerald-400 bg-emerald-500/10 px-2.5 py-1 rounded-md border border-emerald-500/20">${t.category}</span><h3 class="text-base font-black text-white mt-2">${t.title}</h3></div>
+              <div class="text-right"><div class="text-2xl font-black text-emerald-400">${t.totalOdds}</div><span class="text-[10px] text-slate-400 font-bold uppercase">Total Odds</span></div>
+            </div>
+            <div class="space-y-2.5 mb-4">
+              ${t.matches ? t.matches.map(m => `
+                <div class="bg-slate-950 p-3 rounded-2xl border border-slate-800 text-xs">
+                  <div class="flex justify-between font-bold text-slate-200"><span>⚽ ${m.name}</span><span class="text-emerald-400 font-black">@${m.odds}</span></div>
+                  <div class="flex justify-between items-center mt-1"><span class="text-slate-400 font-semibold">Pick: <strong class="text-white">${m.pick}</strong></span></div>
+                </div>`).join('') : ''}
+            </div>
+          </div>
+          <div class="flex justify-between items-center border-t border-slate-800 pt-4 text-xs font-black uppercase text-amber-400">
+            <span>Status: <strong class="${t.status==='won'?'text-emerald-400':t.status==='lost'?'text-rose-400':'text-amber-400'}">${t.status}</strong></span>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    async function loadPublicTickets() {
+      try {
+        const querySnapshot = await getDocs(collection(db, "daily_tickets"));
+        allTickets = [];
+        querySnapshot.forEach((doc) => {
+          allTickets.push({ id: doc.id, ...doc.data() });
+        });
+        allTickets.sort((a, b) => (b.createdAt?.toMillis() || 0) - (a.createdAt?.toMillis() || 0));
+
+        const fCont = document.getElementById("featContent-tickets");
+        if (allTickets.length > 0 && fCont) {
+          fCont.innerHTML = allTickets.map(t => `
+            <div class="min-w-[260px] bg-slate-900 border border-slate-800 p-4 rounded-xl shadow-xl flex flex-col justify-between snap-start">
+              <div class="flex justify-between items-start mb-2 border-b border-slate-800 pb-2">
+                <span class="text-[9px] font-black uppercase text-emerald-400">${t.category}</span>
+                <span class="text-sm font-black text-emerald-400">${t.totalOdds} Odds</span>
+              </div>
+              <h3 class="text-xs font-bold text-white mb-2 truncate">${t.title}</h3>
+              <span class="text-[9px] font-bold uppercase ${t.status==='won'?'text-emerald-400':t.status==='lost'?'text-rose-400':'text-amber-400'}">${t.status}</span>
+            </div>
+          `).join('');
+        }
+        renderTickets(allTickets);
+      } catch (e) {
+        console.error("Error loading tickets:", e);
+      }
+    }
+    loadPublicTickets();
+
+    onSnapshot(collection(db, "terminal_news"), (snapshot) => {
       const news = [];
       snapshot.forEach(docSnap => news.push({ id: docSnap.id, ...docSnap.data() }));
-      
       const featNews = document.getElementById("featContent-news");
       const lowerNews = document.getElementById("newsFeedContainer");
-
       if(news.length > 0) {
         const newsCards = news.map(n => `
           <div onclick="openNews('${n.title}', '${n.tag}', '${n.time}', '${n.img}', '${n.body}')" class="min-w-[260px] md:min-w-[300px] bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden shadow-xl cursor-pointer hover:border-emerald-500/40 transition snap-start flex flex-col justify-between">
@@ -950,11 +917,8 @@
             </div>
           </div>
         `).join('');
-
         if (featNews) featNews.innerHTML = newsCards;
         if (lowerNews) lowerNews.innerHTML = newsCards;
-      } else {
-        if (lowerNews) lowerNews.innerHTML = `<div class="text-slate-500 text-xs py-4">No recent news available. Check back soon.</div>`;
       }
     });
 
@@ -972,28 +936,6 @@
       `;
       document.getElementById('newsModal').classList.remove('hidden');
     };
-
-    // 14. VIP TICKETS SYNC
-    let allTickets = [];
-    onSnapshot(query(collection(db, "daily_tickets"), orderBy("createdAt", "desc")), (snapshot) => {
-      allTickets = [];
-      snapshot.forEach(docSnap => allTickets.push({ id: docSnap.id, ...docSnap.data() }));
-      
-      const fCont = document.getElementById("featContent-tickets");
-      if(allTickets.length > 0 && fCont) {
-        fCont.innerHTML = allTickets.map(t => `
-          <div class="min-w-[260px] bg-slate-900 border border-slate-800 p-4 rounded-xl shadow-xl flex flex-col justify-between snap-start">
-            <div class="flex justify-between items-start mb-2 border-b border-slate-800 pb-2">
-              <span class="text-[9px] font-black uppercase text-emerald-400">${t.category}</span>
-              <span class="text-sm font-black text-emerald-400">${t.totalOdds} Odds</span>
-            </div>
-            <h3 class="text-xs font-bold text-white mb-2 truncate">${t.title}</h3>
-            <span class="text-[9px] font-bold uppercase ${t.status==='won'?'text-emerald-400':t.status==='lost'?'text-rose-400':'text-amber-400'}">${t.status}</span>
-          </div>
-        `).join('');
-      }
-    });
-
   </script>
 </body>
 </html>
