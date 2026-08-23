@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ambassadors Sports Tips | Pro Sports Terminal</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%2307090e'/><text x='50' y='72' font-family='Arial Black' font-weight='900' font-size='65' text-anchor='middle' fill='%2334d399'>A</text></svg>">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    .scrollbar-hide::-webkit-scrollbar { display: none; }
+    .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+  </style>
+</head>
+<body class="bg-[#05070a] text-slate-100 font-sans min-h-screen antialiased selection:bg-emerald-400 selection:text-slate-950">
+
+  <!-- Header -->
+  <header class="border-b border-emerald-500/20 bg-[#070b14]/90 backdrop-blur-2xl sticky top-0 z-50 px-4 md:px-6 py-3 flex justify-between items-center shadow-2xl">
+    <div class="flex items-center space-x-3">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 380 130" class="h-9 md:h-10 w-auto">
+        <defs>
+          <linearGradient id="neonA" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#34d399"/><stop offset="100%" stop-color="#06b6d4"/></linearGradient>
+          <radialGradient id="ballGlow" cx="30%" cy="30%" r="70%"><stop offset="0%" stop-color="#fff"/><stop offset="100%" stop-color="#475569"/></radialGradient>
+          <radialGradient id="basketGlow" cx="30%" cy="30%" r="70%"><stop offset="0%" stop-color="#fb923c"/><stop offset="100%" stop-color="#9a3412"/></radialGradient>
+        </defs>
+        <g transform="translate(10, 35)"><circle cx="14" cy="14" r="13" fill="url(#ballGlow)"/><path d="M14 5 L19 10 L16 17 L12 17 L9 10 Z" fill="#0f172a"/></g>
+        <g transform="translate(85, 75)"><circle cx="12" cy="12" r="11" fill="url(#basketGlow)"/><path d="M12 1 C 12 12, 12 12, 23 12" fill="none" stroke="#431407" stroke-width="1.2"/></g>
+        <text x="60" y="92" font-family="'Inter', Arial Black, sans-serif" font-weight="900" font-size="70" text-anchor="middle" fill="url(#neonA)">A</text>
+        <text x="135" y="58" font-family="Inter, sans-serif" font-weight="900" font-size="20" fill="#ffffff" letter-spacing="1">AMBASSADORS</text>
+        <text x="137" y="80" font-family="Inter, sans-serif" font-weight="700" font-size="12" fill="#34d399" letter-spacing="2.5">SPORTS TIPS</text>
+      </svg>
+    </div>
+    <div class="flex items-center gap-2">
+      <span class="bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 text-[10px] md:text-[11px] px-2.5 py-1 rounded-full font-black uppercase tracking-wider flex items-center gap-1.5">
+        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span> Live Odds
+      </span>
+    </div>
+  </header>
+
+  <main class="max-w-6xl mx-auto px-4 py-6 space-y-10">
+    
+    <!-- SPOTLIGHT MATCH-UPS -->
+    <section class="space-y-3">
+      <div class="flex justify-between items-center">
+        <h2 class="text-sm md:text-base font-black text-white uppercase tracking-wider flex items-center gap-2">🔥 Spotlight Match-Ups</h2>
+        <span class="text-[10px] text-slate-400 font-bold">Swipe left/right ➡️</span>
+      </div>
+      <div id="spotlightContainer" class="flex gap-4 overflow-x-auto pb-3 scrollbar-hide snap-x"></div>
+    </section>
+
+    <!-- LIVE SCORES SECTION -->
+    <section class="space-y-4">
+      <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+        <h2 class="text-base font-black text-white uppercase tracking-wide flex items-center gap-2">
+          <span class="w-2.5 h-2.5 rounded-full bg-rose-500 animate-pulse"></span> Live Scores
+        </h2>
+        <div class="flex items-center gap-2 w-full sm:w-auto justify-between">
+          <div class="flex bg-slate-900 border border-slate-800 rounded-xl p-1">
+            <button onclick="filterLiveSport('all')" class="live-sport-btn px-3 py-1 text-xs font-black rounded-lg bg-emerald-400 text-slate-950 transition">All</button>
+            <button onclick="filterLiveSport('football')" class="live-sport-btn px-3 py-1 text-xs font-black rounded-lg text-slate-400 hover:text-white transition">⚽ Football</button>
+            <button onclick="filterLiveSport('basketball')" class="live-sport-btn px-3 py-1 text-xs font-black rounded-lg text-slate-400 hover:text-white transition">🏀 Basketball</button>
+          </div>
+          <button onclick="toggleSeeAllLive()" id="seeAllBtn" class="text-xs font-bold text-emerald-400 hover:underline">See All</button>
+        </div>
+      </div>
+      <div id="liveScoresContainer" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+    </section>
+
+    <!-- FIXTURES WITH EXTENDED HORIZON FILTER (Today up to 2 Months) -->
+    <section class="space-y-4 border-t border-slate-800 pt-6">
+      <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <h2 id="sectionTitle" class="text-base font-black text-white uppercase tracking-wide">🗓️ Match Schedule & Fixtures</h2>
+        
+        <div class="flex items-center gap-2">
+          <!-- Horizon Date Selector -->
+          <select id="fixtureHorizon" class="bg-slate-900 border border-slate-700 text-xs rounded-xl px-3 py-2 text-emerald-400 font-bold outline-none" onchange="renderFixturesByHorizon()">
+            <option value="today">Today</option>
+            <option value="tomorrow">Tomorrow</option>
+            <option value="monday">Monday</option>
+            <option value="tuesday">Tuesday</option>
+            <option value="wednesday">Wednesday</option>
+            <option value="thursday">Thursday</option>
+            <option value="friday">Friday</option>
+            <option value="saturday">Saturday</option>
+            <option value="sunday">Sunday</option>
+            <option value="week">One Week</option>
+            <option value="month1">Next 1 Month</option>
+            <option value="month2">Up to 2 Months</option>
+          </select>
+
+          <div class="flex bg-slate-900 border border-slate-800 rounded-xl p-1">
+            <button onclick="switchMainTab('fixtures')" id="mainTabFixtures" class="px-3 py-1.5 text-xs font-black rounded-lg bg-emerald-400 text-slate-950 transition">Fixtures</button>
+            <button onclick="switchMainTab('tickets')" id="mainTabTickets" class="px-3 py-1.5 text-xs font-black rounded-lg text-slate-400 hover:text-white transition">💎 VIP Tickets</button>
+          </div>
+        </div>
+      </div>
+
+      <div id="viewFixtures" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+
+      <div id="viewTickets" class="space-y-4 hidden">
+        <div class="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
+          <button class="filter-btn active bg-emerald-400 text-slate-950 font-black px-4 py-1.5 rounded-xl text-xs whitespace-nowrap shadow" onclick="filterTickets('all')">All Tickets</button>
+          <button class="filter-btn bg-slate-900 border border-slate-800 text-slate-300 font-bold px-4 py-1.5 rounded-xl text-xs whitespace-nowrap" onclick="filterTickets('2_odds')">2 Odds</button>
+          <button class="filter-btn bg-slate-900 border border-slate-800 text-slate-300 font-bold px-4 py-1.5 rounded-xl text-xs whitespace-nowrap" onclick="filterTickets('5_odds')">5 Odds</button>
+          <button class="filter-btn bg-slate-900 border border-slate-800 text-slate-300 font-bold px-4 py-1.5 rounded-xl text-xs whitespace-nowrap" onclick="filterTickets('1000_odds')">1,000+ Mega Acca</button>
+        </div>
+        <div id="ticketsContainer" class="grid grid-cols-1 md:grid-cols-3 gap-6"></div>
+      </div>
+    </section>
+
+    <!-- NEWS FEED -->
+    <section class="border-t border-slate-800 pt-8 space-y-4">
+      <h2 class="text-base font-black text-white uppercase tracking-wide flex items-center gap-2">🔥 Recent Transfer & Sports News</h2>
+      <div class="flex gap-4 overflow-x-auto pb-4 scrollbar-hide snap-x" id="newsContainer">
+        <div class="text-slate-500 text-xs py-4">Syncing live news stream...</div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- MODALS -->
+  <div id="statsModal" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-4 hidden">
+    <div class="bg-slate-900 border border-emerald-500/40 w-full max-w-lg rounded-3xl p-6 shadow-2xl relative space-y-4">
+      <button onclick="document.getElementById('statsModal').classList.add('hidden')" class="absolute top-4 right-4 text-slate-400 hover:text-white font-black text-lg">✕</button>
+      <h3 id="modalTeamTitle" class="text-base font-black text-emerald-400 uppercase tracking-wide">Match Analytics & History</h3>
+      <div class="bg-slate-950 p-4 rounded-2xl border border-slate-800 text-xs space-y-3 text-slate-300" id="modalStatsContent">Loading analytics...</div>
+    </div>
+  </div>
+
+  <div id="newsModal" class="fixed inset-0 z-50 bg-[#05070a] overflow-y-auto p-4 md:p-8 hidden">
+    <div class="max-w-3xl mx-auto space-y-6">
+      <button onclick="document.getElementById('newsModal').classList.add('hidden')" class="bg-slate-900 border border-slate-700 text-white font-black px-4 py-2 rounded-xl text-xs">← Back to Terminal</button>
+      <div id="newsModalContent" class="space-y-4"></div>
+    </div>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getFirestore, collection, query, orderBy, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyBuzHlvjtdi40ucfuwQIbWqyQJJeoGYABA",
+      authDomain: "powertips-cc902.firebaseapp.com",
+      projectId: "powertips-cc902",
+      storageBucket: "powertips-cc902.firebasestorage.app",
+      messagingSenderId: "449155099143",
+      appId: "1:449155099143:web:07c0bc0df8cdccc40898a2"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    const spotlightMatches = [
+      { home: "Arsenal", away: "Chelsea", league: "Premier League", time: "Today • 17:30 WAT", homeLogo: "https://media.api-sports.io/football/teams/42.png", awayLogo: "https://media.api-sports.io/football/teams/49.png" },
+      { home: "Real Madrid", away: "Barcelona", league: "La Liga", time: "Today • 21:00 WAT", homeLogo: "https://media.api-sports.io/football/teams/541.png", awayLogo: "https://media.api-sports.io/football/teams/529.png" }
+    ];
+
+    document.getElementById("spotlightContainer").innerHTML = spotlightMatches.map(s => `
+      <div class="min-w-[280px] md:min-w-[340px] flex-shrink-0 snap-start bg-gradient-to-r from-slate-950 via-[#0a1628] to-slate-950 border border-emerald-500/30 p-5 rounded-3xl shadow-xl flex flex-col justify-between">
+        <div class="flex justify-between items-center mb-3"><span class="text-[9px] font-black uppercase bg-emerald-400 text-slate-950 px-2.5 py-0.5 rounded-full">${s.league}</span><span class="text-[10px] text-emerald-400 font-bold">${s.time}</span></div>
+        <div class="flex items-center justify-between my-2"><div class="flex items-center gap-2"><img src="${s.homeLogo}" class="w-8 h-8 object-contain"><span class="font-bold text-xs text-white">${s.home}</span></div><span class="text-xs font-black text-slate-500">VS</span><div class="flex items-center gap-2 flex-row-reverse"><img src="${s.awayLogo}" class="w-8 h-8 object-contain"><span class="font-bold text-xs text-white">${s.away}</span></div></div>
+        <button onclick="openStats('${s.home}', '${s.away}')" class="mt-3 w-full bg-slate-900 hover:bg-slate-800 border border-slate-700 text-emerald-400 font-black text-[11px] py-2 rounded-xl">View H2H Stats 📊</button>
+      </div>
+    `).join('');
+
+    const liveMatches = [
+      { sport: "football", league: "Premier League", time: "74'", home: "Arsenal", homeScore: 2, away: "Chelsea", awayScore: 1, homeLogo: "https://media.api-sports.io/football/teams/42.png", awayLogo: "https://media.api-sports.io/football/teams/49.png" }
+    ];
+
+    let showAllLive = false;
+    window.filterLiveSport = function(sport) {
+      document.querySelectorAll('.live-sport-btn').forEach(b => b.className = 'live-sport-btn px-3 py-1 text-xs font-black rounded-lg text-slate-400 hover:text-white transition');
+      event.target.className = 'live-sport-btn px-3 py-1 text-xs font-black rounded-lg bg-emerald-400 text-slate-950 transition';
+      renderLiveScores(sport);
+    };
+    window.toggleSeeAllLive = function() {
+      showAllLive = !showAllLive;
+      document.getElementById('seeAllBtn').textContent = showAllLive ? 'Show Less' : 'See All';
+      renderLiveScores('all');
+    };
+    function renderLiveScores(sportFilter) {
+      const container = document.getElementById("liveScoresContainer");
+      let filtered = sportFilter === 'all' ? liveMatches : liveMatches.filter(m => m.sport === sportFilter);
+      container.innerHTML = filtered.map(m => `
+        <div onclick="openStats('${m.home}', '${m.away}')" class="bg-slate-900 border border-slate-800 hover:border-emerald-500/40 p-4 rounded-3xl shadow-xl cursor-pointer transition">
+          <div class="flex justify-between items-center mb-2"><span class="text-[10px] font-black uppercase text-emerald-400">${m.league}</span><span class="text-xs text-rose-400 font-bold animate-pulse">${m.time}</span></div>
+          <div class="flex items-center justify-between"><div class="flex items-center gap-2"><img src="${m.homeLogo}" class="w-7 h-7 object-contain"><span class="font-bold text-xs text-white">${m.home}</span></div><span class="text-xl font-black text-emerald-400 px-3 py-1 bg-slate-950 rounded-xl border border-slate-800">${m.homeScore} : ${m.awayScore}</span><div class="flex items-center gap-2 flex-row-reverse"><img src="${m.awayLogo}" class="w-7 h-7 object-contain"><span class="font-bold text-xs text-white">${m.away}</span></div></div>
+        </div>
+      `).join('');
+    }
+    renderLiveScores('all');
+
+    // Fixtures spanning up to 2 months out
+    const extendedFixtures = {
+      today: [{ home: "Man City", away: "Liverpool", league: "Premier League", date: "Today, 17:30", oddsH: "1.95", oddsA: "3.40", homeLogo: "https://media.api-sports.io/football/teams/50.png", awayLogo: "https://media.api-sports.io/football/teams/40.png" }],
+      tomorrow: [{ home: "Real Madrid", away: "Valencia", league: "La Liga", date: "Tomorrow, 20:00", oddsH: "1.45", oddsA: "6.50", homeLogo: "https://media.api-sports.io/football/teams/541.png", awayLogo: "https://media.api-sports.io/football/teams/532.png" }],
+      saturday: [{ home: "Bayern Munich", away: "Dortmund", league: "Bundesliga", date: "Sat, Oct 10", oddsH: "1.75", oddsA: "4.20", homeLogo: "https://media.api-sports.io/football/teams/157.png", awayLogo: "https://media.api-sports.io/football/teams/165.png" }],
+      month1: [{ home: "PSG", away: "Marseille", league: "Ligue 1", date: "In 3 Weeks", oddsH: "1.55", oddsA: "5.50", homeLogo: "https://media.api-sports.io/football/teams/85.png", awayLogo: "https://media.api-sports.io/football/teams/81.png" }],
+      month2: [{ home: "Inter Milan", away: "Juventus", league: "Serie A", date: "In 6 Weeks", oddsH: "2.05", oddsA: "3.50", homeLogo: "https://media.api-sports.io/football/teams/505.png", awayLogo: "https://media.api-sports.io/football/teams/496.png" }]
+    };
+
+    window.renderFixturesByHorizon = function() {
+      const horizon = document.getElementById('fixtureHorizon').value;
+      let matches = extendedFixtures[horizon] || extendedFixtures.today;
+
+      document.getElementById("viewFixtures").innerHTML = matches.map(f => `
+        <div onclick="openStats('${f.home}', '${f.away}')" class="bg-slate-900 border border-slate-800 hover:border-emerald-500/40 p-4 rounded-3xl shadow-xl cursor-pointer transition flex flex-col justify-between">
+          <div class="flex justify-between items-center mb-2"><span class="text-[10px] font-black text-emerald-400 uppercase">${f.league}</span><span class="text-[10px] text-slate-400 font-bold">📅 ${f.date}</span></div>
+          <div class="flex items-center justify-between my-2"><div class="flex items-center gap-2"><img src="${f.homeLogo}" class="w-6 h-6 object-contain"><span class="font-bold text-xs text-slate-200">${f.home}</span></div><span class="text-[11px] font-bold text-slate-500">VS</span><div class="flex items-center gap-2 flex-row-reverse"><img src="${f.awayLogo}" class="w-6 h-6 object-contain"><span class="font-bold text-xs text-slate-200">${f.away}</span></div></div>
+          <div class="mt-2 text-center text-[10px] font-black text-emerald-400 bg-slate-950 py-1.5 rounded-xl border border-slate-800">1x2 Odds: ${f.oddsH} | ${f.oddsA}</div>
+        </div>
+      `).join('');
+    };
+    renderFixturesByHorizon();
+
+    window.switchMainTab = function(tab) {
+      document.getElementById('mainTabFixtures').className = tab === 'fixtures' ? 'px-3 py-1.5 text-xs font-black rounded-lg bg-emerald-400 text-slate-950 transition' : 'px-3 py-1.5 text-xs font-black rounded-lg text-slate-400 hover:text-white transition';
+      document.getElementById('mainTabTickets').className = tab === 'tickets' ? 'px-3 py-1.5 text-xs font-black rounded-lg bg-emerald-400 text-slate-950 transition' : 'px-3 py-1.5 text-xs font-black rounded-lg text-slate-400 hover:text-white transition';
+
+      document.getElementById('sectionTitle').textContent = tab === 'fixtures' ? "🗓️ Match Schedule & Fixtures" : "💎 VIP Prediction Tickets";
+      document.getElementById('viewFixtures').classList.toggle('hidden', tab !== 'fixtures');
+      document.getElementById('viewTickets').classList.toggle('hidden', tab !== 'tickets');
+    };
+
+    window.openStats = function(home, away) {
+      document.getElementById('statsModal').classList.remove('hidden');
+      document.getElementById('modalStatsContent').innerHTML = `
+        <p class="font-black text-white text-sm mb-2">${home} vs ${away} Past Match Records</p>
+        <p>📊 <strong>Last 5 Head-to-Head:</strong> ${home} (3 Wins) | Draw (1) | ${away} (1 Win)</p>
+      `;
+    };
+
+    onSnapshot(query(collection(db, "terminal_news"), orderBy("createdAt", "desc")), (snapshot) => {
+      const news = [];
+      snapshot.forEach(docSnap => news.push({ id: docSnap.id, ...docSnap.data() }));
+      renderNews(news);
+    });
+
+    function renderNews(news) {
+      const container = document.getElementById("newsContainer");
+      if (news.length === 0) return container.innerHTML = `<div class="text-slate-500 text-xs py-4">No AI news articles published yet.</div>`;
+      container.innerHTML = news.map(n => `
+        <div onclick="openNews('${n.title}', '${n.tag}', '${n.time}', '${n.img}', '${n.body}')" class="min-w-[260px] md:min-w-[320px] flex-shrink-0 snap-start bg-slate-900 border border-slate-800 rounded-3xl overflow-hidden shadow-xl flex flex-col justify-between cursor-pointer hover:border-cyan-500/40 transition">
+          <img src="${n.img}" class="h-36 w-full object-cover">
+          <div class="p-4 space-y-2">
+            <div class="flex justify-between items-center"><span class="text-[9px] font-black uppercase text-cyan-400 bg-cyan-500/10 px-2 py-0.5 rounded">${n.tag}</span><span class="text-[9px] text-slate-500 font-bold">${n.time}</span></div>
+            <h4 class="font-black text-xs text-white leading-snug">${n.title}</h4>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    window.openNews = function(title, tag, time, img, body) {
+      const shareUrl = window.location.href;
+      document.getElementById('newsModalContent').innerHTML = `
+        <div class="flex justify-between items-center">
+          <span class="text-[10px] font-black text-cyan-400 uppercase bg-cyan-500/10 px-2.5 py-1 rounded">${tag}</span>
+          <button onclick="navigator.clipboard.writeText('${shareUrl}'); alert('News article link copied!');" class="bg-slate-900 border border-slate-700 text-emerald-400 font-bold px-3 py-1.5 rounded-xl text-xs flex items-center gap-1.5">🔗 Share Update</button>
+        </div>
+        <h1 class="text-xl md:text-3xl font-black text-white">${title}</h1>
+        <p class="text-xs text-slate-400 font-bold">${time}</p>
+        <img src="${img}" class="h-64 w-full object-cover rounded-3xl border border-slate-800">
+        <p class="text-sm text-slate-300 leading-relaxed">${body}</p>
+      `;
+      document.getElementById('newsModal').classList.remove('hidden');
+    };
+
+    let allTickets = [];
+    onSnapshot(query(collection(db, "daily_tickets"), orderBy("createdAt", "desc")), (snapshot) => {
+      allTickets = [];
+      snapshot.forEach(docSnap => allTickets.push({ id: docSnap.id, ...docSnap.data() }));
+      renderTickets(allTickets);
+    });
+
+    function renderTickets(tickets) {
+      const container = document.getElementById("ticketsContainer");
+      if (tickets.length === 0) return container.innerHTML = `<div class="text-slate-500 col-span-3 text-center py-12">No active tickets published.</div>`;
+
+      container.innerHTML = tickets.map(t => `
+        <div class="bg-slate-900 border border-slate-800 rounded-3xl p-6 shadow-2xl flex flex-col justify-between">
+          <div>
+            <div class="flex justify-between items-start mb-4">
+              <div><span class="text-[10px] font-black uppercase text-emerald-400 bg-emerald-500/10 px-2.5 py-1 rounded-md border border-emerald-500/20">${t.category}</span><h3 class="text-base font-black text-white mt-2">${t.title}</h3></div>
+              <div class="text-right"><div class="text-2xl font-black text-emerald-400">${t.totalOdds}</div><span class="text-[10px] text-slate-400 font-bold uppercase">Total Odds</span></div>
+            </div>
+            <div class="space-y-2.5 mb-4">
+              ${t.matches.map(m => `
+                <div class="bg-slate-950 p-3 rounded-2xl border border-slate-800 text-xs">
+                  <div class="flex justify-between font-bold text-slate-200"><span>⚽ ${m.name}</span><span class="text-emerald-400 font-black">@${m.odds}</span></div>
+                  <div class="flex justify-between items-center mt-1"><span class="text-slate-400 font-semibold">Pick: <strong class="text-white">${m.pick}</strong></span></div>
+                </div>`).join('')}
+            </div>
+          </div>
+          <div class="flex justify-between items-center border-t border-slate-800 pt-4 text-xs font-black uppercase text-amber-400">
+            <span>Status: ${t.status}</span>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    window.filterTickets = function(cat) {
+      document.querySelectorAll('.filter-btn').forEach(b => b.className = 'filter-btn bg-slate-900 border border-slate-800 text-slate-300 font-bold px-4 py-1.5 rounded-xl text-xs whitespace-nowrap');
+      event.target.className = 'filter-btn active bg-emerald-400 text-slate-950 font-black px-4 py-1.5 rounded-xl text-xs whitespace-nowrap shadow';
+      renderTickets(cat === 'all' ? allTickets : allTickets.filter(t => t.category === cat));
+    };
+  </script>
+</body>
+</html>

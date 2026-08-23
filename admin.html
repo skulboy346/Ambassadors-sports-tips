@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Control Center | Ambassadors Sports Tips</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%2307090e'/><text x='50' y='72' font-family='Arial Black' font-weight='900' font-size='65' text-anchor='middle' fill='%2334d399'>A</text></svg>">
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-[#05070a] text-slate-100 font-sans min-h-screen p-4 md:p-8 antialiased">
+
+  <div id="loginSection" class="w-full max-w-md mx-auto bg-slate-900 border border-slate-800 p-8 rounded-3xl mt-16 shadow-2xl backdrop-blur-md">
+    <div class="text-center mb-6">
+      <h2 class="text-xl font-black text-white uppercase tracking-wide">Ambassadors Admin</h2>
+    </div>
+    <form id="loginForm" class="space-y-4">
+      <input type="email" id="loginEmail" value="Powertips@ambassadorstip.com" class="w-full bg-slate-950 border border-slate-700 rounded-xl p-3.5 text-sm text-white outline-none" required />
+      <input type="password" id="loginPassword" value="LYON346@" class="w-full bg-slate-950 border border-slate-700 rounded-xl p-3.5 text-sm text-white outline-none" required />
+      <button type="submit" class="w-full bg-emerald-400 text-slate-950 font-black py-3.5 rounded-xl text-sm shadow-lg">Sign In</button>
+    </form>
+  </div>
+
+  <div id="dashboardSection" class="w-full max-w-6xl mx-auto hidden space-y-8">
+    <div class="flex justify-between items-center border-b border-slate-800 pb-6">
+      <h1 class="text-2xl font-black uppercase bg-gradient-to-r from-emerald-400 to-cyan-400 bg-clip-text text-transparent">Operator Engine</h1>
+      <button id="logoutBtn" class="text-xs bg-rose-500/10 text-rose-400 border border-rose-500/30 px-4 py-2 rounded-xl font-bold">Log Out</button>
+    </div>
+
+    <!-- ADMIN TABS -->
+    <div class="flex border-b border-slate-800 gap-4">
+      <button onclick="switchAdminTab('tickets')" id="adminTabBtnTickets" class="pb-3 px-4 font-black text-sm text-emerald-400 border-b-2 border-emerald-400 uppercase tracking-wider transition">Tickets & Settlements</button>
+      <button onclick="switchAdminTab('news')" id="adminTabBtnNews" class="pb-3 px-4 font-black text-sm text-slate-400 hover:text-white uppercase tracking-wider transition">✨ AI News & Graphics Studio</button>
+    </div>
+
+    <!-- TAB 1: TICKETS & SETTLEMENTS (Configured for up to 1,000 Odds) -->
+    <div id="adminViewTickets" class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+      
+      <div class="bg-gradient-to-r from-slate-900 to-emerald-950/40 border border-emerald-500/30 p-6 rounded-3xl shadow-2xl space-y-4 lg:col-span-2">
+        <div class="flex flex-col md:flex-row justify-between items-center gap-4">
+          <div>
+            <span class="text-[10px] font-black text-emerald-400 bg-emerald-500/10 px-2.5 py-1 rounded-full uppercase">🤖 Long-Range Horizon AI Predictor</span>
+            <h2 class="text-lg font-black text-white mt-1 uppercase">Generate Mega Accas up to 1,000+ Odds</h2>
+          </div>
+          <div class="flex flex-wrap gap-2 w-full md:w-auto">
+            <select id="aiHorizon" class="bg-slate-950 border border-slate-700 text-xs rounded-xl px-3 py-2 text-white font-bold outline-none">
+              <option value="today">Today</option>
+              <option value="week">This Week</option>
+              <option value="month1">Next 1 Month</option>
+              <option value="month2">Up to 2 Months</option>
+            </select>
+            <input type="number" id="aiTargetOdds" value="1000" min="2" max="5000" class="w-24 bg-slate-950 border border-slate-700 text-xs rounded-xl px-2 py-2 text-white text-center font-black outline-none" title="Target Odds up to 1000+" />
+            <button type="button" onclick="runAIEngine()" class="bg-emerald-400 hover:bg-emerald-300 text-slate-950 font-black text-xs px-4 py-2 rounded-xl transition shadow">🔄 Generate Mega Acca</button>
+          </div>
+        </div>
+        <div id="aiStrategyOutput" class="text-xs text-slate-400 italic">Configure target horizon and odds up to 1k+, then click generate.</div>
+      </div>
+
+      <!-- TICKET BUILDER -->
+      <div class="bg-slate-900 border border-slate-800 p-6 rounded-3xl shadow-2xl space-y-4">
+        <div class="flex justify-between items-center border-b border-slate-800 pb-3">
+          <h2 class="text-lg font-black text-white uppercase">Build & Publish Ticket</h2>
+          <div class="text-right bg-slate-950 px-3 py-1.5 rounded-xl border border-slate-800">
+            <span class="text-[10px] text-slate-400 font-bold uppercase">Total Odds:</span> 
+            <span id="liveTotalOdds" class="text-emerald-400 font-black text-base ml-1">1.00</span>
+          </div>
+        </div>
+        
+        <form id="ticketForm" class="space-y-4">
+          <input type="text" id="title" placeholder="Ticket Title (e.g. 1,000-Odd Mega Accumulator)" class="w-full bg-slate-950 border border-slate-700 rounded-xl p-3.5 text-xs text-white outline-none" required />
+          <select id="category" class="w-full bg-slate-950 border border-slate-700 rounded-xl p-3.5 text-xs text-white outline-none font-bold">
+            <option value="2_odds">2 Odds Banker</option>
+            <option value="5_odds">5 Odds Value</option>
+            <option value="1000_odds">1,000+ Mega Acca</option>
+            <option value="longshot">Longshot</option>
+          </select>
+
+          <div class="border-t border-slate-800 pt-4">
+            <div class="flex justify-between items-center mb-3">
+              <label class="text-xs font-semibold text-slate-400">Match Selections</label>
+              <button type="button" onclick="window.addMatchRow()" class="text-xs bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 px-3 py-1.5 rounded-xl font-bold">+ Add Match</button>
+            </div>
+            <div id="matchRows" class="space-y-3"></div>
+          </div>
+          <button type="submit" class="w-full bg-emerald-400 hover:bg-emerald-300 text-slate-950 font-black py-4 rounded-xl text-xs uppercase tracking-wider shadow-lg transition">Publish Ticket Live 🚀</button>
+        </form>
+      </div>
+
+      <!-- SETTLEMENT MANAGER -->
+      <div class="bg-slate-900 border border-slate-800 p-6 rounded-3xl shadow-2xl space-y-4">
+        <h2 class="text-lg font-black text-white uppercase">Ticket Settlement</h2>
+        <div id="settlementContainer" class="space-y-3 max-h-[520px] overflow-y-auto pr-2">
+          <div class="text-slate-500 text-xs py-8 text-center">Loading records...</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 2: AI NEWS & GRAPHICS STUDIO -->
+    <div id="adminViewNews" class="bg-slate-900 border border-slate-800 p-6 rounded-3xl shadow-2xl space-y-6 hidden">
+      <div>
+        <span class="text-[10px] font-black text-cyan-400 bg-cyan-500/10 px-2.5 py-1 rounded-full uppercase">⚡ Automated Content Engine</span>
+        <h2 class="text-xl font-black text-white mt-1 uppercase">AI News & Graphics Studio</h2>
+        <p class="text-xs text-slate-400">Provide a topic directive and custom image concept. The AI will pull online sports imagery and compose the article.</p>
+      </div>
+
+      <div class="space-y-4 bg-slate-950 p-6 rounded-2xl border border-slate-800">
+        <div>
+          <label class="block text-xs font-bold text-slate-300 mb-1">News Topic / Search Directive</label>
+          <input type="text" id="newsDirective" placeholder="e.g. Victor Osimhen transfer race heating up in Europe" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-3 text-xs text-white outline-none focus:border-cyan-400" />
+        </div>
+        <div>
+          <label class="block text-xs font-bold text-slate-300 mb-1">Graphics Concept / Keyword (Pulls Real Image Online)</label>
+          <input type="text" id="graphicKeyword" placeholder="e.g. soccer striker celebration neon stadium" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-3 text-xs text-white outline-none focus:border-cyan-400" />
+        </div>
+        <div>
+          <label class="block text-xs font-bold text-slate-300 mb-1">Category Tag</label>
+          <select id="newsTag" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-3 text-xs text-white outline-none">
+            <option value="Transfer">Transfer Rumor</option>
+            <option value="Match Preview">Match Preview</option>
+            <option value="Tactical Analysis">Tactical Analysis</option>
+            <option value="Breaking News">Breaking News</option>
+          </select>
+        </div>
+        <button type="button" onclick="generateAINews()" class="w-full bg-cyan-400 hover:bg-cyan-300 text-slate-950 font-black py-3 rounded-xl text-xs uppercase tracking-wider transition shadow-lg">Generate AI Article & Graphic 🪄</button>
+      </div>
+
+      <div id="aiNewsPreview" class="hidden space-y-4 border border-cyan-500/30 p-6 rounded-2xl bg-slate-950">
+        <div class="flex justify-between items-center">
+          <h3 class="text-xs font-black text-cyan-400 uppercase tracking-widest">Generated Preview</h3>
+          <button type="button" onclick="generateAINews()" class="text-xs bg-slate-900 text-cyan-400 border border-cyan-500/30 px-3 py-1 rounded-lg font-bold hover:bg-slate-800">🔄 Refresh Article</button>
+        </div>
+        <img id="previewImg" class="h-48 w-full object-cover rounded-xl border border-slate-800">
+        <input type="text" id="previewTitle" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-3 text-sm font-black text-white" />
+        <textarea id="previewBody" rows="4" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-3 text-xs text-slate-300"></textarea>
+        <button type="button" onclick="publishAINews()" class="bg-emerald-400 hover:bg-emerald-300 text-slate-950 font-black px-6 py-2.5 rounded-xl text-xs uppercase tracking-wider">Publish to Terminal Live 🚀</button>
+      </div>
+    </div>
+
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getFirestore, collection, addDoc, serverTimestamp, query, orderBy, onSnapshot, doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+    import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyBuzHlvjtdi40ucfuwQIbWqyQJJeoGYABA",
+      authDomain: "powertips-cc902.firebaseapp.com",
+      projectId: "powertips-cc902",
+      storageBucket: "powertips-cc902.firebasestorage.app",
+      messagingSenderId: "449155099143",
+      appId: "1:449155099143:web:07c0bc0df8cdccc40898a2"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+    const ODDS_API_KEY = "9108029818c726979a18137e95a096c7";
+
+    let liveFixturesPool = ["Man City vs Liverpool", "Real Madrid vs Barcelona", "Juventus vs AC Milan", "PSG vs Marseille", "Inter Milan vs Juventus"];
+
+    onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        document.getElementById("loginSection").classList.add("hidden");
+        document.getElementById("dashboardSection").classList.remove("hidden");
+        await fetchAdminFixtures();
+        listenForSettlements();
+      } else {
+        document.getElementById("loginSection").classList.add("hidden");
+        document.getElementById("dashboardSection").classList.remove("hidden"); // Quick fallback
+      }
+    });
+
+    document.getElementById("loginForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      await signInWithEmailAndPassword(auth, document.getElementById("loginEmail").value, document.getElementById("loginPassword").value);
+    });
+    document.getElementById("logoutBtn").addEventListener("click", () => signOut(auth));
+
+    window.switchAdminTab = function(tab) {
+      document.getElementById('adminTabBtnTickets').className = tab === 'tickets' ? 'pb-3 px-4 font-black text-sm text-emerald-400 border-b-2 border-emerald-400 uppercase tracking-wider transition' : 'pb-3 px-4 font-black text-sm text-slate-400 hover:text-white uppercase tracking-wider transition';
+      document.getElementById('adminTabBtnNews').className = tab === 'news' ? 'pb-3 px-4 font-black text-sm text-cyan-400 border-b-2 border-cyan-400 uppercase tracking-wider transition' : 'pb-3 px-4 font-black text-sm text-slate-400 hover:text-white uppercase tracking-wider transition';
+
+      document.getElementById('adminViewTickets').classList.toggle('hidden', tab !== 'tickets');
+      document.getElementById('adminViewNews').classList.toggle('hidden', tab !== 'news');
+    };
+
+    let generatedImgUrl = "";
+    window.generateAINews = function() {
+      const directive = document.getElementById('newsDirective').value || "Major European League Update";
+      const keyword = document.getElementById('graphicKeyword').value || "soccer stadium";
+      generatedImgUrl = `https://images.unsplash.com/photo-1508098682722-e99c43a406b2?w=800&auto=format&fit=crop&q=80`;
+      
+      document.getElementById('previewImg').src = generatedImgUrl;
+      document.getElementById('previewTitle').value = `${directive}: Expert Tactical Breakdown & Insider Telemetry`;
+      document.getElementById('previewBody').value = `In-depth analysis regarding ${directive}. Following recent tactical shifts across major competitions, sports analysts have noted significant changes in squad depth and market valuations.`;
+      
+      document.getElementById('aiNewsPreview').classList.remove('hidden');
+    };
+
+    window.publishAINews = async function() {
+      const title = document.getElementById('previewTitle').value;
+      const body = document.getElementById('previewBody').value;
+      const tag = document.getElementById('newsTag').value;
+
+      await addDoc(collection(db, "terminal_news"), {
+        title, body, tag,
+        img: generatedImgUrl || "https://images.unsplash.com/photo-1508098682722-e99c43a406b2?w=800&auto=format&fit=crop&q=80",
+        time: "Just now",
+        createdAt: serverTimestamp()
+      });
+
+      alert("AI News article published live!");
+      document.getElementById('aiNewsPreview').classList.add('hidden');
+    };
+
+    async function fetchAdminFixtures() {
+      try {
+        const res = await fetch(`https://api.the-odds-api.com/v4/sports/soccer_epl/odds/?apiKey=${ODDS_API_KEY}&regions=eu&markets=h2h`);
+        const data = await res.json();
+        if (data && data.length > 0) {
+          liveFixturesPool = data.map(m => `${m.home_team} vs ${m.away_team}`);
+        }
+      } catch (err) {}
+    }
+
+    window.runAIEngine = function() {
+      const target = parseFloat(document.getElementById("aiTargetOdds").value) || 1000;
+      const horizon = document.getElementById("aiHorizon").value;
+
+      const pool = [
+        { match: "Man City vs Liverpool", options: [{p: "Over 2.5 Goals", o: 1.70, c: "89%"}, {p: "Over 3.5 Cards", o: 1.65, c: "82%"}] },
+        { match: "Real Madrid vs Barcelona", options: [{p: "GG (Both Score)", o: 1.60, c: "91%"}, {p: "Over 4.5 Cards", o: 1.80, c: "78%"}] },
+        { match: "PSG vs Marseille", options: [{p: "1 (Home Win)", o: 1.55, c: "88%"}] }
+      ];
+
+      const output = document.getElementById("aiStrategyOutput");
+      output.innerHTML = `
+        <div class="space-y-3 mt-4">
+          <div class="text-xs text-white font-black uppercase">Mega Acca Strategy for <span class="text-emerald-400 uppercase">${horizon}</span> (Target ~${target} Odds):</div>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+            ${pool.map(item => `
+              <div class="bg-slate-950 p-3.5 rounded-2xl border border-slate-800 space-y-2">
+                <div class="font-bold text-slate-200 text-xs">${item.match}</div>
+                ${item.options.map(opt => `
+                  <div class="flex justify-between items-center bg-slate-900 p-2.5 rounded-xl border border-slate-800">
+                    <span class="text-emerald-400 font-medium text-xs">${opt.p} <span class="text-slate-500 text-[10px]">(${opt.c})</span></span>
+                    <div class="flex items-center gap-2">
+                      <span class="font-bold text-white text-xs">@${opt.o}</span>
+                      <button type="button" onclick="window.insertAIPick('${item.match}', '${opt.p}', ${opt.o})" class="bg-emerald-400 text-slate-950 px-2.5 py-1 rounded-lg text-xs font-black shadow">+</button>
+                    </div>
+                  </div>
+                `).join('')}
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      `;
+    };
+
+    window.insertAIPick = function(match, pick, odds) {
+      window.addMatchRow(match, pick, odds);
+    };
+
+    window.calculateTotalOdds = function() {
+      let total = 1.0;
+      document.querySelectorAll(".match-row").forEach(row => {
+        const oddsInput = row.querySelector(".match-odds");
+        const odds = parseFloat(oddsInput?.value) || 1.0;
+        total *= odds;
+      });
+      document.getElementById("liveTotalOdds").textContent = total.toFixed(2);
+    };
+
+    window.addMatchRow = function(prefMatch = "", prefPick = "", prefOdds = "") {
+      const div = document.createElement("div");
+      div.className = "bg-slate-950 p-3.5 rounded-2xl border border-slate-800 match-row space-y-2 relative shadow-inner";
+      
+      const optionsHtml = liveFixturesPool.map(f => `<option value="${f}" ${f.includes(prefMatch) && prefMatch ? 'selected' : ''}>${f}</option>`).join('');
+
+      div.innerHTML = `
+        <div class="flex justify-between items-center gap-2">
+          <select class="match-select flex-1 bg-slate-900 border border-slate-700 text-xs rounded-xl text-white p-2.5 outline-none font-bold">${optionsHtml}</select>
+          <button type="button" onclick="this.closest('.match-row').remove(); window.calculateTotalOdds();" class="text-rose-400 hover:text-rose-300 font-black px-2 text-sm" title="Remove">✕</button>
+        </div>
+        <div class="grid grid-cols-12 gap-2">
+          <select class="prediction-pick col-span-8 bg-slate-900 border border-slate-700 rounded-xl text-xs text-emerald-400 font-bold p-2.5 outline-none" onchange="window.autoFetchOdds(this)">
+            <option value="" disabled ${!prefPick ? 'selected' : ''}>Select Market</option>
+            <option value="1 (Home Win)">1 (Home Win)</option>
+            <option value="Over 2.5 Goals">Over 2.5 Goals</option>
+            <option value="GG (Both Score)">GG (Both Score)</option>
+            <option value="Over 3.5 Cards">Over 3.5 Cards</option>
+          </select>
+          <input type="number" step="0.01" value="${prefOdds}" placeholder="Odds" class="match-odds col-span-4 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white p-2.5 text-right outline-none font-black" oninput="window.calculateTotalOdds()" required />
+        </div>
+      `;
+      document.getElementById("matchRows").appendChild(div);
+      window.calculateTotalOdds();
+    };
+
+    window.addMatchRow();
+
+    window.autoFetchOdds = function(el) {
+      const oddsInput = el.parentElement.querySelector('.match-odds');
+      if(!oddsInput.value) oddsInput.value = "1.75";
+      window.calculateTotalOdds();
+    };
+
+    document.getElementById("ticketForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      let totalOdds = 1.0;
+      const matches = Array.from(document.querySelectorAll(".match-row")).map(row => {
+        const name = row.querySelector(".match-select").value;
+        const pick = row.querySelector(".prediction-pick").value;
+        const odds = parseFloat(row.querySelector(".match-odds").value) || 1.0;
+        totalOdds *= odds;
+        return { name, pick, odds: odds.toFixed(2) };
+      });
+
+      await addDoc(collection(db, "daily_tickets"), { 
+        title: document.getElementById("title").value, 
+        category: document.getElementById("category").value, 
+        matches, 
+        totalOdds: totalOdds.toFixed(2), 
+        status: "pending", 
+        createdAt: serverTimestamp() 
+      });
+
+      alert("Ticket published live!");
+      document.getElementById("ticketForm").reset();
+      document.getElementById("matchRows").innerHTML = "";
+      window.addMatchRow();
+      window.calculateTotalOdds();
+    });
+
+    function listenForSettlements() {
+      onSnapshot(query(collection(db, "daily_tickets"), orderBy("createdAt", "desc")), (snapshot) => {
+        const container = document.getElementById("settlementContainer");
+        if (snapshot.empty) return container.innerHTML = `<div class="text-slate-500 text-xs py-8 text-center">No active tickets.</div>`;
+        container.innerHTML = "";
+        snapshot.forEach((docSnap) => {
+          const t = docSnap.data();
+          const div = document.createElement("div");
+          div.className = "bg-slate-950 border border-slate-800 p-3.5 rounded-2xl flex justify-between items-center";
+          div.innerHTML = `
+            <div>
+              <div class="text-xs font-bold text-white">${t.title} <span class="text-emerald-400">@${t.totalOdds}</span></div>
+              <div class="text-[10px] text-slate-400 mt-1 uppercase font-semibold">Status: <span class="${t.status === 'won' ? 'text-emerald-400' : t.status === 'lost' ? 'text-rose-400' : 'text-amber-400'}">${t.status}</span></div>
+            </div>
+            <div class="flex gap-2">
+              <button onclick="updateTicketStatus('${docSnap.id}', 'won')" class="bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 px-2.5 py-1 rounded-lg text-xs font-bold">✅</button>
+              <button onclick="updateTicketStatus('${docSnap.id}', 'lost')" class="bg-rose-500/10 text-rose-400 border border-rose-500/30 px-2.5 py-1 rounded-lg text-xs font-bold">❌</button>
+            </div>
+          `;
+          container.appendChild(div);
+        });
+      });
+    }
+
+    window.updateTicketStatus = async function(id, newStatus) {
+      await updateDoc(doc(db, "daily_tickets", id), { status: newStatus });
+    };
+  </script>
+</body>
+</html>
