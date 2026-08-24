@@ -74,7 +74,7 @@
           <option value="day_before">2 Days Ago</option>
           <option value="week">Past 7 Days</option>
         </select>
-        <select id="resCategory" class="bg-slate-950 border border-slate-700 text-xs rounded-lg px-2 py-1.5 text-white font-bold outline-none" onchange="loadResultsArena()">
+        <select id="resCategory" class="bg-slate-950 border border-slate-700 text-xs rounded-lg px-2 py-1.5 text-white font-bold outline-none" onchange="populateLeagues('resCategory', 'resLeague'); loadResultsArena()">
           <option value="all">🌍 All Sports & Countries</option>
           <option value="England">🏴󠁧󠁢󠁥󠁮󠁧󠁿 England</option>
           <option value="Spain">🇪🇸 Spain</option>
@@ -84,6 +84,8 @@
           <option value="Americas">🌎 Americas</option>
           <option value="World">🏆 International</option>
           <option value="Basketball">🏀 Basketball</option>
+          <option value="Tennis">🎾 Tennis</option>
+          <option value="Table Tennis">🏓 Table Tennis</option>
         </select>
         <select id="resLeague" class="bg-slate-950 border border-slate-700 text-xs rounded-lg px-2 py-1.5 text-white font-bold outline-none" onchange="loadResultsArena()">
           <option value="all">All Leagues</option>
@@ -112,8 +114,9 @@
             <option value="week">1 Week</option>
             <option value="week2">2 Weeks</option>
             <option value="month1">1 Month</option>
+            <option value="month2">2 Months</option>
           </select>
-          <select id="fixtureCountry" class="bg-slate-900 border border-slate-700 text-xs rounded-lg px-2 py-1.5 text-white font-bold outline-none" onchange="fetchApiFootballFixtures()">
+          <select id="fixtureCountry" class="bg-slate-900 border border-slate-700 text-xs rounded-lg px-2 py-1.5 text-white font-bold outline-none" onchange="populateLeagues('fixtureCountry', 'fixtureLeague'); fetchApiFootballFixtures()">
             <option value="all">🌍 All Locations</option>
             <option value="England">🏴󠁧󠁢󠁥󠁮󠁧󠁿 England</option>
             <option value="Spain">🇪🇸 Spain</option>
@@ -121,6 +124,8 @@
             <option value="Germany">🇩🇪 Germany</option>
             <option value="France">🇫🇷 France</option>
             <option value="Basketball">🏀 Basketball</option>
+            <option value="Tennis">🎾 Tennis</option>
+            <option value="Table Tennis">🏓 Table Tennis</option>
           </select>
           <select id="fixtureLeague" class="bg-slate-900 border border-slate-700 text-xs rounded-lg px-2 py-1.5 text-white font-bold outline-none" onchange="fetchApiFootballFixtures()">
             <option value="all">All Leagues</option>
@@ -153,7 +158,7 @@
         </div>
       </div>
 
-      <!-- TICKETS VIEW -->
+      <!-- TICKETS VIEW (Active vs Outcomes) -->
       <div id="viewTickets" class="flex-col bg-[#0b1015] hidden">
         <div class="flex border-b border-slate-800 bg-slate-950/50">
           <button onclick="switchTicketMode('active')" id="ticketModeActive" class="flex-1 py-2 text-[10px] font-black uppercase tracking-widest text-emerald-400 bg-emerald-500/10 transition">🟢 Active Pending</button>
@@ -218,6 +223,14 @@
     </div>
   </div>
 
+  <!-- FULL ARTICLE READING MODAL -->
+  <div id="newsModal" class="fixed inset-0 z-50 bg-[#05070a] overflow-y-auto p-4 md:p-8 hidden">
+    <div class="max-w-3xl mx-auto space-y-6">
+      <button onclick="document.getElementById('newsModal').classList.add('hidden')" class="bg-slate-900 border border-slate-700 text-white font-black px-4 py-2 rounded-xl text-xs hover:bg-emerald-500/20 transition">← Back</button>
+      <div id="newsModalContent" class="space-y-4"></div>
+    </div>
+  </div>
+
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { getFirestore, collection, getDocs, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
@@ -232,12 +245,12 @@
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
     const soccerApiKey = "15d684bf0ade8909fc993ff95ee5255877d70727dca00c078e641951cef3ec3d";
-    const bballApiKey = "afc868327bmsh38c47b6bc124e98p165ea1jsn015c0d841dd3";
+    const allScoresApiKey = "afc868327bmsh38c47b6bc124e98p165ea1jsn015c0d841dd3";
 
     let globalArenaCache = [];
     let allTickets = [];
 
-    async function fetchWithTimeout(url, options = {}, timeout = 3500) {
+    async function fetchWithTimeout(url, options = {}, timeout = 5500) {
       const controller = new AbortController();
       const id = setTimeout(() => controller.abort(), timeout);
       try {
@@ -373,19 +386,20 @@
         const d = new Date(); d.setDate(d.getDate() + 14); return { from: todayStr, to: d.toISOString().split('T')[0] };
       }
       if (horizonKey === 'month1') {
-        const d = new Date(); d.setDate(d.getDate() + 15); return { from: todayStr, to: d.toISOString().split('T')[0] }; // Max limit applied
+        const d = new Date(); d.setDate(d.getDate() + 30); return { from: todayStr, to: d.toISOString().split('T')[0] };
       }
       if (horizonKey === 'month2') {
-        const d = new Date(); d.setDate(d.getDate() + 15); return { from: todayStr, to: d.toISOString().split('T')[0] };
+        const d = new Date(); d.setDate(d.getDate() + 60); return { from: todayStr, to: d.toISOString().split('T')[0] };
       }
       return { from: todayStr, to: todayStr };
     };
 
-    window.fetchBasketballData = async function(dateStr) {
+    // SPORTS API FETCHERS
+    async function fetchBasketballData(dateStr) {
       const url = `https://api-basketball.p.rapidapi.com/games?date=${dateStr}`;
-      const options = { method: 'GET', headers: { 'x-rapidapi-key': bballApiKey, 'x-rapidapi-host': 'api-basketball.p.rapidapi.com' } };
+      const options = { method: 'GET', headers: { 'x-rapidapi-key': allScoresApiKey, 'x-rapidapi-host': 'api-basketball.p.rapidapi.com' } };
       try {
-        const data = await fetchWithTimeout(url, options, 3000);
+        const data = await fetchWithTimeout(url, options, 4000);
         if (!data || !data.response) return [];
         return data.response.map(b => ({
           match_hometeam_name: b.teams.home.name,
@@ -403,7 +417,86 @@
           odd_1: "1.85", odd_x: "15.00", odd_2: "2.05"
         }));
       } catch (err) { return []; }
+    }
+
+    async function fetchOtherSportsData(dateStr, sportName) {
+      let sportId = sportName === 'Tennis' ? 3 : 5; 
+      const [y, m, d] = dateStr.split('-');
+      const formattedDate = `${d}%2F${m}%2F${y}`;
+
+      const url = `https://allscores.p.rapidapi.com/api/allscores/matches?sport=${sportId}&date=${formattedDate}&timezone=Africa%2FLagos&langId=1`;
+      const options = {
+        method: 'GET',
+        headers: {
+          'x-rapidapi-key': allScoresApiKey,
+          'x-rapidapi-host': 'allscores.p.rapidapi.com'
+        }
+      };
+
+      try {
+        const data = await fetchWithTimeout(url, options, 4000);
+        if (!data || !data.matches) return [];
+        
+        return data.matches.map(match => ({
+          match_hometeam_name: match.homeCompetitor?.name || "Player 1",
+          match_awayteam_name: match.awayCompetitor?.name || "Player 2",
+          country_name: sportName,
+          league_name: match.competition?.name || sportName,
+          match_time: match.startTime ? new Date(match.startTime).toTimeString().substring(0,5) : "12:00",
+          match_date: dateStr,
+          team_home_badge: match.homeCompetitor?.logo || "",
+          team_away_badge: match.awayCompetitor?.logo || "",
+          match_status: match.status?.name || (match.isFinished ? "Finished" : "Not Started"),
+          match_live: match.isLive ? "1" : "0",
+          match_hometeam_score: match.homeCompetitor?.score || "",
+          match_awayteam_score: match.awayCompetitor?.score || "",
+          odd_1: "1.85", odd_x: "3.40", odd_2: "2.05"
+        }));
+      } catch (e) {
+        return [];
+      }
+    }
+
+    async function fetchRealSportsNews() {
+      const url = 'https://allscores.p.rapidapi.com/api/allscores/news?sport=1&timezone=Africa%2FLagos&langId=1';
+      const options = {
+        method: 'GET',
+        headers: {
+          'x-rapidapi-key': allScoresApiKey,
+          'x-rapidapi-host': 'allscores.p.rapidapi.com'
+        }
+      };
+      try {
+        const data = await fetchWithTimeout(url, options, 4000);
+        return data && data.news ? data.news : [];
+      } catch (err) {
+        return [];
+      }
+    }
+
+    const countryLeagues = {
+      all: ["Premier League", "La Liga", "Serie A", "NBA", "ATP", "WTA", "WTT"],
+      England: ["Premier League", "Championship", "FA Cup"],
+      Spain: ["La Liga", "Copa del Rey"],
+      Italy: ["Serie A", "Serie B"],
+      Germany: ["Bundesliga"],
+      France: ["Ligue 1"],
+      Americas: ["MLS", "Liga MX"],
+      World: ["UEFA Champions League", "Europa League"],
+      Basketball: ["NBA", "EuroLeague"],
+      Tennis: ["ATP", "WTA", "ITF", "Grand Slam"],
+      "Table Tennis": ["WTT", "Challenger Series"]
     };
+
+    window.populateLeagues = function(countrySelectId, leagueSelectId) {
+      const country = document.getElementById(countrySelectId).value;
+      const leagueSelect = document.getElementById(leagueSelectId);
+      const leagues = countryLeagues[country] || countryLeagues['all'];
+      leagueSelect.innerHTML = `<option value="all">All Leagues</option>` + leagues.map(l => `<option value="${l}">${l}</option>`).join('');
+    };
+
+    populateLeagues('resCategory', 'resLeague');
+    populateLeagues('fixtureCountry', 'fixtureLeague');
 
     function updateDynamicLeagues(dataArray, selectId) {
       const selectEl = document.getElementById(selectId);
@@ -477,7 +570,7 @@
             </div>
             <div class="w-1/3 flex flex-col items-center justify-center gap-1">
               <span class="bg-slate-950 text-white font-black text-2xl px-4 py-1.5 rounded-lg border border-slate-800 shadow-inner">${m.match_hometeam_score || 0} - ${m.match_awayteam_score || 0}</span>
-              <span class="text-[9px] text-emerald-400 font-bold mt-1">Tap for Live Events ➔</span>
+              <span class="text-[9px] text-emerald-400 font-bold mt-1">Tap for Events ➔</span>
             </div>
             <div class="flex flex-col gap-1.5 items-center justify-center w-1/3">
               <img src="${m.team_away_badge}" class="w-8 h-8 object-contain" onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(m.match_awayteam_name)}&background=random&color=fff'">
@@ -560,18 +653,20 @@
       const soccerUrl = `https://apiv2.apifootball.com/?action=get_events&from=${todayStr}&to=${nextWeekStr}&APIkey=${soccerApiKey}`;
 
       try {
-        const [soccerRes, bballData] = await Promise.all([
-          fetchWithTimeout(soccerUrl, {}, 3500),
-          fetchBasketballData(todayStr)
+        const [soccerRes, bballData, tennisData] = await Promise.all([
+          fetchWithTimeout(soccerUrl, {}, 4500),
+          fetchBasketballData(todayStr),
+          fetchOtherSportsData(todayStr, 'Tennis')
         ]);
         let combined = [];
         if (Array.isArray(soccerRes)) combined = [...combined, ...soccerRes];
         if (Array.isArray(bballData)) combined = [...combined, ...bballData];
+        if (Array.isArray(tennisData)) combined = [...combined, ...tennisData];
 
         const eliteLeagues = [
           "Premier League", "La Liga", "Serie A", "Bundesliga", "Ligue 1", 
           "UEFA Champions League", "Champions League", "UEFA Europa League", 
-          "Europa League", "NBA", "EuroLeague"
+          "Europa League", "NBA", "EuroLeague", "ATP", "WTA"
         ];
 
         let spotlightList = combined.filter(m => {
@@ -646,28 +741,29 @@
 
       try {
         container.innerHTML = `<div class="text-slate-500 text-xs py-8 text-center">Syncing arena stream...</div>`;
-        const [soccerRes, bballData] = await Promise.all([
-          (catFilter !== 'Basketball') ? fetchWithTimeout(soccerUrl, {}, 3500) : Promise.resolve([]),
-          (catFilter === 'all' || catFilter === 'Basketball') ? fetchBasketballData(to) : Promise.resolve([])
+        const [soccerRes, bballData, tennisData, ttData] = await Promise.all([
+          (catFilter !== 'Basketball' && catFilter !== 'Tennis' && catFilter !== 'Table Tennis') ? fetchWithTimeout(soccerUrl, {}, 4500) : Promise.resolve([]),
+          (catFilter === 'all' || catFilter === 'Basketball') ? fetchBasketballData(to) : Promise.resolve([]),
+          (catFilter === 'all' || catFilter === 'Tennis') ? fetchOtherSportsData(to, 'Tennis') : Promise.resolve([]),
+          (catFilter === 'all' || catFilter === 'Table Tennis') ? fetchOtherSportsData(to, 'Table Tennis') : Promise.resolve([])
         ]);
 
         let combined = [];
         if (Array.isArray(soccerRes)) combined = [...combined, ...soccerRes];
         if (Array.isArray(bballData)) combined = [...combined, ...bballData];
+        if (Array.isArray(tennisData)) combined = [...combined, ...tennisData];
+        if (Array.isArray(ttData)) combined = [...combined, ...ttData];
 
         if (combined.length === 0) {
            container.innerHTML = `<div class="text-slate-500 text-xs py-8 text-center">No active match stream.</div>`;
            return;
         }
 
-        globalArenaCache = combined;
         let filtered = combined.filter(m => type === 'live' ? isMatchLive(m) : isMatchFinished(m));
         
         let catFiltered = filtered;
-        if (catFilter !== 'all' && catFilter !== 'Basketball') {
+        if (catFilter !== 'all') {
           catFiltered = filtered.filter(m => m.country_name && m.country_name.includes(catFilter));
-        } else if (catFilter === 'Basketball') {
-          catFiltered = filtered.filter(m => m.country_name === 'Basketball');
         }
 
         updateDynamicLeagues(catFiltered, 'resLeague');
@@ -702,21 +798,23 @@
       const soccerUrl = `https://apiv2.apifootball.com/?action=get_events&from=${from}&to=${to}&APIkey=${soccerApiKey}`;
 
       try {
-        const [soccerRes, bballData] = await Promise.all([
-          (country !== 'Basketball') ? fetchWithTimeout(soccerUrl, {}, 3500) : Promise.resolve([]),
-          (country === 'all' || country === 'Basketball') ? fetchBasketballData(from) : Promise.resolve([])
+        const [soccerRes, bballData, tennisData, ttData] = await Promise.all([
+          (country !== 'Basketball' && country !== 'Tennis' && country !== 'Table Tennis') ? fetchWithTimeout(soccerUrl, {}, 5500) : Promise.resolve([]),
+          (country === 'all' || country === 'Basketball') ? fetchBasketballData(from) : Promise.resolve([]),
+          (country === 'all' || country === 'Tennis') ? fetchOtherSportsData(from, 'Tennis') : Promise.resolve([]),
+          (country === 'all' || country === 'Table Tennis') ? fetchOtherSportsData(from, 'Table Tennis') : Promise.resolve([])
         ]);
         
         let upcoming = [];
         if (Array.isArray(soccerRes)) upcoming = [...upcoming, ...soccerRes];
         if (Array.isArray(bballData)) upcoming = [...upcoming, ...bballData];
+        if (Array.isArray(tennisData)) upcoming = [...upcoming, ...tennisData];
+        if (Array.isArray(ttData)) upcoming = [...upcoming, ...ttData];
 
         upcoming = upcoming.filter(f => !isMatchFinished(f) && !isMatchLive(f));
 
-        if (country !== 'all' && country !== 'Basketball') {
+        if (country !== 'all') {
           upcoming = upcoming.filter(f => f.country_name && f.country_name.toLowerCase().includes(country.toLowerCase()));
-        } else if (country === 'Basketball') {
-          upcoming = upcoming.filter(f => f.country_name === 'Basketball');
         }
 
         updateDynamicLeagues(upcoming, 'fixtureLeague');
@@ -839,17 +937,14 @@
                 <span class="font-bold text-xs text-white truncate max-w-[100px]">${away}</span>
               </div>
             </div>
-
             <div class="space-y-2">
-              <span class="text-[10px] font-black uppercase text-emerald-400 tracking-wider">⚽ Goalscorers & Key Events</span>
+              <span class="text-[10px] font-black uppercase text-emerald-400 tracking-wider">⚽ Goalscorers & Events</span>
               <div class="space-y-1.5">${goalsList}</div>
             </div>
-
             <div class="space-y-2">
-              <span class="text-[10px] font-black uppercase text-amber-400 tracking-wider">🟨 🟥 Disciplinary & Bookings</span>
+              <span class="text-[10px] font-black uppercase text-amber-400 tracking-wider">🟨 🟥 Bookings</span>
               <div class="space-y-1.5">${cardsList}</div>
             </div>
-
             ${statsHtml ? `
               <div class="bg-slate-950 p-4 rounded-2xl border border-slate-800 space-y-3">
                 <span class="text-[10px] font-black uppercase text-slate-400 tracking-wider block mb-1">📊 Live Match Statistics</span>
@@ -864,7 +959,7 @@
       let h2hHtml = `<div class="text-slate-500 italic py-2">No previous head-to-head records found.</div>`;
       let totalH2HMatches = 0, hWins = 0, aWins = 0, draws = 0, totalGoals = 0, over15Count = 0, bttsCount = 0;
 
-      if (match.country_name !== "Basketball") {
+      if (match.country_name !== "Basketball" && match.country_name !== "Tennis" && match.country_name !== "Table Tennis") {
         try {
           const h2hUrl = `https://apiv2.apifootball.com/?action=get_H2H&firstTeam=${encodeURIComponent(home)}&secondTeam=${encodeURIComponent(away)}&APIkey=${soccerApiKey}`;
           const h2hData = await fetchWithTimeout(h2hUrl, {}, 3000);
@@ -1066,7 +1161,7 @@
               <div class="bg-slate-950 p-3 rounded-2xl border border-slate-800 text-sm">
                 <div class="flex justify-between font-bold text-slate-200 mb-1">
                   <div class="flex flex-col">
-                     <span class="truncate">⚽ ${m.name}</span>
+                     <span class="truncate pr-2">⚽ ${m.name}</span>
                      <span class="text-[9px] text-slate-500 mt-0.5">📅 ${formattedDT}</span>
                   </div>
                   <span class="text-emerald-400 font-black">@${m.odds}</span>
@@ -1123,7 +1218,6 @@
            fCont.innerHTML = `<div class="text-slate-500 text-xs py-4 text-center w-full">No active VIP tickets currently available.</div>`;
         }
 
-        // Render initially active tickets
         filterActiveTickets('all');
       } catch (e) {
         console.error("Error loading tickets:", e);
@@ -1131,21 +1225,37 @@
     }
     loadPublicTickets();
 
-    onSnapshot(collection(db, "terminal_news"), (snapshot) => {
-      const news = [];
-      snapshot.forEach(docSnap => news.push({ id: docSnap.id, ...docSnap.data() }));
+    onSnapshot(collection(db, "terminal_news"), async (snapshot) => {
+      const fbNews = [];
+      snapshot.forEach(docSnap => fbNews.push({ id: docSnap.id, ...docSnap.data() }));
+      
+      const liveNews = await fetchRealSportsNews();
+      const parsedLiveNews = liveNews.slice(0, 10).map(n => ({
+        title: n.title,
+        tag: n.sport?.name || "Global News",
+        time: "Live Update",
+        img: n.imageUrl || "https://images.unsplash.com/photo-1508098682722-e99c43a406b2?w=800&auto=format&fit=crop&q=80",
+        body: n.summary || "Tap to read full tactical telemetry and match news update."
+      }));
+
+      const combinedNews = [...fbNews, ...parsedLiveNews];
       const featNews = document.getElementById("featContent-news");
       const lowerNews = document.getElementById("newsFeedContainer");
-      if(news.length > 0) {
-        const newsCards = news.map(n => `
-          <div onclick="openNews('${n.title}', '${n.tag}', '${n.time}', '${n.img}', '${n.body}')" class="min-w-[260px] md:min-w-[300px] bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden shadow-xl cursor-pointer hover:border-emerald-500/40 transition snap-start flex flex-col justify-between">
+
+      if(combinedNews.length > 0) {
+        const newsCards = combinedNews.map(n => {
+          const safeTitle = n.title.replace(/'/g, "\\'").replace(/"/g, "&quot;");
+          const safeBody = n.body.replace(/'/g, "\\'").replace(/"/g, "&quot;");
+          return `
+          <div onclick="openNews('${safeTitle}', '${n.tag}', '${n.time}', '${n.img}', '${safeBody}')" class="min-w-[260px] md:min-w-[300px] bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden shadow-xl cursor-pointer hover:border-emerald-500/40 transition snap-start flex flex-col justify-between">
             <img src="${n.img}" class="h-32 w-full object-cover">
             <div class="p-3.5 space-y-2">
               <span class="text-[9px] font-black uppercase text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">${n.tag}</span>
               <h4 class="font-bold text-xs text-white leading-snug line-clamp-2">${n.title}</h4>
             </div>
           </div>
-        `).join('');
+        `}).join('');
+
         if (featNews) featNews.innerHTML = newsCards;
         if (lowerNews) lowerNews.innerHTML = newsCards;
       }
