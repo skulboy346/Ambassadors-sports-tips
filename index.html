@@ -34,7 +34,7 @@
 
   <main class="max-w-5xl mx-auto px-2 md:px-4 py-6 space-y-8">
     
-    <!-- 1. FEATURED SECTION (AUTO-SLIDING SPOTLIGHT) -->
+    <!-- 1. FEATURED SECTION -->
     <section class="bg-slate-900/50 border border-slate-800 rounded-2xl overflow-hidden shadow-xl">
       <div class="flex border-b border-slate-800 bg-slate-900">
         <button onclick="switchFeatured('matches')" id="featBtn-matches" class="flex-1 py-3 text-xs font-black uppercase tracking-wide text-emerald-400 border-b-2 border-emerald-400 transition">🔥 Elite Spotlight</button>
@@ -74,7 +74,7 @@
           <option value="day_before">2 Days Ago</option>
           <option value="week">Past 7 Days</option>
         </select>
-        <select id="resCategory" class="bg-slate-950 border border-slate-700 text-xs rounded-lg px-2 py-1.5 text-white font-bold outline-none" onchange="populateLeagues('resCategory', 'resLeague'); loadResultsArena()">
+        <select id="resCategory" class="bg-slate-950 border border-slate-700 text-xs rounded-lg px-2 py-1.5 text-white font-bold outline-none" onchange="loadResultsArena()">
           <option value="all">🌍 All Sports & Countries</option>
           <option value="England">🏴󠁧󠁢󠁥󠁮󠁧󠁿 England</option>
           <option value="Spain">🇪🇸 Spain</option>
@@ -113,7 +113,7 @@
             <option value="week2">2 Weeks</option>
             <option value="month1">1 Month</option>
           </select>
-          <select id="fixtureCountry" class="bg-slate-900 border border-slate-700 text-xs rounded-lg px-2 py-1.5 text-white font-bold outline-none" onchange="populateLeagues('fixtureCountry', 'fixtureLeague'); fetchApiFootballFixtures()">
+          <select id="fixtureCountry" class="bg-slate-900 border border-slate-700 text-xs rounded-lg px-2 py-1.5 text-white font-bold outline-none" onchange="fetchApiFootballFixtures()">
             <option value="all">🌍 All Locations</option>
             <option value="England">🏴󠁧󠁢󠁥󠁮󠁧󠁿 England</option>
             <option value="Spain">🇪🇸 Spain</option>
@@ -153,7 +153,7 @@
         </div>
       </div>
 
-      <!-- TICKETS VIEW (Active vs Concluded Outcomes) -->
+      <!-- TICKETS VIEW -->
       <div id="viewTickets" class="flex-col bg-[#0b1015] hidden">
         <div class="flex border-b border-slate-800 bg-slate-950/50">
           <button onclick="switchTicketMode('active')" id="ticketModeActive" class="flex-1 py-2 text-[10px] font-black uppercase tracking-widest text-emerald-400 bg-emerald-500/10 transition">🟢 Active Pending</button>
@@ -218,44 +218,6 @@
     </div>
   </div>
 
-  <!-- SEE ALL FULL-PAGE MODAL -->
-  <div id="seeAllModal" class="fixed inset-0 z-50 bg-[#05070a] overflow-y-auto hidden flex-col">
-    <div class="sticky top-0 bg-[#070b14]/95 backdrop-blur-md px-4 py-3 flex justify-between items-center border-b border-emerald-500/20 z-10 shadow-lg">
-      <h2 id="seeAllModalTitle" class="text-sm font-black text-emerald-400 uppercase tracking-widest">All Matches</h2>
-      <button onclick="document.getElementById('seeAllModal').classList.add('hidden')" class="bg-slate-900 border border-slate-700 text-white font-black px-3 py-1.5 rounded-lg text-xs hover:bg-rose-500/20 transition">✕ Close Terminal</button>
-    </div>
-    
-    <div class="flex-grow p-4 space-y-4 max-w-5xl mx-auto w-full">
-      <div id="seeAllFilters" class="hidden flex-wrap gap-2 items-center bg-slate-900/80 p-3 rounded-2xl border border-slate-800">
-        <select id="seeAllHorizon" class="bg-slate-950 border border-slate-700 text-xs rounded-xl px-3 py-2 text-emerald-400 font-bold outline-none" onchange="loadSeeAllFixtures()">
-          <option value="today">Today</option>
-          <option value="tomorrow">Tomorrow</option>
-          <option value="week">1 Week</option>
-          <option value="month1">1 Month</option>
-        </select>
-        <select id="seeAllCountry" class="bg-slate-950 border border-slate-700 text-xs rounded-xl px-3 py-2 text-white font-bold outline-none" onchange="populateLeagues('seeAllCountry', 'seeAllLeague'); loadSeeAllFixtures()">
-          <option value="all">🌍 All Locations</option>
-          <option value="England">🏴󠁧󠁢󠁥󠁮󠁧󠁿 England</option>
-          <option value="Spain">🇪🇸 Spain</option>
-        </select>
-        <select id="seeAllLeague" class="bg-slate-950 border border-slate-700 text-xs rounded-xl px-3 py-2 text-white font-bold outline-none" onchange="loadSeeAllFixtures()">
-          <option value="all">All Leagues</option>
-        </select>
-        <input type="text" id="seeAllSearch" placeholder="🔍 Search..." class="bg-slate-950 border border-slate-700 text-xs rounded-xl px-3 py-2 text-white outline-none w-32" oninput="loadSeeAllFixtures()" />
-      </div>
-
-      <div id="seeAllModalContent" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
-    </div>
-  </div>
-
-  <!-- FULL ARTICLE READING MODAL -->
-  <div id="newsModal" class="fixed inset-0 z-50 bg-[#05070a] overflow-y-auto p-4 md:p-8 hidden">
-    <div class="max-w-3xl mx-auto space-y-6">
-      <button onclick="document.getElementById('newsModal').classList.add('hidden')" class="bg-slate-900 border border-slate-700 text-white font-black px-4 py-2 rounded-xl text-xs hover:bg-emerald-500/20 transition">← Back</button>
-      <div id="newsModalContent" class="space-y-4"></div>
-    </div>
-  </div>
-
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { getFirestore, collection, getDocs, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
@@ -275,14 +237,7 @@
     let globalArenaCache = [];
     let allTickets = [];
 
-    const formatYMD = (d) => {
-      const year = d.getFullYear();
-      const month = String(d.getMonth() + 1).padStart(2, '0');
-      const day = String(d.getDate()).padStart(2, '0');
-      return `${year}-${month}-${day}`;
-    };
-
-    async function fetchWithTimeout(url, options = {}, timeout = 4000) {
+    async function fetchWithTimeout(url, options = {}, timeout = 3500) {
       const controller = new AbortController();
       const id = setTimeout(() => controller.abort(), timeout);
       try {
@@ -345,7 +300,9 @@
     };
 
     window.formatToWAT = function(dateStr, timeStr) {
-      if (!timeStr) timeStr = "18:00";
+      if (!dateStr || dateStr.includes("undefined")) return "TBD";
+      if (!timeStr || timeStr.includes("undefined")) timeStr = "12:00";
+      
       let [hours, mins] = timeStr.split(':').map(Number);
       if (isNaN(hours)) hours = 18;
       if (isNaN(mins)) mins = 0;
@@ -353,38 +310,32 @@
       const formattedTime = `${hours.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}`;
       
       const now = new Date();
-      const todayStr = formatYMD(now);
+      const todayStr = now.toISOString().split('T')[0];
       const tmrw = new Date(); tmrw.setDate(tmrw.getDate() + 1);
-      const tmrwStr = formatYMD(tmrw);
-
+      const tmrwStr = tmrw.toISOString().split('T')[0];
+      
       let dayLabel = "Today";
-      if (!dateStr || dateStr === todayStr) dayLabel = "Today";
+      if (dateStr === todayStr) dayLabel = "Today";
       else if (dateStr === tmrwStr) dayLabel = "Tomorrow";
       else {
-        const parts = dateStr.split('-');
-        if (parts.length === 3) {
-          const d = new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2]));
-          dayLabel = d.toLocaleDateString('en-US', { day: 'numeric', month: 'short' });
-        } else {
-          dayLabel = dateStr;
-        }
+        const d = new Date(dateStr);
+        if (!isNaN(d)) dayLabel = d.toLocaleDateString('en-US', { day: 'numeric', month: 'short' });
+        else dayLabel = dateStr;
       }
       return `${dayLabel} • ${formattedTime} WAT`;
     };
 
     window.formatFullMatchDateTime = function(dateStr, timeStr) {
-      if (!timeStr) timeStr = "18:00";
+      if (!dateStr || dateStr.includes("undefined")) return "TBD";
+      if (!timeStr || timeStr.includes("undefined")) timeStr = "12:00";
+      
       let [hours, mins] = timeStr.split(':').map(Number);
       if (isNaN(hours)) hours = 18;
       if (isNaN(mins)) mins = 0;
       hours = (hours + 1) % 24;
       const formattedTime = `${hours.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}`;
       
-      let d = new Date();
-      if (dateStr && dateStr.includes('-')) {
-        const parts = dateStr.split('-');
-        d = new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2]));
-      }
+      const d = new Date(dateStr);
       const dayName = d.toLocaleDateString('en-US', { weekday: 'long' });
       const dayNum = d.toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' });
       return `📅 ${dayName}, ${dayNum} • ${formattedTime} WAT`;
@@ -392,20 +343,19 @@
 
     window.resolveDateRange = function(horizonKey) {
       const now = new Date();
-      const todayStr = formatYMD(now);
-      
+      const todayStr = now.toISOString().split('T')[0];
       if (horizonKey === 'today' || !horizonKey) return { from: todayStr, to: todayStr };
       if (horizonKey === 'yesterday') {
         const d = new Date(); d.setDate(d.getDate() - 1);
-        const s = formatYMD(d); return { from: s, to: s };
+        const s = d.toISOString().split('T')[0]; return { from: s, to: s };
       }
       if (horizonKey === 'day_before') {
         const d = new Date(); d.setDate(d.getDate() - 2);
-        const s = formatYMD(d); return { from: s, to: s };
+        const s = d.toISOString().split('T')[0]; return { from: s, to: s };
       }
       if (horizonKey === 'tomorrow') {
         const d = new Date(); d.setDate(d.getDate() + 1);
-        const s = formatYMD(d); return { from: s, to: s };
+        const s = d.toISOString().split('T')[0]; return { from: s, to: s };
       }
       const dayNames = ["sunday", "monday", "tuesday", "wednesday", "thursday", "friday", "saturday"];
       if (dayNames.includes(horizonKey.toLowerCase())) {
@@ -414,16 +364,19 @@
         let daysUntil = (targetDayIdx - currentDayIdx + 7) % 7;
         if (daysUntil === 0) daysUntil = 7; 
         const d = new Date(); d.setDate(d.getDate() + daysUntil);
-        const s = formatYMD(d); return { from: s, to: s };
+        const s = d.toISOString().split('T')[0]; return { from: s, to: s };
       }
       if (horizonKey === 'week') {
-        const d = new Date(); d.setDate(d.getDate() + 7); return { from: todayStr, to: formatYMD(d) };
+        const d = new Date(); d.setDate(d.getDate() + 7); return { from: todayStr, to: d.toISOString().split('T')[0] };
       }
       if (horizonKey === 'week2') {
-        const d = new Date(); d.setDate(d.getDate() + 14); return { from: todayStr, to: formatYMD(d) };
+        const d = new Date(); d.setDate(d.getDate() + 14); return { from: todayStr, to: d.toISOString().split('T')[0] };
       }
       if (horizonKey === 'month1') {
-        const d = new Date(); d.setDate(d.getDate() + 30); return { from: todayStr, to: formatYMD(d) };
+        const d = new Date(); d.setDate(d.getDate() + 15); return { from: todayStr, to: d.toISOString().split('T')[0] }; // Max limit applied
+      }
+      if (horizonKey === 'month2') {
+        const d = new Date(); d.setDate(d.getDate() + 15); return { from: todayStr, to: d.toISOString().split('T')[0] };
       }
       return { from: todayStr, to: todayStr };
     };
@@ -439,8 +392,8 @@
           match_awayteam_name: b.teams.away.name,
           country_name: "Basketball",
           league_name: b.league.name,
-          match_time: b.time || "19:00",
-          match_date: b.date ? b.date.split('T')[0] : dateStr,
+          match_time: b.time,
+          match_date: b.date.split('T')[0],
           team_home_badge: b.teams.home.logo,
           team_away_badge: b.teams.away.logo,
           match_status: b.status.short === "FT" || b.status.short === "AOT" ? "Finished" : b.status.short,
@@ -452,27 +405,17 @@
       } catch (err) { return []; }
     };
 
-    const countryLeagues = {
-      all: ["Premier League", "La Liga", "Serie A", "Bundesliga", "Ligue 1", "UEFA Champions League", "UEFA Europa League", "NBA", "EuroLeague"],
-      England: ["Premier League", "Championship", "League One", "FA Cup"],
-      Spain: ["La Liga", "Segunda Division", "Copa del Rey"],
-      Italy: ["Serie A", "Serie B"],
-      Germany: ["Bundesliga", "2. Bundesliga"],
-      France: ["Ligue 1", "Ligue 2"],
-      Americas: ["MLS", "Liga MX", "Canadian Premier League"],
-      World: ["UEFA Champions League", "Europa League", "World Cup"],
-      Basketball: ["NBA", "EuroLeague", "FIBA"]
-    };
-
-    window.populateLeagues = function(countrySelectId, leagueSelectId) {
-      const country = document.getElementById(countrySelectId).value;
-      const leagueSelect = document.getElementById(leagueSelectId);
-      const leagues = countryLeagues[country] || countryLeagues['all'];
-      leagueSelect.innerHTML = `<option value="all">All Leagues</option>` + leagues.map(l => `<option value="${l}">${l}</option>`).join('');
-    };
-
-    populateLeagues('resCategory', 'resLeague');
-    populateLeagues('fixtureCountry', 'fixtureLeague');
+    function updateDynamicLeagues(dataArray, selectId) {
+      const selectEl = document.getElementById(selectId);
+      if(!selectEl) return;
+      const currentVal = selectEl.value;
+      const uniqueLeagues = [...new Set(dataArray.map(m => m.league_name))].filter(Boolean).sort();
+      let html = `<option value="all">All Leagues</option>`;
+      uniqueLeagues.forEach(l => {
+        html += `<option value="${l}" ${l === currentVal ? 'selected' : ''}>${l}</option>`;
+      });
+      selectEl.innerHTML = html;
+    }
 
     function renderListCard(f) {
       const matchBadge = formatToWAT(f.match_date, f.match_time);
@@ -594,7 +537,7 @@
 
       spotlightSlideInterval = setInterval(() => {
         if (!container || container.children.length <= 1) return;
-        const cardWidth = container.children[0].offsetWidth + 16;
+        const cardWidth = container.children[0].offsetWidth + 16; 
         const maxScroll = container.scrollWidth - container.clientWidth;
         if (container.scrollLeft >= maxScroll - 10) {
           container.scrollTo({ left: 0, behavior: 'smooth' });
@@ -611,9 +554,9 @@
       const featContainer = document.getElementById('featContent-matches');
       if (!featContainer) return;
       const now = new Date();
-      const todayStr = formatYMD(now);
+      const todayStr = now.toISOString().split('T')[0];
       const nextWeek = new Date(); nextWeek.setDate(nextWeek.getDate() + 7);
-      const nextWeekStr = formatYMD(nextWeek);
+      const nextWeekStr = nextWeek.toISOString().split('T')[0];
       const soccerUrl = `https://apiv2.apifootball.com/?action=get_events&from=${todayStr}&to=${nextWeekStr}&APIkey=${soccerApiKey}`;
 
       try {
@@ -720,14 +663,20 @@
         globalArenaCache = combined;
         let filtered = combined.filter(m => type === 'live' ? isMatchLive(m) : isMatchFinished(m));
         
+        let catFiltered = filtered;
         if (catFilter !== 'all' && catFilter !== 'Basketball') {
-          filtered = filtered.filter(m => m.country_name && m.country_name.includes(catFilter));
-        }
-        if (leagueFilter !== 'all') {
-          filtered = filtered.filter(m => m.league_name && m.league_name.includes(leagueFilter));
+          catFiltered = filtered.filter(m => m.country_name && m.country_name.includes(catFilter));
+        } else if (catFilter === 'Basketball') {
+          catFiltered = filtered.filter(m => m.country_name === 'Basketball');
         }
 
-        const preview = filtered.slice(0, 4);
+        updateDynamicLeagues(catFiltered, 'resLeague');
+
+        if (leagueFilter !== 'all') {
+          catFiltered = catFiltered.filter(m => m.league_name && m.league_name.includes(leagueFilter));
+        }
+
+        const preview = catFiltered.slice(0, 4);
         if (preview.length === 0) {
            container.innerHTML = `<div class="text-slate-500 text-xs py-8 text-center">No ${type === 'live' ? 'live' : 'finished'} matches found for this filter.</div>`;
            return;
@@ -754,7 +703,7 @@
 
       try {
         const [soccerRes, bballData] = await Promise.all([
-          (country !== 'Basketball') ? fetchWithTimeout(soccerUrl, {}, 4000) : Promise.resolve([]),
+          (country !== 'Basketball') ? fetchWithTimeout(soccerUrl, {}, 3500) : Promise.resolve([]),
           (country === 'all' || country === 'Basketball') ? fetchBasketballData(from) : Promise.resolve([])
         ]);
         
@@ -766,7 +715,12 @@
 
         if (country !== 'all' && country !== 'Basketball') {
           upcoming = upcoming.filter(f => f.country_name && f.country_name.toLowerCase().includes(country.toLowerCase()));
+        } else if (country === 'Basketball') {
+          upcoming = upcoming.filter(f => f.country_name === 'Basketball');
         }
+
+        updateDynamicLeagues(upcoming, 'fixtureLeague');
+
         if (league !== 'all') {
           upcoming = upcoming.filter(f => f.league_name && f.league_name.toLowerCase().includes(league.toLowerCase()));
         }
@@ -907,7 +861,6 @@
         return;
       }
 
-      // Pre-Match AI Matrix
       let h2hHtml = `<div class="text-slate-500 italic py-2">No previous head-to-head records found.</div>`;
       let totalH2HMatches = 0, hWins = 0, aWins = 0, draws = 0, totalGoals = 0, over15Count = 0, bttsCount = 0;
 
@@ -965,57 +918,6 @@
           <div class="space-y-2"><span class="text-[10px] font-black uppercase text-slate-400 tracking-wider">Historical H2H Records</span><div class="space-y-1.5">${h2hHtml}</div></div>
         </div>
       `;
-    };
-
-    window.openSeeAllModal = async function(type) {
-      document.getElementById('seeAllModalTitle').textContent = type === 'arena' ? "Live & Results Arena" : "All Scheduled Fixtures";
-      document.getElementById('seeAllFilters').style.display = type === 'arena' ? 'none' : 'flex';
-      const content = document.getElementById('seeAllModalContent');
-      content.innerHTML = `<div class="text-slate-500 text-xs py-10 text-center col-span-full">Loading Data...</div>`;
-      document.getElementById('seeAllModal').classList.remove('hidden');
-
-      if (type === 'arena') {
-        const isLiveMode = document.getElementById('arenaLiveBtn').classList.contains('bg-emerald-400');
-        let filtered = globalArenaCache.filter(m => isLiveMode ? isMatchLive(m) : isMatchFinished(m));
-        content.innerHTML = filtered.length ? filtered.map(m => renderArenaCard(m)).join('') : `<div class="text-slate-500 text-xs py-10 text-center col-span-full">No records found.</div>`;
-      } else {
-        loadSeeAllFixtures();
-      }
-    };
-
-    window.loadSeeAllFixtures = async function() {
-      const content = document.getElementById('seeAllModalContent');
-      content.innerHTML = `<div class="text-slate-500 text-xs py-10 text-center col-span-full">Syncing fixtures...</div>`;
-      const search = document.getElementById('seeAllSearch').value.toLowerCase();
-      const horizon = document.getElementById('seeAllHorizon').value;
-      const country = document.getElementById('seeAllCountry').value;
-      const league = document.getElementById('seeAllLeague').value;
-      const { from, to } = resolveDateRange(horizon);
-
-      try {
-        const soccerUrl = `https://apiv2.apifootball.com/?action=get_events&from=${from}&to=${to}&APIkey=${soccerApiKey}`;
-        const [soccerRes, bballData] = await Promise.all([
-          (country !== 'Basketball') ? fetchWithTimeout(soccerUrl, {}, 3500) : Promise.resolve([]),
-          (country === 'all' || country === 'Basketball') ? fetchBasketballData(from) : Promise.resolve([])
-        ]);
-        let combined = [];
-        if (Array.isArray(soccerRes)) combined = [...combined, ...soccerRes];
-        if (Array.isArray(bballData)) combined = [...combined, ...bballData];
-
-        let upcoming = combined.filter(f => !isMatchFinished(f) && !isMatchLive(f));
-        if (country !== 'all' && country !== 'Basketball') upcoming = upcoming.filter(f => f.country_name && f.country_name.toLowerCase().includes(country.toLowerCase()));
-        if (league !== 'all') upcoming = upcoming.filter(f => f.league_name && f.league_name.includes(league.toLowerCase()));
-        if (search) upcoming = upcoming.filter(f => f.match_hometeam_name.toLowerCase().includes(search) || f.match_awayteam_name.toLowerCase().includes(search));
-
-        upcoming.sort((a, b) => {
-          const dtA = `${a.match_date || ''} ${a.match_time || '00:00'}`;
-          const dtB = `${b.match_date || ''} ${b.match_time || '00:00'}`;
-          return dtA.localeCompare(dtB);
-        });
-        content.innerHTML = upcoming.length ? upcoming.map(f => renderFeaturedCard(f)).join('') : `<div class="text-slate-500 text-xs py-10 text-center col-span-full">No matches found.</div>`;
-      } catch (e) {
-         content.innerHTML = `<div class="text-rose-400 text-xs py-10 text-center col-span-full">Failed to fetch data.</div>`;
-      }
     };
 
     window.switchMainTab = function(tab) {
@@ -1221,6 +1123,7 @@
            fCont.innerHTML = `<div class="text-slate-500 text-xs py-4 text-center w-full">No active VIP tickets currently available.</div>`;
         }
 
+        // Render initially active tickets
         filterActiveTickets('all');
       } catch (e) {
         console.error("Error loading tickets:", e);

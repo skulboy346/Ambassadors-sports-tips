@@ -53,7 +53,7 @@
           <div>
             <span class="text-[10px] font-black text-emerald-400 bg-emerald-500/10 px-2.5 py-1 rounded-full uppercase border border-emerald-500/20">🤖 Deep AI Match Prediction Engine</span>
             <h2 class="text-lg font-black text-white mt-1 uppercase">Target Odds Accumulator Generator</h2>
-            <p class="text-xs text-slate-400">Strictly filters matches based on the exact selected time horizon.</p>
+            <p class="text-xs text-slate-400">Generates data-backed match predictions based on historical encounter metrics & league form.</p>
           </div>
           
           <div class="flex flex-wrap gap-2 items-center w-full lg:w-auto">
@@ -68,6 +68,7 @@
               <option value="saturday">Saturday</option>
               <option value="sunday">Sunday</option>
               <option value="week">Next 7 Days</option>
+              <option value="month1">Next 1 Month</option>
             </select>
 
             <select id="aiCategory" class="bg-slate-950 border border-slate-700 text-xs rounded-xl px-3 py-2 text-white font-bold outline-none">
@@ -76,10 +77,15 @@
               <option value="Basketball">Basketball Only</option>
             </select>
 
-            <div class="flex items-center bg-slate-950 border border-slate-700 rounded-xl px-2 py-1">
-              <span class="text-[10px] text-slate-400 font-bold mr-1">Target:</span>
-              <input type="number" id="aiTargetOdds" value="5" min="1.5" max="5000" step="0.5" class="w-16 bg-transparent text-xs text-emerald-400 text-center font-black outline-none" />
-              <span class="text-[10px] text-slate-400 font-bold">Odds</span>
+            <div class="flex items-center gap-2">
+              <div class="flex items-center bg-slate-950 border border-slate-700 rounded-xl px-2 py-1">
+                <span class="text-[10px] text-slate-400 font-bold mr-1">Target Odds:</span>
+                <input type="number" id="aiTargetOdds" value="5" min="1.5" max="5000" step="0.5" class="w-12 bg-transparent text-xs text-emerald-400 text-center font-black outline-none" />
+              </div>
+              <div class="flex items-center bg-slate-950 border border-slate-700 rounded-xl px-2 py-1">
+                <span class="text-[10px] text-slate-400 font-bold mr-1">Max Matches:</span>
+                <input type="number" id="aiMaxMatches" value="5" min="1" max="15" class="w-10 bg-transparent text-xs text-emerald-400 text-center font-black outline-none" />
+              </div>
             </div>
 
             <button type="button" onclick="runAIEngine()" class="bg-emerald-400 hover:bg-emerald-300 text-slate-950 font-black text-xs px-4 py-2.5 rounded-xl transition shadow-lg">⚡ Generate Predictions</button>
@@ -249,13 +255,7 @@
 
     let rawAdminFixturesPool = [];
 
-    const formatYMD = (d) => {
-      const year = d.getFullYear();
-      const month = String(d.getMonth() + 1).padStart(2, '0');
-      const day = String(d.getDate()).padStart(2, '0');
-      return `${year}-${month}-${day}`;
-    };
-
+    // AUTH OBSERVER
     onAuthStateChanged(auth, async (user) => {
       if (user) {
         document.getElementById("loginSection").classList.add("hidden");
@@ -288,12 +288,11 @@
 
     function resolveDateRange(horizonKey) {
       const now = new Date();
-      const todayStr = formatYMD(now);
-      
+      const todayStr = now.toISOString().split('T')[0];
       if (horizonKey === 'today' || !horizonKey) return { from: todayStr, to: todayStr };
       if (horizonKey === 'tomorrow') {
         const d = new Date(); d.setDate(d.getDate() + 1);
-        const s = formatYMD(d); return { from: s, to: s };
+        const s = d.toISOString().split('T')[0]; return { from: s, to: s };
       }
       const dayNames = ["sunday", "monday", "tuesday", "wednesday", "thursday", "friday", "saturday"];
       if (dayNames.includes(horizonKey.toLowerCase())) {
@@ -302,10 +301,13 @@
         let daysUntil = (targetDayIdx - currentDayIdx + 7) % 7;
         if (daysUntil === 0) daysUntil = 7; 
         const d = new Date(); d.setDate(d.getDate() + daysUntil);
-        const s = formatYMD(d); return { from: s, to: s };
+        const s = d.toISOString().split('T')[0]; return { from: s, to: s };
       }
       if (horizonKey === 'week') {
-        const d = new Date(); d.setDate(d.getDate() + 7); return { from: todayStr, to: formatYMD(d) };
+        const d = new Date(); d.setDate(d.getDate() + 7); return { from: todayStr, to: d.toISOString().split('T')[0] };
+      }
+      if (horizonKey === 'month1') {
+        const d = new Date(); d.setDate(d.getDate() + 15); return { from: todayStr, to: d.toISOString().split('T')[0] }; // Limit to max 15 days
       }
       return { from: todayStr, to: todayStr };
     }
@@ -333,7 +335,10 @@
     async function fetchBasketballGames(dateStr) {
       const url = `https://api-basketball.p.rapidapi.com/games?date=${dateStr}`;
       try {
-        const res = await fetch(url, { method: 'GET', headers: { 'x-rapidapi-key': bballApiKey, 'x-rapidapi-host': 'api-basketball.p.rapidapi.com' } });
+        const controller = new AbortController();
+        const id = setTimeout(() => controller.abort(), 3500);
+        const res = await fetch(url, { method: 'GET', headers: { 'x-rapidapi-key': bballApiKey, 'x-rapidapi-host': 'api-basketball.p.rapidapi.com' }, signal: controller.signal });
+        clearTimeout(id);
         const data = await res.json();
         if (!data || !data.response) return [];
         return data.response.map(b => ({
@@ -342,8 +347,8 @@
           league: b.league.name,
           country: "Basketball",
           status: b.status.short,
-          match_date: b.date ? b.date.split('T')[0] : dateStr,
-          match_time: b.time || "19:00"
+          match_date: b.date.split('T')[0],
+          match_time: b.time
         }));
       } catch (err) { return []; }
     }
@@ -353,10 +358,13 @@
       const soccerUrl = `https://apiv2.apifootball.com/?action=get_events&from=${from}&to=${to}&APIkey=${soccerApiKey}`;
 
       try {
+        const controller = new AbortController();
+        const id = setTimeout(() => controller.abort(), 3500);
         const [soccerRes, bballRes] = await Promise.all([
-          fetch(soccerUrl).then(r => r.json()).catch(() => []),
+          fetch(soccerUrl, { signal: controller.signal }).then(r => r.json()).catch(() => []),
           fetchBasketballGames(from)
         ]);
+        clearTimeout(id);
 
         rawAdminFixturesPool = [];
 
@@ -369,8 +377,8 @@
                 away: m.match_awayteam_name,
                 league: m.league_name,
                 country: m.country_name || "World",
-                match_date: m.match_date || from,
-                match_time: m.match_time || "18:00"
+                match_date: m.match_date,
+                match_time: m.match_time
               });
             }
           });
@@ -391,8 +399,7 @@
     window.filterBuilderFixtures = async function() {
       const horizon = document.getElementById('builderHorizon').value;
       const country = document.getElementById('builderCountry').value;
-      const league = document.getElementById('builderLeague').value;
-
+      
       await fetchAdminFixtures(horizon);
 
       let filtered = [...rawAdminFixturesPool];
@@ -400,8 +407,15 @@
       if (country !== 'all' && country !== 'Basketball') {
         filtered = filtered.filter(f => f.country && f.country.toLowerCase().includes(country.toLowerCase()));
       }
-      if (league !== 'all') {
-        filtered = filtered.filter(f => f.league && f.league.toLowerCase().includes(league.toLowerCase()));
+
+      const uniqueLeagues = [...new Set(filtered.map(m => m.league))].filter(Boolean).sort();
+      const leagueSelect = document.getElementById('builderLeague');
+      const selectedLeague = leagueSelect.value;
+      leagueSelect.innerHTML = `<option value="all">All Leagues</option>` + uniqueLeagues.map(l => `<option value="${l}" ${l === selectedLeague ? 'selected' : ''}>${l}</option>`).join('');
+
+      const activeLeague = leagueSelect.value;
+      if (activeLeague !== 'all') {
+        filtered = filtered.filter(f => f.league && f.league.toLowerCase().includes(activeLeague.toLowerCase()));
       }
 
       document.querySelectorAll(".match-row select.match-select").forEach(sel => {
@@ -417,23 +431,19 @@
       const horizon = document.getElementById("aiHorizon").value;
       const category = document.getElementById("aiCategory").value;
       const targetOdds = parseFloat(document.getElementById("aiTargetOdds").value) || 5.0;
+      const maxMatches = parseInt(document.getElementById("aiMaxMatches").value) || 5;
       const output = document.getElementById("aiStrategyOutput");
 
       output.innerHTML = `<div class="text-xs text-slate-400 animate-pulse py-4">Analyzing team strength, form telemetry & compiling target odds acca...</div>`;
 
-      const { from, to } = resolveDateRange(horizon);
       await fetchAdminFixtures(horizon);
 
       let pool = [...rawAdminFixturesPool];
-      
-      // Strict Date Horizon Enforcer
-      pool = pool.filter(f => f.match_date >= from && f.match_date <= to);
-
       if (category === "Football") pool = pool.filter(f => f.country !== "Basketball");
       if (category === "Basketball") pool = pool.filter(f => f.country === "Basketball");
 
       if (pool.length === 0) {
-        output.innerHTML = `<div class="text-rose-400 text-xs py-2">No active upcoming fixtures found strictly for "${horizon}".</div>`;
+        output.innerHTML = `<div class="text-rose-400 text-xs py-2">No active upcoming fixtures found for this horizon/sport selection.</div>`;
         return;
       }
 
@@ -471,8 +481,8 @@
         return {
           matchTitle: `${m.home} vs ${m.away}`,
           league: m.league,
-          match_date: m.match_date || from,
-          match_time: m.match_time || "18:00",
+          match_date: m.match_date,
+          match_time: m.match_time,
           options: marketOptions
         };
       });
@@ -481,7 +491,7 @@
       let currentAccaOdds = 1.0;
 
       for (const match of evaluatedMatches) {
-        if (currentAccaOdds >= targetOdds) break;
+        if (currentAccaOdds >= targetOdds || accaPicks.length >= maxMatches) break;
         const bestPick = match.options[0];
         accaPicks.push({
           match: match.matchTitle,
@@ -499,7 +509,7 @@
         <div class="space-y-4 mt-3">
           <div class="flex justify-between items-center bg-slate-950 p-3 rounded-2xl border border-slate-800">
             <div>
-              <span class="text-[10px] text-slate-400 uppercase font-bold">Horizon: ${horizon.toUpperCase()} • Target: ~${targetOdds} Odds</span>
+              <span class="text-[10px] text-slate-400 uppercase font-bold">Target: ~${targetOdds} Odds</span>
               <div class="text-sm font-black text-emerald-400">Total Acca Odds: ${currentAccaOdds.toFixed(2)} (${accaPicks.length} Selections)</div>
             </div>
             <button type="button" onclick="loadAccaIntoBuilder(${JSON.stringify(accaPicks).replace(/"/g, '&quot;')})" class="bg-emerald-400 hover:bg-emerald-300 text-slate-950 font-black text-xs px-4 py-2 rounded-xl transition shadow">📥 Load into Builder</button>
@@ -510,7 +520,7 @@
               <div class="bg-slate-950 p-3.5 rounded-2xl border border-slate-800 space-y-2">
                 <div class="flex justify-between items-center">
                   <span class="font-bold text-slate-200 text-xs truncate max-w-[200px]">${item.matchTitle}</span>
-                  <span class="text-[9px] text-slate-500 font-bold">${item.match_date} ${item.match_time}</span>
+                  <span class="text-[9px] text-slate-500 font-bold">${item.league}</span>
                 </div>
                 <div class="space-y-1.5">
                   ${item.options.map(opt => `
@@ -537,8 +547,8 @@
       window.calculateTotalOdds();
     };
 
-    window.insertAIPick = function(match, pick, odds, match_date, match_time) {
-      window.addMatchRow(match, pick, odds, match_date, match_time);
+    window.insertAIPick = function(match, pick, odds, mDate, mTime) {
+      window.addMatchRow(match, pick, odds, mDate, mTime);
     };
 
     window.calculateTotalOdds = function() {
@@ -597,6 +607,7 @@
 
     window.addMatchRow();
 
+    // TICKET PUBLISHING
     document.getElementById("ticketForm").addEventListener("submit", async (e) => {
       e.preventDefault();
       
@@ -615,11 +626,8 @@
         const name = selectEl.value;
         const selectedOption = selectEl.options[selectEl.selectedIndex];
         
-        let match_date = selectedOption ? selectedOption.getAttribute('data-date') || '' : '';
-        let match_time = selectedOption ? selectedOption.getAttribute('data-time') || '' : '';
-
-        if(!match_date) match_date = formatYMD(new Date());
-        if(!match_time) match_time = "18:00";
+        const match_date = selectedOption ? selectedOption.getAttribute('data-date') || '' : '';
+        const match_time = selectedOption ? selectedOption.getAttribute('data-time') || '' : '';
 
         const pick = row.querySelector(".prediction-pick").value;
         const odds = parseFloat(row.querySelector(".match-odds").value) || 1.0;
@@ -647,7 +655,7 @@
         document.getElementById("matchRows").innerHTML = "";
         window.addMatchRow();
         window.calculateTotalOdds();
-        loadAdminSettlements(); 
+        loadAdminSettlements(); // Instantly fetch the new ticket
       } catch (err) {
         alert("Failed to publish ticket: " + err.message);
       } finally {
@@ -656,6 +664,7 @@
       }
     });
 
+    // SETTLEMENT DESK
     async function loadAdminSettlements() {
       const container = document.getElementById("settlementContainer");
       try {
@@ -709,6 +718,7 @@
       }
     };
 
+    // AI NEWS & GRAPHICS STUDIO
     let generatedImgUrl = "";
     window.generateAINews = function() {
       const directive = document.getElementById('newsDirective').value || "Major League Transfer & Tactical Shift";
