@@ -53,7 +53,7 @@
           <div>
             <span class="text-[10px] font-black text-emerald-400 bg-emerald-500/10 px-2.5 py-1 rounded-full uppercase border border-emerald-500/20">🤖 Deep AI Match Prediction Engine</span>
             <h2 class="text-lg font-black text-white mt-1 uppercase">Target Odds Accumulator Generator</h2>
-            <p class="text-xs text-slate-400">Generates data-backed match predictions based on historical encounter metrics & league form.</p>
+            <p class="text-xs text-slate-400">Strictly filters matches based on the exact selected time horizon.</p>
           </div>
           
           <div class="flex flex-wrap gap-2 items-center w-full lg:w-auto">
@@ -68,7 +68,6 @@
               <option value="saturday">Saturday</option>
               <option value="sunday">Sunday</option>
               <option value="week">Next 7 Days</option>
-              <option value="month1">Next 1 Month</option>
             </select>
 
             <select id="aiCategory" class="bg-slate-950 border border-slate-700 text-xs rounded-xl px-3 py-2 text-white font-bold outline-none">
@@ -93,7 +92,7 @@
       <!-- BUILD & PUBLISH TICKET + SETTLEMENT MANAGER -->
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
         
-        <!-- TICKET BUILDER (WITH RESTORED DAYS, LEAGUES & CATEGORIES) -->
+        <!-- TICKET BUILDER -->
         <div class="bg-slate-900 border border-slate-800 p-6 rounded-3xl shadow-2xl space-y-4">
           <div class="flex justify-between items-center border-b border-slate-800 pb-3">
             <h2 class="text-lg font-black text-white uppercase">Build VIP Prediction Ticket</h2>
@@ -250,7 +249,13 @@
 
     let rawAdminFixturesPool = [];
 
-    // AUTH OBSERVER
+    const formatYMD = (d) => {
+      const year = d.getFullYear();
+      const month = String(d.getMonth() + 1).padStart(2, '0');
+      const day = String(d.getDate()).padStart(2, '0');
+      return `${year}-${month}-${day}`;
+    };
+
     onAuthStateChanged(auth, async (user) => {
       if (user) {
         document.getElementById("loginSection").classList.add("hidden");
@@ -273,7 +278,6 @@
     });
     document.getElementById("logoutBtn").addEventListener("click", () => signOut(auth));
 
-    // TAB SWITCHING
     window.switchAdminTab = function(tab) {
       document.getElementById('adminTabBtnTickets').className = tab === 'tickets' ? 'pb-3 px-4 font-black text-sm text-emerald-400 border-b-2 border-emerald-400 uppercase tracking-wider transition' : 'pb-3 px-4 font-black text-sm text-slate-400 hover:text-white uppercase tracking-wider transition';
       document.getElementById('adminTabBtnNews').className = tab === 'news' ? 'pb-3 px-4 font-black text-sm text-cyan-400 border-b-2 border-cyan-400 uppercase tracking-wider transition' : 'pb-3 px-4 font-black text-sm text-slate-400 hover:text-white uppercase tracking-wider transition';
@@ -282,17 +286,15 @@
       document.getElementById('adminViewNews').classList.toggle('hidden', tab !== 'news');
     };
 
-    // DATE RANGE RESOLVER
     function resolveDateRange(horizonKey) {
       const now = new Date();
-      const todayStr = now.toISOString().split('T')[0];
+      const todayStr = formatYMD(now);
       
       if (horizonKey === 'today' || !horizonKey) return { from: todayStr, to: todayStr };
       if (horizonKey === 'tomorrow') {
         const d = new Date(); d.setDate(d.getDate() + 1);
-        const s = d.toISOString().split('T')[0]; return { from: s, to: s };
+        const s = formatYMD(d); return { from: s, to: s };
       }
-      
       const dayNames = ["sunday", "monday", "tuesday", "wednesday", "thursday", "friday", "saturday"];
       if (dayNames.includes(horizonKey.toLowerCase())) {
         const targetDayIdx = dayNames.indexOf(horizonKey.toLowerCase());
@@ -300,21 +302,16 @@
         let daysUntil = (targetDayIdx - currentDayIdx + 7) % 7;
         if (daysUntil === 0) daysUntil = 7; 
         const d = new Date(); d.setDate(d.getDate() + daysUntil);
-        const s = d.toISOString().split('T')[0]; return { from: s, to: s };
+        const s = formatYMD(d); return { from: s, to: s };
       }
-      
       if (horizonKey === 'week') {
-        const d = new Date(); d.setDate(d.getDate() + 7); return { from: todayStr, to: d.toISOString().split('T')[0] };
-      }
-      if (horizonKey === 'month1') {
-        const d = new Date(); d.setDate(d.getDate() + 30); return { from: todayStr, to: d.toISOString().split('T')[0] };
+        const d = new Date(); d.setDate(d.getDate() + 7); return { from: todayStr, to: formatYMD(d) };
       }
       return { from: todayStr, to: todayStr };
     }
 
-    // LEAGUES CONFIGURATION FOR BUILDER
     const countryLeagues = {
-      all: ["Premier League", "La Liga", "Serie A", "Bundesliga", "Ligue 1", "UEFA Champions League", "NBA"],
+      all: ["Premier League", "La Liga", "Serie A", "Bundesliga", "Ligue 1", "UEFA Champions League", "UEFA Europa League", "NBA", "EuroLeague"],
       England: ["Premier League", "Championship", "League One", "FA Cup"],
       Spain: ["La Liga", "Segunda Division", "Copa del Rey"],
       Italy: ["Serie A", "Serie B"],
@@ -333,7 +330,6 @@
     };
     populateAdminLeagues();
 
-    // BASKETBALL FETCH
     async function fetchBasketballGames(dateStr) {
       const url = `https://api-basketball.p.rapidapi.com/games?date=${dateStr}`;
       try {
@@ -345,12 +341,13 @@
           away: b.teams.away.name,
           league: b.league.name,
           country: "Basketball",
-          status: b.status.short
+          status: b.status.short,
+          match_date: b.date ? b.date.split('T')[0] : dateStr,
+          match_time: b.time || "19:00"
         }));
       } catch (err) { return []; }
     }
 
-    // FETCH LIVE FIXTURES POOL
     async function fetchAdminFixtures(horizon = "today") {
       const { from, to } = resolveDateRange(horizon);
       const soccerUrl = `https://apiv2.apifootball.com/?action=get_events&from=${from}&to=${to}&APIkey=${soccerApiKey}`;
@@ -371,7 +368,9 @@
                 home: m.match_hometeam_name,
                 away: m.match_awayteam_name,
                 league: m.league_name,
-                country: m.country_name || "World"
+                country: m.country_name || "World",
+                match_date: m.match_date || from,
+                match_time: m.match_time || "18:00"
               });
             }
           });
@@ -389,7 +388,6 @@
       }
     }
 
-    // FILTER BUILDER STREAM
     window.filterBuilderFixtures = async function() {
       const horizon = document.getElementById('builderHorizon').value;
       const country = document.getElementById('builderCountry').value;
@@ -410,12 +408,11 @@
         const currentVal = sel.value;
         sel.innerHTML = `<option value="">-- Select from filtered match stream --</option>` + filtered.map(f => {
           const title = `${f.home} vs ${f.away}`;
-          return `<option value="${title}" ${currentVal.includes(f.home) ? 'selected' : ''}>${title} (${f.league})</option>`;
+          return `<option value="${title}" data-date="${f.match_date || ''}" data-time="${f.match_time || ''}" ${currentVal.includes(f.home) ? 'selected' : ''}>${title} (${f.league})</option>`;
         }).join('');
       });
     };
 
-    // ACCURATE AI ACCUMULATOR PREDICTION ENGINE
     window.runAIEngine = async function() {
       const horizon = document.getElementById("aiHorizon").value;
       const category = document.getElementById("aiCategory").value;
@@ -424,14 +421,19 @@
 
       output.innerHTML = `<div class="text-xs text-slate-400 animate-pulse py-4">Analyzing team strength, form telemetry & compiling target odds acca...</div>`;
 
+      const { from, to } = resolveDateRange(horizon);
       await fetchAdminFixtures(horizon);
 
       let pool = [...rawAdminFixturesPool];
+      
+      // Strict Date Horizon Enforcer
+      pool = pool.filter(f => f.match_date >= from && f.match_date <= to);
+
       if (category === "Football") pool = pool.filter(f => f.country !== "Basketball");
       if (category === "Basketball") pool = pool.filter(f => f.country === "Basketball");
 
       if (pool.length === 0) {
-        output.innerHTML = `<div class="text-rose-400 text-xs py-2">No active upcoming fixtures found for this horizon/sport selection.</div>`;
+        output.innerHTML = `<div class="text-rose-400 text-xs py-2">No active upcoming fixtures found strictly for "${horizon}".</div>`;
         return;
       }
 
@@ -469,6 +471,8 @@
         return {
           matchTitle: `${m.home} vs ${m.away}`,
           league: m.league,
+          match_date: m.match_date || from,
+          match_time: m.match_time || "18:00",
           options: marketOptions
         };
       });
@@ -484,7 +488,9 @@
           league: match.league,
           pick: bestPick.pick,
           odds: bestPick.odds,
-          conf: bestPick.confidence
+          conf: bestPick.confidence,
+          match_date: match.match_date,
+          match_time: match.match_time
         });
         currentAccaOdds *= bestPick.odds;
       }
@@ -493,7 +499,7 @@
         <div class="space-y-4 mt-3">
           <div class="flex justify-between items-center bg-slate-950 p-3 rounded-2xl border border-slate-800">
             <div>
-              <span class="text-[10px] text-slate-400 uppercase font-bold">Target: ~${targetOdds} Odds</span>
+              <span class="text-[10px] text-slate-400 uppercase font-bold">Horizon: ${horizon.toUpperCase()} • Target: ~${targetOdds} Odds</span>
               <div class="text-sm font-black text-emerald-400">Total Acca Odds: ${currentAccaOdds.toFixed(2)} (${accaPicks.length} Selections)</div>
             </div>
             <button type="button" onclick="loadAccaIntoBuilder(${JSON.stringify(accaPicks).replace(/"/g, '&quot;')})" class="bg-emerald-400 hover:bg-emerald-300 text-slate-950 font-black text-xs px-4 py-2 rounded-xl transition shadow">📥 Load into Builder</button>
@@ -504,7 +510,7 @@
               <div class="bg-slate-950 p-3.5 rounded-2xl border border-slate-800 space-y-2">
                 <div class="flex justify-between items-center">
                   <span class="font-bold text-slate-200 text-xs truncate max-w-[200px]">${item.matchTitle}</span>
-                  <span class="text-[9px] text-slate-500 font-bold">${item.league}</span>
+                  <span class="text-[9px] text-slate-500 font-bold">${item.match_date} ${item.match_time}</span>
                 </div>
                 <div class="space-y-1.5">
                   ${item.options.map(opt => `
@@ -512,7 +518,7 @@
                       <span class="text-emerald-400 text-xs font-semibold">${opt.pick} <span class="text-slate-500 text-[10px]">(${opt.confidence})</span></span>
                       <div class="flex items-center gap-2">
                         <span class="font-bold text-white text-xs">@${opt.odds}</span>
-                        <button type="button" onclick="insertAIPick('${item.matchTitle}', '${opt.pick}', ${opt.odds})" class="bg-emerald-400 text-slate-950 px-2 py-0.5 rounded-lg text-xs font-black hover:bg-emerald-300 transition">+</button>
+                        <button type="button" onclick="insertAIPick('${item.matchTitle}', '${opt.pick}', ${opt.odds}, '${item.match_date}', '${item.match_time}')" class="bg-emerald-400 text-slate-950 px-2 py-0.5 rounded-lg text-xs font-black hover:bg-emerald-300 transition">+</button>
                       </div>
                     </div>
                   `).join('')}
@@ -526,16 +532,15 @@
 
     window.loadAccaIntoBuilder = function(picks) {
       document.getElementById("matchRows").innerHTML = "";
-      picks.forEach(p => window.addMatchRow(p.match, p.pick, p.odds));
+      picks.forEach(p => window.addMatchRow(p.match, p.pick, p.odds, p.match_date, p.match_time));
       document.getElementById("title").value = `${document.getElementById("aiTargetOdds").value} Odds VIP AI Strategy Acca`;
       window.calculateTotalOdds();
     };
 
-    window.insertAIPick = function(match, pick, odds) {
-      window.addMatchRow(match, pick, odds);
+    window.insertAIPick = function(match, pick, odds, match_date, match_time) {
+      window.addMatchRow(match, pick, odds, match_date, match_time);
     };
 
-    // MANUAL MATCH ROW BUILDER
     window.calculateTotalOdds = function() {
       let total = 1.0;
       document.querySelectorAll(".match-row").forEach(row => {
@@ -546,7 +551,7 @@
       document.getElementById("liveTotalOdds").textContent = total.toFixed(2);
     };
 
-    window.addMatchRow = function(prefMatch = "", prefPick = "", prefOdds = "") {
+    window.addMatchRow = function(prefMatch = "", prefPick = "", prefOdds = "", prefDate = "", prefTime = "") {
       const div = document.createElement("div");
       div.className = "bg-slate-950 p-3.5 rounded-2xl border border-slate-800 match-row space-y-2 shadow-inner";
       
@@ -554,10 +559,10 @@
       if (rawAdminFixturesPool.length > 0) {
         optionsHtml += rawAdminFixturesPool.map(f => {
           const title = `${f.home} vs ${f.away}`;
-          return `<option value="${title}" ${prefMatch && title.includes(prefMatch) ? 'selected' : ''}>${title} (${f.league})</option>`;
+          return `<option value="${title}" data-date="${f.match_date || ''}" data-time="${f.match_time || ''}" ${prefMatch && title.includes(prefMatch) ? 'selected' : ''}>${title} (${f.league})</option>`;
         }).join('');
       } else if (prefMatch) {
-        optionsHtml += `<option value="${prefMatch}" selected>${prefMatch}</option>`;
+        optionsHtml += `<option value="${prefMatch}" data-date="${prefDate}" data-time="${prefTime}" selected>${prefMatch}</option>`;
       }
 
       div.innerHTML = `
@@ -592,7 +597,6 @@
 
     window.addMatchRow();
 
-    // TICKET PUBLISHING
     document.getElementById("ticketForm").addEventListener("submit", async (e) => {
       e.preventDefault();
       
@@ -607,11 +611,21 @@
 
       let totalOdds = 1.0;
       const matches = Array.from(matchRows).map(row => {
-        const name = row.querySelector(".match-select").value;
+        const selectEl = row.querySelector(".match-select");
+        const name = selectEl.value;
+        const selectedOption = selectEl.options[selectEl.selectedIndex];
+        
+        let match_date = selectedOption ? selectedOption.getAttribute('data-date') || '' : '';
+        let match_time = selectedOption ? selectedOption.getAttribute('data-time') || '' : '';
+
+        if(!match_date) match_date = formatYMD(new Date());
+        if(!match_time) match_time = "18:00";
+
         const pick = row.querySelector(".prediction-pick").value;
         const odds = parseFloat(row.querySelector(".match-odds").value) || 1.0;
         totalOdds *= odds;
-        return { name, pick, odds: odds.toFixed(2) };
+        
+        return { name, pick, odds: odds.toFixed(2), match_date, match_time };
       });
 
       const submitBtn = document.getElementById("submitBtn");
@@ -633,7 +647,7 @@
         document.getElementById("matchRows").innerHTML = "";
         window.addMatchRow();
         window.calculateTotalOdds();
-        loadAdminSettlements(); // Instantly fetch the new ticket
+        loadAdminSettlements(); 
       } catch (err) {
         alert("Failed to publish ticket: " + err.message);
       } finally {
@@ -642,7 +656,6 @@
       }
     });
 
-    // SETTLEMENT DESK (Direct Fetch Fallback)
     async function loadAdminSettlements() {
       const container = document.getElementById("settlementContainer");
       try {
@@ -657,7 +670,6 @@
           allTickets.push({ id: doc.id, ...doc.data() });
         });
         
-        // Manual descending sort to bypass index blocks completely
         allTickets.sort((a, b) => (b.createdAt?.toMillis() || 0) - (a.createdAt?.toMillis() || 0));
 
         container.innerHTML = "";
@@ -697,7 +709,6 @@
       }
     };
 
-    // AI NEWS & GRAPHICS STUDIO
     let generatedImgUrl = "";
     window.generateAINews = function() {
       const directive = document.getElementById('newsDirective').value || "Major League Transfer & Tactical Shift";

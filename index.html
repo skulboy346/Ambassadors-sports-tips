@@ -34,17 +34,17 @@
 
   <main class="max-w-5xl mx-auto px-2 md:px-4 py-6 space-y-8">
     
-    <!-- 1. FEATURED SECTION -->
+    <!-- 1. FEATURED SECTION (AUTO-SLIDING SPOTLIGHT) -->
     <section class="bg-slate-900/50 border border-slate-800 rounded-2xl overflow-hidden shadow-xl">
       <div class="flex border-b border-slate-800 bg-slate-900">
-        <button onclick="switchFeatured('matches')" id="featBtn-matches" class="flex-1 py-3 text-xs font-black uppercase tracking-wide text-emerald-400 border-b-2 border-emerald-400 transition">🔥 Elite Matches</button>
+        <button onclick="switchFeatured('matches')" id="featBtn-matches" class="flex-1 py-3 text-xs font-black uppercase tracking-wide text-emerald-400 border-b-2 border-emerald-400 transition">🔥 Elite Spotlight</button>
         <button onclick="switchFeatured('tickets')" id="featBtn-tickets" class="flex-1 py-3 text-xs font-black uppercase tracking-wide text-slate-400 hover:text-slate-200 transition">💎 VIP Tickets</button>
         <button onclick="switchFeatured('news')" id="featBtn-news" class="flex-1 py-3 text-xs font-black uppercase tracking-wide text-slate-400 hover:text-slate-200 transition">📰 Intelligence</button>
       </div>
 
-      <div class="p-4">
-        <div id="featContent-matches" class="flex gap-4 overflow-x-auto pb-2 scrollbar-hide snap-x">
-          <div class="text-slate-500 text-xs py-4 text-center w-full">Syncing featured elite matches...</div>
+      <div class="p-4 relative">
+        <div id="featContent-matches" class="flex gap-4 overflow-x-auto pb-2 scrollbar-hide snap-x scroll-smooth">
+          <div class="text-slate-500 text-xs py-4 text-center w-full">Syncing elite spotlights...</div>
         </div>
         <div id="featContent-tickets" class="hidden flex gap-4 overflow-x-auto pb-2 scrollbar-hide snap-x">
           <div class="text-slate-500 text-xs py-4 text-center w-full">Syncing VIP Tickets...</div>
@@ -67,17 +67,15 @@
         </div>
       </div>
 
-      <!-- Arena Filters -->
-      <div id="resultsFilterBar" class="hidden flex flex-wrap gap-2 items-center bg-slate-900/80 p-3 rounded-2xl border border-slate-800 mx-2">
+      <div id="resultsFilterBar" class="flex flex-wrap gap-2 items-center bg-slate-900/80 p-3 rounded-2xl border border-slate-800 mx-2">
         <select id="resDay" class="bg-slate-950 border border-slate-700 text-xs rounded-lg px-2 py-1.5 text-emerald-400 font-bold outline-none" onchange="loadResultsArena()">
           <option value="today">Today</option>
           <option value="yesterday">Yesterday</option>
           <option value="day_before">2 Days Ago</option>
           <option value="week">Past 7 Days</option>
-          <option value="month1">Past 30 Days</option>
         </select>
         <select id="resCategory" class="bg-slate-950 border border-slate-700 text-xs rounded-lg px-2 py-1.5 text-white font-bold outline-none" onchange="populateLeagues('resCategory', 'resLeague'); loadResultsArena()">
-          <option value="all">🌍 All Categories</option>
+          <option value="all">🌍 All Sports & Countries</option>
           <option value="England">🏴󠁧󠁢󠁥󠁮󠁧󠁿 England</option>
           <option value="Spain">🇪🇸 Spain</option>
           <option value="Italy">🇮🇹 Italy</option>
@@ -95,15 +93,12 @@
       <div id="arenaContainer" class="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden shadow-xl flex flex-col mx-2">
         <div class="text-slate-500 text-xs py-8 text-center">Fetching Arena Data...</div>
       </div>
-      <div class="flex justify-end px-2"><button onclick="openSeeAllModal('arena')" class="text-[11px] font-bold text-emerald-400 hover:underline">See All Arena Matches ➔</button></div>
     </section>
 
     <!-- 3. FIXTURES & VIP TICKETS SCHEDULE -->
     <section class="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden shadow-xl mx-2">
-      <!-- Top Filters -->
-      <div class="flex flex-col md:flex-row gap-3 p-4 bg-slate-950 border-b border-slate-800">
+      <div class="flex flex-col md:flex-row gap-3 p-4 bg-slate-950 border-b border-slate-800" id="fixturesFilterBlock">
         <div class="flex flex-wrap items-center gap-2">
-          <!-- Full Horizon Selector -->
           <select id="fixtureHorizon" class="bg-slate-900 border border-slate-700 text-xs rounded-lg px-2 py-1.5 text-emerald-400 font-bold outline-none" onchange="fetchApiFootballFixtures()">
             <option value="today">Today</option>
             <option value="tomorrow">Tomorrow</option>
@@ -117,10 +112,7 @@
             <option value="week">1 Week</option>
             <option value="week2">2 Weeks</option>
             <option value="month1">1 Month</option>
-            <option value="month2">2 Months</option>
           </select>
-
-          <!-- Country / Sport Dropdown -->
           <select id="fixtureCountry" class="bg-slate-900 border border-slate-700 text-xs rounded-lg px-2 py-1.5 text-white font-bold outline-none" onchange="populateLeagues('fixtureCountry', 'fixtureLeague'); fetchApiFootballFixtures()">
             <option value="all">🌍 All Locations</option>
             <option value="England">🏴󠁧󠁢󠁥󠁮󠁧󠁿 England</option>
@@ -128,16 +120,11 @@
             <option value="Italy">🇮🇹 Italy</option>
             <option value="Germany">🇩🇪 Germany</option>
             <option value="France">🇫🇷 France</option>
-            <option value="Americas">🌎 Americas</option>
-            <option value="World">🏆 International</option>
             <option value="Basketball">🏀 Basketball</option>
           </select>
-
-          <!-- Dynamic League Dropdown -->
           <select id="fixtureLeague" class="bg-slate-900 border border-slate-700 text-xs rounded-lg px-2 py-1.5 text-white font-bold outline-none" onchange="fetchApiFootballFixtures()">
             <option value="all">All Leagues</option>
           </select>
-
           <input type="text" id="clubSearch" placeholder="🔍 Search team..." class="bg-slate-900 border border-slate-700 text-xs rounded-lg px-3 py-1.5 text-white outline-none w-32 focus:border-emerald-400" oninput="fetchApiFootballFixtures()" />
         </div>
       </div>
@@ -150,7 +137,6 @@
 
       <!-- FIXTURES VIEW -->
       <div id="viewFixtures" class="flex flex-col bg-[#0b1015]">
-        <!-- Probability Matrix Header Row -->
         <div class="flex justify-between items-center px-4 py-2 bg-[#0b1015] text-[10px] font-bold text-slate-400 border-b border-slate-800">
           <div class="w-1/2 uppercase tracking-widest text-slate-500">Live Odds Matrix</div>
           <div class="w-1/2 flex gap-1 text-center pr-1">
@@ -159,45 +145,78 @@
             <span class="flex-1 bg-slate-900 rounded py-0.5 border border-slate-800 text-cyan-400">Away %</span>
           </div>
         </div>
-
         <div id="fixturesListContainer" class="flex flex-col">
           <div class="text-slate-500 text-xs py-10 text-center">Fetching real-time fixtures...</div>
         </div>
-        
         <div class="p-3 bg-slate-950 text-center border-t border-slate-800">
           <button onclick="openSeeAllModal('fixtures')" class="text-xs font-bold text-emerald-400 hover:text-emerald-300">Open Full Schedule Terminal ➔</button>
         </div>
       </div>
 
-      <!-- TICKETS VIEW (Fully Synced Grid) -->
-      <div id="viewTickets" class="space-y-4 p-4 hidden bg-[#0b1015]">
-        <div class="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
-          <button class="filter-btn active bg-emerald-400 text-slate-950 font-black px-4 py-1.5 rounded-lg text-xs whitespace-nowrap shadow" onclick="filterTickets('all')">All Tickets</button>
-          <button class="filter-btn bg-slate-900 border border-slate-700 text-slate-300 font-bold px-4 py-1.5 rounded-lg text-xs whitespace-nowrap" onclick="filterTickets('2_odds')">2 Odds Banker</button>
-          <button class="filter-btn bg-slate-900 border border-slate-700 text-slate-300 font-bold px-4 py-1.5 rounded-lg text-xs whitespace-nowrap" onclick="filterTickets('5_odds')">5 Odds Value</button>
-          <button class="filter-btn bg-slate-900 border border-slate-700 text-slate-300 font-bold px-4 py-1.5 rounded-lg text-xs whitespace-nowrap" onclick="filterTickets('1000_odds')">1,000+ Mega Acca</button>
+      <!-- TICKETS VIEW (Active vs Concluded Outcomes) -->
+      <div id="viewTickets" class="flex-col bg-[#0b1015] hidden">
+        <div class="flex border-b border-slate-800 bg-slate-950/50">
+          <button onclick="switchTicketMode('active')" id="ticketModeActive" class="flex-1 py-2 text-[10px] font-black uppercase tracking-widest text-emerald-400 bg-emerald-500/10 transition">🟢 Active Pending</button>
+          <button onclick="switchTicketMode('outcomes')" id="ticketModeOutcomes" class="flex-1 py-2 text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-slate-200 transition">🏁 Ticket Outcomes</button>
         </div>
-        
-        <div id="ticketsContainer" class="grid grid-cols-1 md:grid-cols-2 gap-4">
-           <div class="text-slate-500 text-xs py-10 text-center col-span-full">Syncing Tickets...</div>
+
+        <div id="activeTicketsWrapper" class="p-4 space-y-4">
+          <div class="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
+            <button class="filter-btn active bg-emerald-400 text-slate-950 font-black px-4 py-1.5 rounded-lg text-xs whitespace-nowrap shadow" onclick="filterActiveTickets('all')">All Tickets</button>
+            <button class="filter-btn bg-slate-900 border border-slate-700 text-slate-300 font-bold px-4 py-1.5 rounded-lg text-xs whitespace-nowrap" onclick="filterActiveTickets('2_odds')">2 Odds</button>
+            <button class="filter-btn bg-slate-900 border border-slate-700 text-slate-300 font-bold px-4 py-1.5 rounded-lg text-xs whitespace-nowrap" onclick="filterActiveTickets('5_odds')">5 Odds</button>
+            <button class="filter-btn bg-slate-900 border border-slate-700 text-slate-300 font-bold px-4 py-1.5 rounded-lg text-xs whitespace-nowrap" onclick="filterActiveTickets('1000_odds')">1,000+ Acca</button>
+          </div>
+          <div id="activeTicketsGrid" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+             <div class="text-slate-500 text-xs py-10 text-center col-span-full">Syncing Tickets...</div>
+          </div>
+        </div>
+
+        <div id="outcomesTicketsWrapper" class="p-4 space-y-4 hidden">
+          <div class="flex flex-wrap gap-2 items-center">
+            <select id="outcomeDayFilter" class="bg-slate-900 border border-slate-700 text-xs rounded-lg px-3 py-1.5 text-white font-bold outline-none" onchange="renderTicketOutcomes()">
+              <option value="all">All Time</option>
+              <option value="24h">Past 24 Hours</option>
+              <option value="7d">Past 7 Days</option>
+              <option value="30d">Past 30 Days</option>
+            </select>
+            <select id="outcomeStatusFilter" class="bg-slate-900 border border-slate-700 text-xs rounded-lg px-3 py-1.5 text-white font-bold outline-none" onchange="renderTicketOutcomes()">
+              <option value="all">All Results</option>
+              <option value="won">✅ Won Tickets</option>
+              <option value="lost">❌ Lost Tickets</option>
+            </select>
+          </div>
+          <div id="outcomesTicketsGrid" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
         </div>
       </div>
     </section>
-
-    <!-- 4. DEDICATED LOWER NEWS & TRANSFERS FEED -->
-    <section class="border-t border-slate-800 pt-8 space-y-4 mx-2">
-      <div class="flex justify-between items-center px-1">
-        <h2 class="text-base font-black text-white uppercase tracking-wide flex items-center gap-2">
-          🔥 Recent Transfer & Sports News
-        </h2>
-        <span class="text-[10px] text-slate-400 font-bold">Live Streams</span>
-      </div>
-      <div class="flex gap-4 overflow-x-auto pb-4 scrollbar-hide snap-x" id="newsFeedContainer">
-        <div class="text-slate-500 text-xs py-4">Syncing live news stream...</div>
-      </div>
-    </section>
-
   </main>
+
+  <!-- VIP TICKET MODAL -->
+  <div id="ticketModal" class="fixed inset-0 z-50 bg-[#05070a]/95 backdrop-blur-md overflow-y-auto hidden flex flex-col">
+    <div class="sticky top-0 bg-[#070b14]/95 backdrop-blur-md px-4 py-3 flex justify-between items-center border-b border-emerald-500/20 z-10 shadow-lg">
+      <h2 class="text-sm font-black text-emerald-400 uppercase tracking-widest">VIP Ticket Match Slip</h2>
+      <button onclick="document.getElementById('ticketModal').classList.add('hidden')" class="bg-slate-900 border border-slate-700 text-white font-black px-3 py-1.5 rounded-lg text-xs hover:bg-rose-500/20 transition">✕ Close</button>
+    </div>
+    <div class="flex-grow p-4 max-w-2xl mx-auto w-full" id="ticketModalContent"></div>
+  </div>
+
+  <!-- MATCH CENTER & STATS MODAL -->
+  <div id="statsModal" class="fixed inset-0 z-50 bg-[#05070a]/90 backdrop-blur-md flex items-center justify-center p-3 md:p-6 hidden">
+    <div class="bg-slate-900 border border-emerald-500/40 w-full max-w-2xl rounded-3xl p-5 md:p-6 shadow-2xl relative space-y-4 max-h-[92vh] overflow-y-auto">
+      <button onclick="document.getElementById('statsModal').classList.add('hidden')" class="absolute top-4 right-4 text-slate-400 hover:text-white font-black text-lg bg-slate-950/80 px-2.5 py-1 rounded-xl border border-slate-800 transition">✕</button>
+      
+      <div id="modalStatsHeader" class="border-b border-slate-800 pb-3">
+        <span id="modalHeaderBadge" class="text-[10px] font-black uppercase text-emerald-400 tracking-wider">Match Telemetry</span>
+        <h3 id="modalTeamTitle" class="text-lg font-black text-white mt-1">Match Details</h3>
+        <p id="modalMatchDateTime" class="text-xs text-slate-400 font-bold mt-1">Syncing...</p>
+      </div>
+
+      <div id="modalStatsContent" class="space-y-4 text-xs text-slate-300">
+        <div class="py-8 text-center text-slate-500">Querying live match events & statistics...</div>
+      </div>
+    </div>
+  </div>
 
   <!-- SEE ALL FULL-PAGE MODAL -->
   <div id="seeAllModal" class="fixed inset-0 z-50 bg-[#05070a] overflow-y-auto hidden flex-col">
@@ -211,56 +230,21 @@
         <select id="seeAllHorizon" class="bg-slate-950 border border-slate-700 text-xs rounded-xl px-3 py-2 text-emerald-400 font-bold outline-none" onchange="loadSeeAllFixtures()">
           <option value="today">Today</option>
           <option value="tomorrow">Tomorrow</option>
-          <option value="monday">Monday</option>
-          <option value="tuesday">Tuesday</option>
-          <option value="wednesday">Wednesday</option>
-          <option value="thursday">Thursday</option>
-          <option value="friday">Friday</option>
-          <option value="saturday">Saturday</option>
-          <option value="sunday">Sunday</option>
           <option value="week">1 Week</option>
-          <option value="week2">2 Weeks</option>
           <option value="month1">1 Month</option>
-          <option value="month2">2 Months</option>
         </select>
-        
         <select id="seeAllCountry" class="bg-slate-950 border border-slate-700 text-xs rounded-xl px-3 py-2 text-white font-bold outline-none" onchange="populateLeagues('seeAllCountry', 'seeAllLeague'); loadSeeAllFixtures()">
           <option value="all">🌍 All Locations</option>
           <option value="England">🏴󠁧󠁢󠁥󠁮󠁧󠁿 England</option>
           <option value="Spain">🇪🇸 Spain</option>
-          <option value="Italy">🇮🇹 Italy</option>
-          <option value="Germany">🇩🇪 Germany</option>
-          <option value="France">🇫🇷 France</option>
-          <option value="Americas">🌎 Americas</option>
-          <option value="World">🏆 International</option>
-          <option value="Basketball">🏀 Basketball</option>
         </select>
-
         <select id="seeAllLeague" class="bg-slate-950 border border-slate-700 text-xs rounded-xl px-3 py-2 text-white font-bold outline-none" onchange="loadSeeAllFixtures()">
           <option value="all">All Leagues</option>
         </select>
-        
-        <input type="text" id="seeAllSearch" placeholder="🔍 Search..." class="bg-slate-950 border border-slate-700 text-xs rounded-xl px-3 py-2 text-white outline-none w-32 focus:border-emerald-400" oninput="loadSeeAllFixtures()" />
+        <input type="text" id="seeAllSearch" placeholder="🔍 Search..." class="bg-slate-950 border border-slate-700 text-xs rounded-xl px-3 py-2 text-white outline-none w-32" oninput="loadSeeAllFixtures()" />
       </div>
 
       <div id="seeAllModalContent" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
-    </div>
-  </div>
-
-  <!-- STATS MODAL (DEEP AI TELEMETRY) -->
-  <div id="statsModal" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-4 hidden">
-    <div class="bg-slate-900 border border-emerald-500/40 w-full max-w-2xl rounded-3xl p-6 shadow-2xl relative space-y-4 max-h-[90vh] overflow-y-auto">
-      <button onclick="document.getElementById('statsModal').classList.add('hidden')" class="absolute top-4 right-4 text-slate-400 hover:text-white font-black text-lg">✕</button>
-      
-      <div id="modalStatsHeader" class="border-b border-slate-800 pb-3">
-        <span class="text-[10px] font-black uppercase text-emerald-400 tracking-wider">Deep AI Analytics Matrix</span>
-        <h3 id="modalTeamTitle" class="text-lg font-black text-white mt-1">Match Analytics</h3>
-        <p id="modalMatchDateTime" class="text-xs text-slate-400 font-bold mt-1">Syncing kickoff schedule...</p>
-      </div>
-
-      <div id="modalStatsContent" class="space-y-4 text-xs text-slate-300">
-        <div class="py-8 text-center text-slate-500">Retrieving Head-to-Head telemetry and calculating form projections...</div>
-      </div>
     </div>
   </div>
 
@@ -287,6 +271,29 @@
     const db = getFirestore(app);
     const soccerApiKey = "15d684bf0ade8909fc993ff95ee5255877d70727dca00c078e641951cef3ec3d";
     const bballApiKey = "afc868327bmsh38c47b6bc124e98p165ea1jsn015c0d841dd3";
+
+    let globalArenaCache = [];
+    let allTickets = [];
+
+    const formatYMD = (d) => {
+      const year = d.getFullYear();
+      const month = String(d.getMonth() + 1).padStart(2, '0');
+      const day = String(d.getDate()).padStart(2, '0');
+      return `${year}-${month}-${day}`;
+    };
+
+    async function fetchWithTimeout(url, options = {}, timeout = 4000) {
+      const controller = new AbortController();
+      const id = setTimeout(() => controller.abort(), timeout);
+      try {
+        const response = await fetch(url, { ...options, signal: controller.signal });
+        clearTimeout(id);
+        return await response.json();
+      } catch (err) {
+        clearTimeout(id);
+        return [];
+      }
+    }
 
     window.isMatchFinished = function(m) {
       const status = (m.match_status || "").toUpperCase().trim();
@@ -333,8 +340,7 @@
       let pct1 = Math.round((p1 / total) * 100);
       let pctX = Math.round((pX / total) * 100);
       let pct2 = Math.round((p2 / total) * 100);
-      const diff = 100 - (pct1 + pctX + pct2);
-      pct1 += diff;
+      pct1 += 100 - (pct1 + pctX + pct2);
       return { pct1, pctX, pct2 };
     };
 
@@ -345,19 +351,23 @@
       if (isNaN(mins)) mins = 0;
       hours = (hours + 1) % 24;
       const formattedTime = `${hours.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}`;
-
+      
       const now = new Date();
-      const todayStr = now.toISOString().split('T')[0];
+      const todayStr = formatYMD(now);
       const tmrw = new Date(); tmrw.setDate(tmrw.getDate() + 1);
-      const tmrwStr = tmrw.toISOString().split('T')[0];
+      const tmrwStr = formatYMD(tmrw);
 
       let dayLabel = "Today";
-      if (dateStr === todayStr || !dateStr) dayLabel = "Today";
+      if (!dateStr || dateStr === todayStr) dayLabel = "Today";
       else if (dateStr === tmrwStr) dayLabel = "Tomorrow";
       else {
-        const d = new Date(dateStr);
-        if (!isNaN(d)) dayLabel = d.toLocaleDateString('en-US', { day: 'numeric', month: 'short' });
-        else dayLabel = dateStr;
+        const parts = dateStr.split('-');
+        if (parts.length === 3) {
+          const d = new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2]));
+          dayLabel = d.toLocaleDateString('en-US', { day: 'numeric', month: 'short' });
+        } else {
+          dayLabel = dateStr;
+        }
       }
       return `${dayLabel} • ${formattedTime} WAT`;
     };
@@ -369,8 +379,12 @@
       if (isNaN(mins)) mins = 0;
       hours = (hours + 1) % 24;
       const formattedTime = `${hours.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}`;
-
-      const d = dateStr ? new Date(dateStr) : new Date();
+      
+      let d = new Date();
+      if (dateStr && dateStr.includes('-')) {
+        const parts = dateStr.split('-');
+        d = new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2]));
+      }
       const dayName = d.toLocaleDateString('en-US', { weekday: 'long' });
       const dayNum = d.toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' });
       return `📅 ${dayName}, ${dayNum} • ${formattedTime} WAT`;
@@ -378,19 +392,20 @@
 
     window.resolveDateRange = function(horizonKey) {
       const now = new Date();
-      const todayStr = now.toISOString().split('T')[0];
+      const todayStr = formatYMD(now);
+      
       if (horizonKey === 'today' || !horizonKey) return { from: todayStr, to: todayStr };
       if (horizonKey === 'yesterday') {
         const d = new Date(); d.setDate(d.getDate() - 1);
-        const s = d.toISOString().split('T')[0]; return { from: s, to: s };
+        const s = formatYMD(d); return { from: s, to: s };
       }
       if (horizonKey === 'day_before') {
         const d = new Date(); d.setDate(d.getDate() - 2);
-        const s = d.toISOString().split('T')[0]; return { from: s, to: s };
+        const s = formatYMD(d); return { from: s, to: s };
       }
       if (horizonKey === 'tomorrow') {
         const d = new Date(); d.setDate(d.getDate() + 1);
-        const s = d.toISOString().split('T')[0]; return { from: s, to: s };
+        const s = formatYMD(d); return { from: s, to: s };
       }
       const dayNames = ["sunday", "monday", "tuesday", "wednesday", "thursday", "friday", "saturday"];
       if (dayNames.includes(horizonKey.toLowerCase())) {
@@ -399,19 +414,16 @@
         let daysUntil = (targetDayIdx - currentDayIdx + 7) % 7;
         if (daysUntil === 0) daysUntil = 7; 
         const d = new Date(); d.setDate(d.getDate() + daysUntil);
-        const s = d.toISOString().split('T')[0]; return { from: s, to: s };
+        const s = formatYMD(d); return { from: s, to: s };
       }
       if (horizonKey === 'week') {
-        const d = new Date(); d.setDate(d.getDate() + 7); return { from: todayStr, to: d.toISOString().split('T')[0] };
+        const d = new Date(); d.setDate(d.getDate() + 7); return { from: todayStr, to: formatYMD(d) };
       }
       if (horizonKey === 'week2') {
-        const d = new Date(); d.setDate(d.getDate() + 14); return { from: todayStr, to: d.toISOString().split('T')[0] };
+        const d = new Date(); d.setDate(d.getDate() + 14); return { from: todayStr, to: formatYMD(d) };
       }
       if (horizonKey === 'month1') {
-        const d = new Date(); d.setDate(d.getDate() + 30); return { from: todayStr, to: d.toISOString().split('T')[0] };
-      }
-      if (horizonKey === 'month2') {
-        const d = new Date(); d.setDate(d.getDate() + 60); return { from: todayStr, to: d.toISOString().split('T')[0] };
+        const d = new Date(); d.setDate(d.getDate() + 30); return { from: todayStr, to: formatYMD(d) };
       }
       return { from: todayStr, to: todayStr };
     };
@@ -420,16 +432,15 @@
       const url = `https://api-basketball.p.rapidapi.com/games?date=${dateStr}`;
       const options = { method: 'GET', headers: { 'x-rapidapi-key': bballApiKey, 'x-rapidapi-host': 'api-basketball.p.rapidapi.com' } };
       try {
-        const res = await fetch(url, options);
-        const data = await res.json();
+        const data = await fetchWithTimeout(url, options, 3000);
         if (!data || !data.response) return [];
         return data.response.map(b => ({
           match_hometeam_name: b.teams.home.name,
           match_awayteam_name: b.teams.away.name,
           country_name: "Basketball",
           league_name: b.league.name,
-          match_time: b.time,
-          match_date: b.date.split('T')[0],
+          match_time: b.time || "19:00",
+          match_date: b.date ? b.date.split('T')[0] : dateStr,
           team_home_badge: b.teams.home.logo,
           team_away_badge: b.teams.away.logo,
           match_status: b.status.short === "FT" || b.status.short === "AOT" ? "Finished" : b.status.short,
@@ -442,7 +453,7 @@
     };
 
     const countryLeagues = {
-      all: ["Premier League", "La Liga", "Serie A", "Bundesliga", "Ligue 1", "UEFA Champions League", "NBA"],
+      all: ["Premier League", "La Liga", "Serie A", "Bundesliga", "Ligue 1", "UEFA Champions League", "UEFA Europa League", "NBA", "EuroLeague"],
       England: ["Premier League", "Championship", "League One", "FA Cup"],
       Spain: ["La Liga", "Segunda Division", "Copa del Rey"],
       Italy: ["Serie A", "Serie B"],
@@ -462,7 +473,6 @@
 
     populateLeagues('resCategory', 'resLeague');
     populateLeagues('fixtureCountry', 'fixtureLeague');
-    populateLeagues('seeAllCountry', 'seeAllLeague');
 
     function renderListCard(f) {
       const matchBadge = formatToWAT(f.match_date, f.match_time);
@@ -508,8 +518,8 @@
       const isFin = isMatchFinished(m);
       const isLive = isMatchLive(m);
       let timeDisplay = `<span class="text-slate-500 font-bold text-[10px] uppercase">Upcoming</span>`;
-      if (isFin) timeDisplay = `<span class="text-slate-500 font-bold text-[10px] uppercase">Finished (FT)</span>`;
-      if (isLive) timeDisplay = `<span class="bg-rose-500 text-white px-1.5 py-0.5 rounded font-black text-[10px] uppercase flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-white animate-pulse"></span> ${m.match_status || 'Live'}'</span>`;
+      if (isFin) timeDisplay = `<span class="text-slate-400 font-black text-[10px] uppercase bg-slate-950 px-2 py-0.5 rounded border border-slate-800">Final (FT)</span>`;
+      if (isLive) timeDisplay = `<span class="bg-rose-500 text-white px-2 py-0.5 rounded font-black text-[10px] uppercase flex items-center gap-1 shadow-md shadow-rose-500/20"><span class="w-1.5 h-1.5 rounded-full bg-white animate-pulse"></span> ${m.match_status || 'Live'}'</span>`;
       const mJson = encodeURIComponent(JSON.stringify(m));
       return `
         <div onclick="openStatsFromData('${mJson}')" class="bg-slate-900 border-b border-slate-800 p-4 flex flex-col hover:bg-slate-800/50 cursor-pointer transition">
@@ -524,6 +534,7 @@
             </div>
             <div class="w-1/3 flex flex-col items-center justify-center gap-1">
               <span class="bg-slate-950 text-white font-black text-2xl px-4 py-1.5 rounded-lg border border-slate-800 shadow-inner">${m.match_hometeam_score || 0} - ${m.match_awayteam_score || 0}</span>
+              <span class="text-[9px] text-emerald-400 font-bold mt-1">Tap for Live Events ➔</span>
             </div>
             <div class="flex flex-col gap-1.5 items-center justify-center w-1/3">
               <img src="${m.team_away_badge}" class="w-8 h-8 object-contain" onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(m.match_awayteam_name)}&background=random&color=fff'">
@@ -539,7 +550,7 @@
       const probs = calculateProbabilities(f.odd_1, f.odd_x, f.odd_2, f.match_hometeam_name, f.match_awayteam_name);
       const fJson = encodeURIComponent(JSON.stringify(f));
       return `
-        <div onclick="openStatsFromData('${fJson}')" class="min-w-[280px] md:min-w-[320px] bg-slate-900 border border-slate-800 p-4 rounded-xl snap-start cursor-pointer hover:border-emerald-500/40 transition">
+        <div onclick="openStatsFromData('${fJson}')" class="min-w-[280px] md:min-w-[320px] bg-slate-900 border border-slate-800 p-4 rounded-2xl snap-start cursor-pointer hover:border-emerald-500/40 transition flex-shrink-0">
           <div class="flex items-center gap-2 text-[9px] text-emerald-400 font-bold mb-3 border-b border-slate-800 pb-2 uppercase tracking-wider">
             <span class="bg-rose-500 text-white px-1.5 py-0.5 rounded italic">HOT🔥</span>
             <span class="truncate">${f.country_name || 'World'} - ${f.league_name}</span>
@@ -575,6 +586,79 @@
       `;
     }
 
+    let spotlightSlideInterval = null;
+    function initSpotlightAutoSlide() {
+      const container = document.getElementById("featContent-matches");
+      if (!container) return;
+      if (spotlightSlideInterval) clearInterval(spotlightSlideInterval);
+
+      spotlightSlideInterval = setInterval(() => {
+        if (!container || container.children.length <= 1) return;
+        const cardWidth = container.children[0].offsetWidth + 16;
+        const maxScroll = container.scrollWidth - container.clientWidth;
+        if (container.scrollLeft >= maxScroll - 10) {
+          container.scrollTo({ left: 0, behavior: 'smooth' });
+        } else {
+          container.scrollBy({ left: cardWidth, behavior: 'smooth' });
+        }
+      }, 4000);
+
+      container.addEventListener('mouseenter', () => clearInterval(spotlightSlideInterval));
+      container.addEventListener('mouseleave', () => initSpotlightAutoSlide());
+    }
+
+    async function fetchSpotlightMatches() {
+      const featContainer = document.getElementById('featContent-matches');
+      if (!featContainer) return;
+      const now = new Date();
+      const todayStr = formatYMD(now);
+      const nextWeek = new Date(); nextWeek.setDate(nextWeek.getDate() + 7);
+      const nextWeekStr = formatYMD(nextWeek);
+      const soccerUrl = `https://apiv2.apifootball.com/?action=get_events&from=${todayStr}&to=${nextWeekStr}&APIkey=${soccerApiKey}`;
+
+      try {
+        const [soccerRes, bballData] = await Promise.all([
+          fetchWithTimeout(soccerUrl, {}, 3500),
+          fetchBasketballData(todayStr)
+        ]);
+        let combined = [];
+        if (Array.isArray(soccerRes)) combined = [...combined, ...soccerRes];
+        if (Array.isArray(bballData)) combined = [...combined, ...bballData];
+
+        const eliteLeagues = [
+          "Premier League", "La Liga", "Serie A", "Bundesliga", "Ligue 1", 
+          "UEFA Champions League", "Champions League", "UEFA Europa League", 
+          "Europa League", "NBA", "EuroLeague"
+        ];
+
+        let spotlightList = combined.filter(m => {
+          if (isMatchFinished(m) || isMatchLive(m)) return false;
+          const lName = (m.league_name || "").toLowerCase();
+          return eliteLeagues.some(el => lName.includes(el.toLowerCase()));
+        });
+
+        spotlightList.sort((a, b) => {
+          const dtA = `${a.match_date || ''} ${a.match_time || '00:00'}`;
+          const dtB = `${b.match_date || ''} ${b.match_time || '00:00'}`;
+          return dtA.localeCompare(dtB);
+        });
+
+        if (spotlightList.length === 0) {
+          spotlightList = combined.filter(f => !isMatchFinished(f) && !isMatchLive(f)).slice(0, 5);
+        }
+
+        if (spotlightList.length > 0) {
+          featContainer.innerHTML = spotlightList.map(f => renderFeaturedCard(f)).join('');
+          initSpotlightAutoSlide();
+        } else {
+          featContainer.innerHTML = `<div class="text-slate-500 text-xs py-4 text-center w-full">No elite matches scheduled right now. Check back soon.</div>`;
+        }
+      } catch (e) {
+        featContainer.innerHTML = `<div class="text-slate-500 text-xs py-4 text-center w-full">Elite spotlights updating...</div>`;
+      }
+    }
+    fetchSpotlightMatches();
+
     window.switchFeatured = function(tab) {
       ['matches', 'tickets', 'news'].forEach(t => {
         const btn = document.getElementById(`featBtn-${t}`);
@@ -599,10 +683,11 @@
       if(type === 'live') {
         dayFilter.value = 'today';
         dayFilter.disabled = true;
+        dayFilter.classList.add('opacity-50');
       } else {
         dayFilter.disabled = false;
+        dayFilter.classList.remove('opacity-50');
       }
-      document.getElementById('resultsFilterBar').classList.toggle('hidden', type !== 'results');
       loadResultsArena();
     };
 
@@ -619,7 +704,7 @@
       try {
         container.innerHTML = `<div class="text-slate-500 text-xs py-8 text-center">Syncing arena stream...</div>`;
         const [soccerRes, bballData] = await Promise.all([
-          (catFilter !== 'Basketball') ? fetch(soccerUrl).then(r => r.json()).catch(() => []) : Promise.resolve([]),
+          (catFilter !== 'Basketball') ? fetchWithTimeout(soccerUrl, {}, 3500) : Promise.resolve([]),
           (catFilter === 'all' || catFilter === 'Basketball') ? fetchBasketballData(to) : Promise.resolve([])
         ]);
 
@@ -633,7 +718,7 @@
         }
 
         globalArenaCache = combined;
-        let filtered = combined.filter(m => type === 'live' ? !isMatchFinished(m) : isMatchFinished(m));
+        let filtered = combined.filter(m => type === 'live' ? isMatchLive(m) : isMatchFinished(m));
         
         if (catFilter !== 'all' && catFilter !== 'Basketball') {
           filtered = filtered.filter(m => m.country_name && m.country_name.includes(catFilter));
@@ -644,18 +729,19 @@
 
         const preview = filtered.slice(0, 4);
         if (preview.length === 0) {
-           container.innerHTML = `<div class="text-slate-500 text-xs py-8 text-center">No matches found for this filter.</div>`;
+           container.innerHTML = `<div class="text-slate-500 text-xs py-8 text-center">No ${type === 'live' ? 'live' : 'finished'} matches found for this filter.</div>`;
            return;
         }
 
         container.innerHTML = preview.map(m => renderArenaCard(m)).join('');
-      } catch (err) {}
+      } catch (err) {
+        container.innerHTML = `<div class="text-slate-500 text-xs py-8 text-center">No active live matches found.</div>`;
+      }
     };
     switchArenaTab('live');
 
     window.fetchApiFootballFixtures = async function() {
       const container = document.getElementById('fixturesListContainer');
-      const featContainer = document.getElementById('featContent-matches');
       container.innerHTML = `<div class="text-slate-500 text-xs py-10 text-center">Syncing List...</div>`;
 
       const horizon = document.getElementById('fixtureHorizon').value;
@@ -668,7 +754,7 @@
 
       try {
         const [soccerRes, bballData] = await Promise.all([
-          (country !== 'Basketball') ? fetch(soccerUrl).then(r => r.json()).catch(()=>[]) : Promise.resolve([]),
+          (country !== 'Basketball') ? fetchWithTimeout(soccerUrl, {}, 4000) : Promise.resolve([]),
           (country === 'all' || country === 'Basketball') ? fetchBasketballData(from) : Promise.resolve([])
         ]);
         
@@ -688,12 +774,11 @@
           upcoming = upcoming.filter(f => f.match_hometeam_name.toLowerCase().includes(search) || f.match_awayteam_name.toLowerCase().includes(search));
         }
 
-        if (upcoming.length > 0 && featContainer) {
-          const elite = upcoming.slice(0, 4);
-          featContainer.innerHTML = elite.map(f => renderFeaturedCard(f)).join('');
-        }
-
-        upcoming.sort((a, b) => (a.match_time || "00:00").localeCompare(b.match_time || "00:00"));
+        upcoming.sort((a, b) => {
+          const dtA = `${a.match_date || ''} ${a.match_time || '00:00'}`;
+          const dtB = `${b.match_date || ''} ${b.match_time || '00:00'}`;
+          return dtA.localeCompare(dtB);
+        });
 
         if (upcoming.length === 0) {
           container.innerHTML = `<div class="text-slate-500 text-xs py-8 text-center">No upcoming fixtures match your criteria.</div>`;
@@ -711,22 +796,125 @@
       const match = JSON.parse(decodeURIComponent(encodedJson));
       const home = match.match_hometeam_name;
       const away = match.match_awayteam_name;
+      const isLive = isMatchLive(match);
+      const isFin = isMatchFinished(match);
       
       document.getElementById('modalTeamTitle').textContent = `${home} vs ${away}`;
       document.getElementById('modalMatchDateTime').textContent = formatFullMatchDateTime(match.match_date, match.match_time);
       
+      const badge = document.getElementById('modalHeaderBadge');
+      if (isLive) {
+        badge.className = "text-[10px] font-black uppercase text-rose-500 bg-rose-500/10 px-2.5 py-0.5 rounded-full border border-rose-500/20 animate-pulse";
+        badge.textContent = `🔴 Live Match Center • ${match.match_status || 'Live'}'`;
+      } else if (isFin) {
+        badge.className = "text-[10px] font-black uppercase text-slate-400 bg-slate-800 px-2.5 py-0.5 rounded-full border border-slate-700";
+        badge.textContent = "🏁 Final Result & Match Stats";
+      } else {
+        badge.className = "text-[10px] font-black uppercase text-emerald-400 bg-emerald-500/10 px-2.5 py-0.5 rounded-full border border-emerald-500/20";
+        badge.textContent = "🤖 Pre-Match AI Telemetry & Matrix";
+      }
+
       const content = document.getElementById('modalStatsContent');
-      content.innerHTML = `<div class="py-10 text-center text-slate-500">Querying live H2H records & computing AI probability telemetry...</div>`;
+      content.innerHTML = `<div class="py-10 text-center text-slate-500">Querying live telemetry & match events...</div>`;
       document.getElementById('statsModal').classList.remove('hidden');
 
+      if (isLive || isFin) {
+        let goalsList = [];
+        if (Array.isArray(match.goalscorer) && match.goalscorer.length > 0) {
+          goalsList = match.goalscorer.map(g => `
+            <div class="flex items-center justify-between bg-slate-950 p-2.5 rounded-xl border border-slate-800 text-xs">
+              <span class="text-emerald-400 font-black">⚽ ${g.time}'</span>
+              <span class="font-bold text-white">${g.home_scorer || g.away_scorer || 'Goal'} ${g.home_assist || g.away_assist ? `<span class="text-slate-500 text-[10px]">(Assist: ${g.home_assist || g.away_assist})</span>` : ''}</span>
+              <span class="bg-slate-900 px-2 py-0.5 rounded text-emerald-400 font-black text-xs">${g.score}</span>
+            </div>
+          `).join('');
+        } else {
+          goalsList = `<div class="text-slate-500 text-xs italic py-1">No goals recorded yet.</div>`;
+        }
+
+        let cardsList = [];
+        if (Array.isArray(match.cards) && match.cards.length > 0) {
+          cardsList = match.cards.map(c => `
+            <div class="flex items-center justify-between bg-slate-950 p-2 rounded-xl border border-slate-800 text-xs">
+              <span class="text-slate-400 font-bold">⏱️ ${c.time}'</span>
+              <span class="font-semibold text-slate-200">${c.home_fault || c.away_fault || 'Booking'}</span>
+              <span class="text-[10px] font-black uppercase px-2 py-0.5 rounded ${c.card && c.card.toLowerCase().includes('red') ? 'bg-rose-500/20 text-rose-400' : 'bg-amber-500/20 text-amber-400'}">${c.card || 'Card'}</span>
+            </div>
+          `).join('');
+        } else {
+          cardsList = `<div class="text-slate-500 text-xs italic py-1">No bookings recorded.</div>`;
+        }
+
+        let statsHtml = '';
+        if (Array.isArray(match.statistics) && match.statistics.length > 0) {
+          statsHtml = match.statistics.map(s => {
+            const hVal = parseInt(s.home) || 0;
+            const aVal = parseInt(s.away) || 0;
+            const total = (hVal + aVal) || 1;
+            const hPct = Math.round((hVal / total) * 100);
+
+            return `
+              <div class="space-y-1">
+                <div class="flex justify-between text-[11px] font-bold text-slate-300">
+                  <span class="text-emerald-400">${s.home}</span>
+                  <span class="uppercase text-[9px] text-slate-500">${s.type}</span>
+                  <span class="text-cyan-400">${s.away}</span>
+                </div>
+                <div class="w-full h-1.5 bg-slate-950 rounded-full overflow-hidden flex">
+                  <div style="width: ${hPct}%" class="bg-emerald-400 h-full"></div>
+                  <div style="width: ${100 - hPct}%" class="bg-cyan-400 h-full"></div>
+                </div>
+              </div>
+            `;
+          }).join('');
+        }
+
+        content.innerHTML = `
+          <div class="space-y-4">
+            <div class="bg-slate-950 border border-slate-800 p-4 rounded-2xl flex justify-between items-center text-center">
+              <div class="w-1/3 flex flex-col items-center">
+                <img src="${match.team_home_badge}" class="w-10 h-10 object-contain mb-1" onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(home)}&background=random&color=fff'">
+                <span class="font-bold text-xs text-white truncate max-w-[100px]">${home}</span>
+              </div>
+              <div class="w-1/3 flex flex-col items-center">
+                <span class="text-3xl font-black text-white tracking-wider">${match.match_hometeam_score || 0} - ${match.match_awayteam_score || 0}</span>
+                <span class="text-[10px] font-bold text-rose-500 uppercase mt-1">${match.match_status || 'In-Play'}</span>
+              </div>
+              <div class="w-1/3 flex flex-col items-center">
+                <img src="${match.team_away_badge}" class="w-10 h-10 object-contain mb-1" onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(away)}&background=random&color=fff'">
+                <span class="font-bold text-xs text-white truncate max-w-[100px]">${away}</span>
+              </div>
+            </div>
+
+            <div class="space-y-2">
+              <span class="text-[10px] font-black uppercase text-emerald-400 tracking-wider">⚽ Goalscorers & Key Events</span>
+              <div class="space-y-1.5">${goalsList}</div>
+            </div>
+
+            <div class="space-y-2">
+              <span class="text-[10px] font-black uppercase text-amber-400 tracking-wider">🟨 🟥 Disciplinary & Bookings</span>
+              <div class="space-y-1.5">${cardsList}</div>
+            </div>
+
+            ${statsHtml ? `
+              <div class="bg-slate-950 p-4 rounded-2xl border border-slate-800 space-y-3">
+                <span class="text-[10px] font-black uppercase text-slate-400 tracking-wider block mb-1">📊 Live Match Statistics</span>
+                ${statsHtml}
+              </div>
+            ` : ''}
+          </div>
+        `;
+        return;
+      }
+
+      // Pre-Match AI Matrix
       let h2hHtml = `<div class="text-slate-500 italic py-2">No previous head-to-head records found.</div>`;
       let totalH2HMatches = 0, hWins = 0, aWins = 0, draws = 0, totalGoals = 0, over15Count = 0, bttsCount = 0;
 
       if (match.country_name !== "Basketball") {
         try {
           const h2hUrl = `https://apiv2.apifootball.com/?action=get_H2H&firstTeam=${encodeURIComponent(home)}&secondTeam=${encodeURIComponent(away)}&APIkey=${soccerApiKey}`;
-          const res = await fetch(h2hUrl);
-          const h2hData = await res.json();
+          const h2hData = await fetchWithTimeout(h2hUrl, {}, 3000);
 
           if (h2hData && Array.isArray(h2hData.firstTeam_VS_secondTeam) && h2hData.firstTeam_VS_secondTeam.length > 0) {
             const encounters = h2hData.firstTeam_VS_secondTeam;
@@ -788,7 +976,7 @@
 
       if (type === 'arena') {
         const isLiveMode = document.getElementById('arenaLiveBtn').classList.contains('bg-emerald-400');
-        let filtered = globalArenaCache.filter(m => isLiveMode ? !isMatchFinished(m) : isMatchFinished(m));
+        let filtered = globalArenaCache.filter(m => isLiveMode ? isMatchLive(m) : isMatchFinished(m));
         content.innerHTML = filtered.length ? filtered.map(m => renderArenaCard(m)).join('') : `<div class="text-slate-500 text-xs py-10 text-center col-span-full">No records found.</div>`;
       } else {
         loadSeeAllFixtures();
@@ -807,7 +995,7 @@
       try {
         const soccerUrl = `https://apiv2.apifootball.com/?action=get_events&from=${from}&to=${to}&APIkey=${soccerApiKey}`;
         const [soccerRes, bballData] = await Promise.all([
-          (country !== 'Basketball') ? fetch(soccerUrl).then(r => r.json()).catch(()=>[]) : Promise.resolve([]),
+          (country !== 'Basketball') ? fetchWithTimeout(soccerUrl, {}, 3500) : Promise.resolve([]),
           (country === 'all' || country === 'Basketball') ? fetchBasketballData(from) : Promise.resolve([])
         ]);
         let combined = [];
@@ -819,7 +1007,11 @@
         if (league !== 'all') upcoming = upcoming.filter(f => f.league_name && f.league_name.includes(league.toLowerCase()));
         if (search) upcoming = upcoming.filter(f => f.match_hometeam_name.toLowerCase().includes(search) || f.match_awayteam_name.toLowerCase().includes(search));
 
-        upcoming.sort((a, b) => (a.match_time || "00:00").localeCompare(b.match_time || "00:00"));
+        upcoming.sort((a, b) => {
+          const dtA = `${a.match_date || ''} ${a.match_time || '00:00'}`;
+          const dtB = `${b.match_date || ''} ${b.match_time || '00:00'}`;
+          return dtA.localeCompare(dtB);
+        });
         content.innerHTML = upcoming.length ? upcoming.map(f => renderFeaturedCard(f)).join('') : `<div class="text-slate-500 text-xs py-10 text-center col-span-full">No matches found.</div>`;
       } catch (e) {
          content.innerHTML = `<div class="text-rose-400 text-xs py-10 text-center col-span-full">Failed to fetch data.</div>`;
@@ -828,50 +1020,168 @@
 
     window.switchMainTab = function(tab) {
       document.getElementById('viewFixtures').style.display = tab === 'fixtures' ? 'flex' : 'none';
-      document.getElementById('viewTickets').style.display = tab === 'tickets' ? 'block' : 'none';
+      document.getElementById('fixturesFilterBlock').style.display = tab === 'fixtures' ? 'flex' : 'none';
+      document.getElementById('viewTickets').style.display = tab === 'tickets' ? 'flex' : 'none';
+      
       document.getElementById('mainTabFixtures').className = tab === 'fixtures' ? 'flex-1 py-3 text-[10px] font-black uppercase tracking-widest text-emerald-400 border-b border-emerald-400 transition' : 'flex-1 py-3 text-[10px] font-black uppercase tracking-widest text-slate-500 hover:text-slate-300 transition';
       document.getElementById('mainTabTickets').className = tab === 'tickets' ? 'flex-1 py-3 text-[10px] font-black uppercase tracking-widest text-emerald-400 border-b border-emerald-400 transition' : 'flex-1 py-3 text-[10px] font-black uppercase tracking-widest text-slate-500 hover:text-slate-300 transition';
     };
 
-    window.filterTickets = function(cat) {
+    window.switchTicketMode = function(mode) {
+      document.getElementById('activeTicketsWrapper').style.display = mode === 'active' ? 'block' : 'none';
+      document.getElementById('outcomesTicketsWrapper').style.display = mode === 'outcomes' ? 'block' : 'none';
+
+      document.getElementById('ticketModeActive').className = mode === 'active' ? 'flex-1 py-2 text-[10px] font-black uppercase tracking-widest text-emerald-400 bg-emerald-500/10 transition' : 'flex-1 py-2 text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-slate-200 transition';
+      document.getElementById('ticketModeOutcomes').className = mode === 'outcomes' ? 'flex-1 py-2 text-[10px] font-black uppercase tracking-widest text-emerald-400 bg-emerald-500/10 transition' : 'flex-1 py-2 text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-slate-200 transition';
+      
+      if(mode === 'outcomes') {
+        renderTicketOutcomes();
+      }
+    };
+
+    window.filterActiveTickets = function(cat) {
       document.querySelectorAll('.filter-btn').forEach(b => {
         b.classList.remove('active', 'bg-emerald-400', 'text-slate-950');
         b.classList.add('bg-slate-900', 'text-slate-300');
       });
       event.target.classList.add('active', 'bg-emerald-400', 'text-slate-950');
       event.target.classList.remove('bg-slate-900', 'text-slate-300');
-      renderTickets(cat === 'all' ? allTickets : allTickets.filter(t => t.category === cat));
+      
+      let pendingTickets = allTickets.filter(t => t.status === 'pending');
+      renderActiveTickets(cat === 'all' ? pendingTickets : pendingTickets.filter(t => t.category === cat));
     };
 
-    let allTickets = [];
-    function renderTickets(tickets) {
-      const container = document.getElementById("ticketsContainer");
+    function renderActiveTickets(tickets) {
+      const container = document.getElementById("activeTicketsGrid");
       if (!container) return;
       if (tickets.length === 0) {
-        container.innerHTML = `<div class="text-slate-500 col-span-full text-center py-12">No active tickets available for this filter.</div>`;
+        container.innerHTML = `<div class="text-slate-500 col-span-full text-center py-12">No active pending tickets available for this filter.</div>`;
         return;
       }
-      container.innerHTML = tickets.map(t => `
-        <div class="bg-slate-900 border border-slate-800 rounded-3xl p-6 shadow-2xl flex flex-col justify-between">
+      container.innerHTML = tickets.map(t => {
+        const matchesPreview = t.matches ? t.matches.slice(0, 3).map(m => {
+           const formattedDT = formatToWAT(m.match_date, m.match_time);
+           return `<div class="flex flex-col text-[10px] text-slate-300 mb-1 border-b border-slate-800/50 pb-1 last:border-0 last:pb-0"><div class="flex justify-between font-bold text-slate-200"><span class="truncate pr-2">⚽ ${m.name}</span><span class="text-emerald-400">${m.pick}</span></div><span class="text-[9px] text-slate-500">📅 ${formattedDT}</span></div>`;
+        }).join('') : '';
+        const extraCount = t.matches && t.matches.length > 3 ? `<div class="text-[9px] text-slate-500 mt-1 font-bold">+${t.matches.length - 3} more matches...</div>` : '';
+
+        return `
+        <div onclick="openTicketModal('${t.id}')" class="bg-slate-900 border border-slate-800 rounded-3xl p-5 shadow-2xl flex flex-col justify-between cursor-pointer hover:border-emerald-500/50 transition">
           <div>
-            <div class="flex justify-between items-start mb-4">
-              <div><span class="text-[10px] font-black uppercase text-emerald-400 bg-emerald-500/10 px-2.5 py-1 rounded-md border border-emerald-500/20">${t.category}</span><h3 class="text-base font-black text-white mt-2">${t.title}</h3></div>
-              <div class="text-right"><div class="text-2xl font-black text-emerald-400">${t.totalOdds}</div><span class="text-[10px] text-slate-400 font-bold uppercase">Total Odds</span></div>
+            <div class="flex justify-between items-start mb-3">
+              <div><span class="text-[9px] font-black uppercase text-emerald-400 bg-emerald-500/10 px-2.5 py-1 rounded-md border border-emerald-500/20">${t.category}</span><h3 class="text-sm font-black text-white mt-2">${t.title}</h3></div>
+              <div class="text-right"><div class="text-xl font-black text-emerald-400">${t.totalOdds}</div><span class="text-[9px] text-slate-400 font-bold uppercase">Odds</span></div>
             </div>
-            <div class="space-y-2.5 mb-4">
-              ${t.matches ? t.matches.map(m => `
-                <div class="bg-slate-950 p-3 rounded-2xl border border-slate-800 text-xs">
-                  <div class="flex justify-between font-bold text-slate-200"><span>⚽ ${m.name}</span><span class="text-emerald-400 font-black">@${m.odds}</span></div>
-                  <div class="flex justify-between items-center mt-1"><span class="text-slate-400 font-semibold">Pick: <strong class="text-white">${m.pick}</strong></span></div>
-                </div>`).join('') : ''}
+            <div class="bg-slate-950 p-2.5 rounded-2xl border border-slate-800 space-y-1 mb-3">
+              ${matchesPreview}
+              ${extraCount}
             </div>
           </div>
-          <div class="flex justify-between items-center border-t border-slate-800 pt-4 text-xs font-black uppercase text-amber-400">
-            <span>Status: <strong class="${t.status==='won'?'text-emerald-400':t.status==='lost'?'text-rose-400':'text-amber-400'}">${t.status}</strong></span>
+          <div class="flex justify-between items-center border-t border-slate-800 pt-3 text-xs font-black uppercase text-amber-400">
+            <span>Status: <strong class="text-amber-400">${t.status}</strong></span>
+            <span class="text-[9px] text-emerald-400 underline">Tap to View Slip</span>
           </div>
         </div>
-      `).join('');
+      `}).join('');
     }
+
+    window.renderTicketOutcomes = function() {
+      const container = document.getElementById("outcomesTicketsGrid");
+      const dayFilter = document.getElementById("outcomeDayFilter").value;
+      const statusFilter = document.getElementById("outcomeStatusFilter").value;
+      
+      let concluded = allTickets.filter(t => t.status === 'won' || t.status === 'lost');
+      
+      if(statusFilter !== 'all') {
+        concluded = concluded.filter(t => t.status === statusFilter);
+      }
+      
+      if(dayFilter !== 'all') {
+        const nowMs = Date.now();
+        concluded = concluded.filter(t => {
+           const tMs = t.createdAt?.toMillis() || 0;
+           const diff = nowMs - tMs;
+           if(dayFilter === '24h') return diff <= 86400000;
+           if(dayFilter === '7d') return diff <= 86400000 * 7;
+           if(dayFilter === '30d') return diff <= 86400000 * 30;
+           return true;
+        });
+      }
+
+      if (concluded.length === 0) {
+        container.innerHTML = `<div class="text-slate-500 col-span-full text-center py-12">No settled tickets found for these filters.</div>`;
+        return;
+      }
+
+      container.innerHTML = concluded.map(t => {
+        const d = new Date(t.createdAt?.toMillis() || Date.now());
+        const createdStr = d.toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' });
+        
+        return `
+        <div onclick="openTicketModal('${t.id}')" class="bg-slate-900 border border-slate-800 rounded-3xl p-5 shadow-2xl flex flex-col justify-between cursor-pointer hover:border-slate-600 transition">
+          <div>
+            <div class="flex justify-between items-start mb-3">
+              <div>
+                <span class="text-[9px] font-black uppercase text-emerald-400 bg-emerald-500/10 px-2.5 py-1 rounded-md border border-emerald-500/20">${t.category}</span>
+                <h3 class="text-sm font-black text-slate-300 mt-2 line-clamp-1">${t.title}</h3>
+                <span class="text-[9px] text-slate-500 font-bold mt-1 block">Created: ${createdStr}</span>
+              </div>
+              <div class="text-right"><div class="text-xl font-black text-slate-400">${t.totalOdds}</div><span class="text-[9px] text-slate-500 font-bold uppercase">Odds</span></div>
+            </div>
+            <div class="bg-slate-950 p-2.5 rounded-2xl border border-slate-800 space-y-1 mb-3">
+              <div class="text-[10px] text-slate-400 font-bold">${t.matches ? t.matches.length : 0} Matches Evaluated</div>
+            </div>
+          </div>
+          <div class="flex justify-between items-center border-t border-slate-800 pt-3 text-xs font-black uppercase">
+            <span>Result: <strong class="${t.status==='won'?'text-emerald-400':'text-rose-400'}">${t.status}</strong></span>
+            <span class="text-[9px] text-slate-400 underline">Tap to View Slip</span>
+          </div>
+        </div>
+      `}).join('');
+    };
+
+    window.openTicketModal = function(id) {
+      const t = allTickets.find(x => x.id === id);
+      if(!t) return;
+      
+      const content = document.getElementById('ticketModalContent');
+      content.innerHTML = `
+        <div class="bg-slate-900 border border-slate-800 rounded-3xl p-6 shadow-2xl flex flex-col">
+          <div class="flex justify-between items-start mb-4 border-b border-slate-800 pb-4">
+            <div>
+              <span class="text-[10px] font-black uppercase text-emerald-400 bg-emerald-500/10 px-2.5 py-1 rounded-md border border-emerald-500/20">${t.category}</span>
+              <h3 class="text-lg font-black text-white mt-2">${t.title}</h3>
+            </div>
+            <div class="text-right">
+              <div class="text-2xl font-black text-emerald-400">${t.totalOdds}</div>
+              <span class="text-[10px] text-slate-400 font-bold uppercase">Total Odds</span>
+            </div>
+          </div>
+          <div class="space-y-3 mb-6">
+            ${t.matches ? t.matches.map(m => {
+              const formattedDT = formatToWAT(m.match_date, m.match_time);
+              return `
+              <div class="bg-slate-950 p-3 rounded-2xl border border-slate-800 text-sm">
+                <div class="flex justify-between font-bold text-slate-200 mb-1">
+                  <div class="flex flex-col">
+                     <span class="truncate">⚽ ${m.name}</span>
+                     <span class="text-[9px] text-slate-500 mt-0.5">📅 ${formattedDT}</span>
+                  </div>
+                  <span class="text-emerald-400 font-black">@${m.odds}</span>
+                </div>
+                <div class="flex justify-between items-center mt-2 pt-2 border-t border-slate-800/50">
+                  <span class="text-slate-400 font-semibold text-xs">Prediction: <strong class="text-white">${m.pick}</strong></span>
+                </div>
+              </div>`
+            }).join('') : ''}
+          </div>
+          <div class="text-center font-black uppercase text-sm border-t border-slate-800 pt-4 ${t.status==='won'?'text-emerald-400':t.status==='lost'?'text-rose-400':'text-amber-400'}">
+            Ticket Status: ${t.status}
+          </div>
+        </div>
+      `;
+      document.getElementById('ticketModal').classList.remove('hidden');
+    };
 
     async function loadPublicTickets() {
       try {
@@ -882,20 +1192,36 @@
         });
         allTickets.sort((a, b) => (b.createdAt?.toMillis() || 0) - (a.createdAt?.toMillis() || 0));
 
+        const pendingTickets = allTickets.filter(t => t.status === 'pending');
+
         const fCont = document.getElementById("featContent-tickets");
-        if (allTickets.length > 0 && fCont) {
-          fCont.innerHTML = allTickets.map(t => `
-            <div class="min-w-[260px] bg-slate-900 border border-slate-800 p-4 rounded-xl shadow-xl flex flex-col justify-between snap-start">
+        if (pendingTickets.length > 0 && fCont) {
+          fCont.innerHTML = pendingTickets.map(t => {
+            const matchesPreview = t.matches ? t.matches.slice(0, 3).map(m => `<div class="text-[10px] text-slate-300 truncate">⚽ ${m.name} <span class="text-emerald-400 font-bold">(${m.pick})</span></div>`).join('') : '';
+            const extraCount = t.matches && t.matches.length > 3 ? `<div class="text-[9px] text-slate-500 mt-1">+${t.matches.length - 3} more...</div>` : '';
+            
+            return `
+            <div onclick="openTicketModal('${t.id}')" class="min-w-[280px] bg-slate-900 border border-slate-800 p-4 rounded-xl shadow-xl flex flex-col justify-between snap-start cursor-pointer hover:border-emerald-500/50 transition">
               <div class="flex justify-between items-start mb-2 border-b border-slate-800 pb-2">
                 <span class="text-[9px] font-black uppercase text-emerald-400">${t.category}</span>
                 <span class="text-sm font-black text-emerald-400">${t.totalOdds} Odds</span>
               </div>
               <h3 class="text-xs font-bold text-white mb-2 truncate">${t.title}</h3>
-              <span class="text-[9px] font-bold uppercase ${t.status==='won'?'text-emerald-400':t.status==='lost'?'text-rose-400':'text-amber-400'}">${t.status}</span>
+              <div class="bg-slate-950 p-2 rounded-lg mb-2 border border-slate-800 space-y-1">
+                 ${matchesPreview}
+                 ${extraCount}
+              </div>
+              <div class="flex justify-between items-center mt-auto pt-2">
+                <span class="text-[9px] font-bold uppercase text-amber-400">${t.status}</span>
+                <span class="text-[9px] text-emerald-400 underline">Tap to view</span>
+              </div>
             </div>
-          `).join('');
+          `}).join('');
+        } else if(fCont) {
+           fCont.innerHTML = `<div class="text-slate-500 text-xs py-4 text-center w-full">No active VIP tickets currently available.</div>`;
         }
-        renderTickets(allTickets);
+
+        filterActiveTickets('all');
       } catch (e) {
         console.error("Error loading tickets:", e);
       }
