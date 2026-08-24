@@ -47,7 +47,7 @@
     <!-- TAB 1: TICKETS & SETTLEMENTS -->
     <div id="adminViewTickets" class="space-y-8">
       
-      <!-- AI ACCUMULATOR BUILDER WITH LEAGUE FILTER -->
+      <!-- AI ACCUMULATOR BUILDER -->
       <div class="bg-gradient-to-r from-slate-900 to-emerald-950/40 border border-emerald-500/30 p-6 rounded-3xl shadow-2xl space-y-4">
         <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
           <div>
@@ -57,21 +57,35 @@
           </div>
           
           <div class="flex flex-wrap gap-2 items-center w-full lg:w-auto">
-            <select id="aiHorizon" class="bg-slate-950 border border-slate-700 text-xs rounded-xl px-3 py-2 text-emerald-400 font-bold outline-none" onchange="updateAIGeneratorLeagues()">
+            <select id="aiHorizon" class="bg-slate-950 border border-slate-700 text-xs rounded-xl px-3 py-2 text-emerald-400 font-bold outline-none" onchange="filterAIGeneratorPool()">
               <option value="today">Today Only</option>
               <option value="tomorrow">Tomorrow Only</option>
               <option value="week">Next 7 Days</option>
-              <option value="month1">Next 1 Month</option>
+              <option value="month1">Next 15 Days</option>
             </select>
 
-            <select id="aiCategory" class="bg-slate-950 border border-slate-700 text-xs rounded-xl px-3 py-2 text-white font-bold outline-none" onchange="updateAIGeneratorLeagues()">
+            <select id="aiCategory" class="bg-slate-950 border border-slate-700 text-xs rounded-xl px-3 py-2 text-white font-bold outline-none" onchange="filterAIGeneratorPool()">
               <option value="all">🌍 All Sports</option>
               <option value="Football">Soccer Only</option>
               <option value="Basketball">Basketball Only</option>
               <option value="Tennis">Tennis Only</option>
+              <option value="Table Tennis">Table Tennis Only</option>
             </select>
 
-            <!-- Dynamic AI League Filter Dropdown -->
+            <select id="aiCountry" class="bg-slate-950 border border-slate-700 text-xs rounded-xl px-3 py-2 text-white font-bold outline-none" onchange="filterAIGeneratorPool()">
+              <option value="all">🌍 All Locations</option>
+              <option value="England">🏴󠁧󠁢󠁥󠁮󠁧󠁿 England</option>
+              <option value="Spain">🇪🇸 Spain</option>
+              <option value="Italy">🇮🇹 Italy</option>
+              <option value="Germany">🇩🇪 Germany</option>
+              <option value="France">🇫🇷 France</option>
+              <option value="USA">🇺🇸 USA (MLS)</option>
+              <option value="Americas">🌎 Americas</option>
+              <option value="Basketball">🏀 Basketball</option>
+              <option value="Tennis">🎾 Tennis</option>
+              <option value="Table Tennis">🏓 Table Tennis</option>
+            </select>
+
             <select id="aiLeague" class="bg-slate-950 border border-slate-700 text-xs rounded-xl px-3 py-2 text-emerald-400 font-bold outline-none max-w-[150px]">
               <option value="all">All Leagues</option>
             </select>
@@ -93,7 +107,7 @@
           </div>
         </div>
 
-        <div id="aiStrategyOutput" class="text-xs text-slate-400 italic">Select your target horizon and odds amount, then click generate.</div>
+        <div id="aiStrategyOutput" class="text-xs text-slate-400 italic">Select your target horizon, location and odds amount, then click generate.</div>
       </div>
 
       <!-- BUILD & PUBLISH TICKET + SETTLEMENT MANAGER -->
@@ -118,7 +132,7 @@
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
               <div>
                 <label class="block text-[10px] font-bold text-slate-400 mb-1">Day / Horizon</label>
-                <select id="builderHorizon" class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-xs text-emerald-400 font-bold outline-none" onchange="filterBuilderFixtures()">
+                <select id="builderHorizon" class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-xs text-emerald-400 font-bold outline-none" onchange="onBuilderFiltersChange()">
                   <option value="today">Today</option>
                   <option value="tomorrow">Tomorrow</option>
                   <option value="monday">Monday</option>
@@ -129,18 +143,20 @@
                   <option value="saturday">Saturday</option>
                   <option value="sunday">Sunday</option>
                   <option value="week">1 Week</option>
+                  <option value="month1">15 Days Max</option>
                 </select>
               </div>
 
               <div>
-                <label class="block text-[10px] font-bold text-slate-400 mb-1">Country / Sport</label>
-                <select id="builderCountry" class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-xs text-white font-bold outline-none" onchange="filterBuilderFixtures()">
+                <label class="block text-[10px] font-bold text-slate-400 mb-1">Location / Country</label>
+                <select id="builderCountry" class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-xs text-white font-bold outline-none" onchange="onBuilderFiltersChange()">
                   <option value="all">🌍 All Locations</option>
                   <option value="England">🏴󠁧󠁢󠁥󠁮󠁧󠁿 England</option>
                   <option value="Spain">🇪🇸 Spain</option>
                   <option value="Italy">🇮🇹 Italy</option>
                   <option value="Germany">🇩🇪 Germany</option>
                   <option value="France">🇫🇷 France</option>
+                  <option value="USA">🇺🇸 USA / MLS</option>
                   <option value="Americas">🌎 Americas</option>
                   <option value="World">🏆 International</option>
                   <option value="Basketball">🏀 Basketball</option>
@@ -150,8 +166,8 @@
               </div>
 
               <div>
-                <label class="block text-[10px] font-bold text-slate-400 mb-1">League Category</label>
-                <select id="builderLeague" class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-xs text-white font-bold outline-none" onchange="filterBuilderFixtures()">
+                <label class="block text-[10px] font-bold text-slate-400 mb-1">League / Category</label>
+                <select id="builderLeague" class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-xs text-white font-bold outline-none" onchange="applyBuilderStrictFilter()">
                   <option value="all">All Leagues</option>
                 </select>
               </div>
@@ -257,6 +273,14 @@
     const allScoresApiKey = "afc868327bmsh38c47b6bc124e98p165ea1jsn015c0d841dd3";
 
     let rawAdminFixturesPool = [];
+    let currentBuilderFilteredPool = [];
+
+    window.getLocalYYYYMMDD = function(dateObj) {
+      const year = dateObj.getFullYear();
+      const month = String(dateObj.getMonth() + 1).padStart(2, '0');
+      const day = String(dateObj.getDate()).padStart(2, '0');
+      return `${year}-${month}-${day}`;
+    };
 
     async function fetchWithTimeout(url, options = {}, timeout = 5500) {
       const controller = new AbortController();
@@ -303,11 +327,11 @@
 
     function resolveDateRange(horizonKey) {
       const now = new Date();
-      const todayStr = now.toISOString().split('T')[0];
+      const todayStr = window.getLocalYYYYMMDD(now);
       if (horizonKey === 'today' || !horizonKey) return { from: todayStr, to: todayStr };
       if (horizonKey === 'tomorrow') {
         const d = new Date(); d.setDate(d.getDate() + 1);
-        const s = d.toISOString().split('T')[0]; return { from: s, to: s };
+        return { from: window.getLocalYYYYMMDD(d), to: window.getLocalYYYYMMDD(d) };
       }
       const dayNames = ["sunday", "monday", "tuesday", "wednesday", "thursday", "friday", "saturday"];
       if (dayNames.includes(horizonKey.toLowerCase())) {
@@ -316,13 +340,15 @@
         let daysUntil = (targetDayIdx - currentDayIdx + 7) % 7;
         if (daysUntil === 0) daysUntil = 7; 
         const d = new Date(); d.setDate(d.getDate() + daysUntil);
-        const s = d.toISOString().split('T')[0]; return { from: s, to: s };
+        return { from: window.getLocalYYYYMMDD(d), to: window.getLocalYYYYMMDD(d) };
       }
       if (horizonKey === 'week') {
-        const d = new Date(); d.setDate(d.getDate() + 7); return { from: todayStr, to: d.toISOString().split('T')[0] };
+        const d = new Date(); d.setDate(d.getDate() + 6);
+        return { from: todayStr, to: window.getLocalYYYYMMDD(d) };
       }
       if (horizonKey === 'month1') {
-        const d = new Date(); d.setDate(d.getDate() + 15); return { from: todayStr, to: d.toISOString().split('T')[0] };
+        const d = new Date(); d.setDate(d.getDate() + 14); 
+        return { from: todayStr, to: window.getLocalYYYYMMDD(d) };
       }
       return { from: todayStr, to: todayStr };
     }
@@ -410,61 +436,109 @@
           ttData.forEach(t => rawAdminFixturesPool.push(t));
         }
 
-        updateAIGeneratorLeagues();
-        filterBuilderFixtures();
+        filterAIGeneratorPool();
+        onBuilderFiltersChange();
       } catch (err) {
         console.error("Error fetching fixtures:", err);
       }
     }
 
-    window.updateAIGeneratorLeagues = async function() {
-      const horizon = document.getElementById('aiHorizon').value;
+    // FILTER AI GENERATOR LEAGUES DYNAMICALLY
+    window.filterAIGeneratorPool = function() {
       const category = document.getElementById('aiCategory').value;
+      const country = document.getElementById('aiCountry').value;
       
       let pool = [...rawAdminFixturesPool];
       if (category === "Football") pool = pool.filter(f => f.country !== "Basketball" && f.country !== "Tennis" && f.country !== "Table Tennis");
       if (category === "Basketball") pool = pool.filter(f => f.country === "Basketball");
       if (category === "Tennis") pool = pool.filter(f => f.country === "Tennis");
+      if (category === "Table Tennis") pool = pool.filter(f => f.country === "Table Tennis");
+
+      if (country !== 'all') {
+        pool = pool.filter(f => {
+           const cName = (f.country || "").toLowerCase();
+           const lName = (f.league || "").toLowerCase();
+           const searchKey = country.toLowerCase();
+           if (searchKey === 'usa') return cName.includes('usa') || lName.includes('mls');
+           if (searchKey === 'americas') return cName.includes('mexico') || cName.includes('americas') || lName.includes('copa') || lName.includes('liga mx');
+           return cName.includes(searchKey) || lName.includes(searchKey);
+        });
+      }
 
       const uniqueLeagues = [...new Set(pool.map(m => m.league))].filter(Boolean).sort();
       const aiLeagueSelect = document.getElementById('aiLeague');
       const selected = aiLeagueSelect.value;
-      aiLeagueSelect.innerHTML = `<option value="all">All Leagues</option>` + uniqueLeagues.map(l => `<option value="${l}" ${l === selected ? 'selected' : ''}>${l}</option>`).join('');
+      aiLeagueSelect.innerHTML = `<option value="all">All Leagues (${uniqueLeagues.length})</option>` + uniqueLeagues.map(l => `<option value="${l}" ${l === selected ? 'selected' : ''}>${l}</option>`).join('');
     };
 
-    window.filterBuilderFixtures = async function() {
+    // STRICT CASCADING FOR BUILD VIP PREDICTION TICKET
+    window.onBuilderFiltersChange = async function() {
       const horizon = document.getElementById('builderHorizon').value;
       const country = document.getElementById('builderCountry').value;
       
+      await fetchAdminFixtures(horizon);
+
+      let pool = [...rawAdminFixturesPool];
+
+      if (country !== 'all') {
+        pool = pool.filter(f => {
+           const cName = (f.country || "").toLowerCase();
+           const lName = (f.league || "").toLowerCase();
+           const searchKey = country.toLowerCase();
+           if (searchKey === 'usa') return cName.includes('usa') || lName.includes('mls');
+           if (searchKey === 'americas') return cName.includes('mexico') || cName.includes('americas') || lName.includes('copa') || lName.includes('liga mx');
+           return cName.includes(searchKey) || lName.includes(searchKey);
+        });
+      }
+
+      const uniqueLeagues = [...new Set(pool.map(m => m.league))].filter(Boolean).sort();
+      const leagueSelect = document.getElementById('builderLeague');
+      const selectedLeague = leagueSelect.value;
+      leagueSelect.innerHTML = `<option value="all">All Leagues (${uniqueLeagues.length})</option>` + uniqueLeagues.map(l => `<option value="${l}" ${l === selectedLeague ? 'selected' : ''}>${l}</option>`).join('');
+
+      applyBuilderStrictFilter();
+    };
+
+    window.applyBuilderStrictFilter = function() {
+      const country = document.getElementById('builderCountry').value;
+      const activeLeague = document.getElementById('builderLeague').value;
+
       let filtered = [...rawAdminFixturesPool];
 
       if (country !== 'all') {
-        filtered = filtered.filter(f => f.country && f.country.toLowerCase().includes(country.toLowerCase()));
+        filtered = filtered.filter(f => {
+           const cName = (f.country || "").toLowerCase();
+           const lName = (f.league || "").toLowerCase();
+           const searchKey = country.toLowerCase();
+           if (searchKey === 'usa') return cName.includes('usa') || lName.includes('mls');
+           if (searchKey === 'americas') return cName.includes('mexico') || cName.includes('americas') || lName.includes('copa') || lName.includes('liga mx');
+           return cName.includes(searchKey) || lName.includes(searchKey);
+        });
       }
-
-      const uniqueLeagues = [...new Set(filtered.map(m => m.league))].filter(Boolean).sort();
-      const leagueSelect = document.getElementById('builderLeague');
-      const selectedLeague = leagueSelect.value;
-      leagueSelect.innerHTML = `<option value="all">All Leagues</option>` + uniqueLeagues.map(l => `<option value="${l}" ${l === selectedLeague ? 'selected' : ''}>${l}</option>`).join('');
-
-      const activeLeague = leagueSelect.value;
       if (activeLeague !== 'all') {
         filtered = filtered.filter(f => f.league && f.league.toLowerCase().includes(activeLeague.toLowerCase()));
       }
 
+      currentBuilderFilteredPool = filtered;
+
       document.querySelectorAll(".match-row select.match-select").forEach(sel => {
         const currentVal = sel.value;
-        sel.innerHTML = `<option value="">-- Select from filtered match stream --</option>` + filtered.map(f => {
-          const title = `${f.home} vs ${f.away}`;
-          return `<option value="${title}" data-league="${f.league || ''}" data-date="${f.match_date || ''}" data-time="${f.match_time || ''}" ${currentVal.includes(f.home) ? 'selected' : ''}>${title} (${f.league})</option>`;
-        }).join('');
+        if (filtered.length === 0) {
+          sel.innerHTML = `<option value="">-- No matches in this location/league --</option>`;
+        } else {
+          sel.innerHTML = `<option value="">-- Select match (${filtered.length} available) --</option>` + filtered.map(f => {
+            const title = `${f.home} vs ${f.away}`;
+            return `<option value="${title}" data-league="${f.league || ''}" data-date="${f.match_date || ''}" data-time="${f.match_time || ''}" ${currentVal.includes(f.home) ? 'selected' : ''}>${title} (${f.league})</option>`;
+          }).join('');
+        }
       });
     };
 
-    // DIVERSIFIED AI ENGINE (DOUBLE CHANCE, CEILINGS, TEAM OVER)
+    // TARGET ODDS ACCUMULATOR AI GENERATOR
     window.runAIEngine = async function() {
       const horizon = document.getElementById("aiHorizon").value;
       const category = document.getElementById("aiCategory").value;
+      const country = document.getElementById("aiCountry").value;
       const leagueChoice = document.getElementById("aiLeague").value;
       const targetOdds = parseFloat(document.getElementById("aiTargetOdds").value) || 5.0;
       const maxMatches = parseInt(document.getElementById("aiMaxMatches").value) || 5;
@@ -478,20 +552,31 @@
       if (category === "Football") pool = pool.filter(f => f.country !== "Basketball" && f.country !== "Tennis" && f.country !== "Table Tennis");
       if (category === "Basketball") pool = pool.filter(f => f.country === "Basketball");
       if (category === "Tennis") pool = pool.filter(f => f.country === "Tennis");
+      if (category === "Table Tennis") pool = pool.filter(f => f.country === "Table Tennis");
 
+      if (country !== 'all') {
+        pool = pool.filter(f => {
+           const cName = (f.country || "").toLowerCase();
+           const lName = (f.league || "").toLowerCase();
+           const searchKey = country.toLowerCase();
+           if (searchKey === 'usa') return cName.includes('usa') || lName.includes('mls');
+           if (searchKey === 'americas') return cName.includes('mexico') || cName.includes('americas') || lName.includes('copa') || lName.includes('liga mx');
+           return cName.includes(searchKey) || lName.includes(searchKey);
+        });
+      }
       if (leagueChoice !== 'all') {
         pool = pool.filter(f => f.league && f.league.toLowerCase().includes(leagueChoice.toLowerCase()));
       }
 
       if (pool.length === 0) {
-        output.innerHTML = `<div class="text-rose-400 text-xs py-2">No active upcoming fixtures found for this specific horizon/league.</div>`;
+        output.innerHTML = `<div class="text-rose-400 text-xs py-2">No active upcoming fixtures found for this specific horizon/location selection.</div>`;
         return;
       }
 
-      // Shuffle pool for fresh dynamic picks on every click
+      // Shuffle pool for varied safe selections every time Generate is clicked
       pool = pool.sort(() => Math.random() - 0.5);
 
-      const eliteTeams = ["barcelona", "real madrid", "manchester city", "arsenal", "liverpool", "bayern munich", "inter", "psg", "juventus", "ac milan", "atletico madrid", "chelsea", "tottenham", "leverkusen"];
+      const eliteTeams = ["barcelona", "real madrid", "manchester city", "arsenal", "liverpool", "bayern munich", "inter", "psg", "juventus", "ac milan", "atletico madrid", "chelsea", "tottenham", "leverkusen", "inter miami", "la galaxy", "celtic"];
 
       const evaluatedMatches = pool.map(m => {
         const hName = m.home.toLowerCase();
@@ -505,7 +590,7 @@
             { pick: "Over 195.5 Total Points", odds: 1.30, confidence: "98%" },
             { pick: "1 (Home Win)", odds: 1.45, confidence: "90%" }
           ];
-        } else if (m.country === "Tennis") {
+        } else if (m.country === "Tennis" || m.country === "Table Tennis") {
           marketOptions = [
             { pick: "1 (Match Win Banker)", odds: 1.25, confidence: "96%" },
             { pick: "Over 18.5 Total Games", odds: 1.35, confidence: "92%" }
@@ -565,7 +650,7 @@
         <div class="space-y-4 mt-3">
           <div class="flex justify-between items-center bg-slate-950 p-3.5 rounded-2xl border border-slate-800 shadow-inner">
             <div>
-              <span class="text-[10px] text-slate-400 uppercase font-bold">Timeframe: ${horizon.toUpperCase()} • League: ${leagueChoice}</span>
+              <span class="text-[10px] text-slate-400 uppercase font-bold">Horizon: ${horizon.toUpperCase()} • Location: ${country}</span>
               <div class="text-sm font-black text-emerald-400">Total Safe Acca: ${currentAccaOdds.toFixed(2)} Odds (${accaPicks.length} Selections)</div>
             </div>
             <button type="button" onclick="loadAccaIntoBuilder(${JSON.stringify(accaPicks).replace(/"/g, '&quot;')})" class="bg-emerald-400 hover:bg-emerald-300 text-slate-950 font-black text-xs px-4 py-2.5 rounded-xl transition shadow">📥 Load Safest Picks</button>
@@ -621,9 +706,11 @@
       const div = document.createElement("div");
       div.className = "bg-slate-950 p-3.5 rounded-2xl border border-slate-800 match-row space-y-2 shadow-inner";
       
-      let optionsHtml = `<option value="">-- Select from match stream --</option>`;
-      if (rawAdminFixturesPool.length > 0) {
-        optionsHtml += rawAdminFixturesPool.map(f => {
+      const poolToUse = currentBuilderFilteredPool.length > 0 ? currentBuilderFilteredPool : rawAdminFixturesPool;
+
+      let optionsHtml = `<option value="">-- Select match (${poolToUse.length} available) --</option>`;
+      if (poolToUse.length > 0) {
+        optionsHtml += poolToUse.map(f => {
           const title = `${f.home} vs ${f.away}`;
           return `<option value="${title}" data-league="${f.league || ''}" data-date="${f.match_date || ''}" data-time="${f.match_time || ''}" ${prefMatch && title.includes(prefMatch) ? 'selected' : ''}>${title} (${f.league})</option>`;
         }).join('');
@@ -649,7 +736,7 @@
             <option value="Over 1.5 Match Goals" ${prefPick.includes('Over 1.5') ? 'selected' : ''}>Over 1.5 Match Goals</option>
             <option value="GG (Both Score)" ${prefPick.includes('GG') ? 'selected' : ''}>GG (Both Score)</option>
           </select>
-          <input type="number" step="0.01" value="${prefOdds}" placeholder="Odds" class="match-odds col-span-4 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white p-2.5 text-right outline-none font-black" oninput="window.calculateTotalOdds()" required />
+          <input type="number" step="0.01" value="${prefOdds || '1.25'}" placeholder="Odds" class="match-odds col-span-4 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white p-2.5 text-right outline-none font-black" oninput="window.calculateTotalOdds()" required />
         </div>
       `;
       document.getElementById("matchRows").appendChild(div);
@@ -664,7 +751,7 @@
 
     window.addMatchRow();
 
-    // TICKET PUBLISHING (Saves Match League, Date and Time)
+    // TICKET PUBLISHING
     document.getElementById("ticketForm").addEventListener("submit", async (e) => {
       e.preventDefault();
       
@@ -775,6 +862,7 @@
       }
     };
 
+    // AI NEWS & GRAPHICS STUDIO
     let generatedImgUrl = "";
     window.generateAINews = function() {
       const directive = document.getElementById('newsDirective').value || "Major League Transfer & Tactical Shift";
