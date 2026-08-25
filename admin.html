@@ -47,7 +47,7 @@
     <!-- TAB 1: TICKETS & SETTLEMENTS -->
     <div id="adminViewTickets" class="space-y-8">
       
-      <!-- AI ACCUMULATOR BUILDER -->
+      <!-- AI ACCUMULATOR BUILDER WITH DYNAMIC FILTERS -->
       <div class="bg-gradient-to-r from-slate-900 to-emerald-950/40 border border-emerald-500/30 p-6 rounded-3xl shadow-2xl space-y-4">
         <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
           <div>
@@ -361,11 +361,11 @@
         return data.response.map(b => ({
           home: b.teams.home.name,
           away: b.teams.away.name,
-          league: b.league.name,
+          league: b.league.name || "NBA",
           country: "Basketball",
           status: b.status.short,
           match_date: b.date.split('T')[0],
-          match_time: b.time
+          match_time: b.time || "19:00"
         }));
       } catch (err) { return []; }
     }
@@ -443,7 +443,6 @@
       }
     }
 
-    // FILTER AI GENERATOR LEAGUES DYNAMICALLY
     window.filterAIGeneratorPool = function() {
       const category = document.getElementById('aiCategory').value;
       const country = document.getElementById('aiCountry').value;
@@ -471,7 +470,6 @@
       aiLeagueSelect.innerHTML = `<option value="all">All Leagues (${uniqueLeagues.length})</option>` + uniqueLeagues.map(l => `<option value="${l}" ${l === selected ? 'selected' : ''}>${l}</option>`).join('');
     };
 
-    // STRICT CASCADING FOR BUILD VIP PREDICTION TICKET
     window.onBuilderFiltersChange = async function() {
       const horizon = document.getElementById('builderHorizon').value;
       const country = document.getElementById('builderCountry').value;
@@ -534,7 +532,6 @@
       });
     };
 
-    // TARGET ODDS ACCUMULATOR AI GENERATOR
     window.runAIEngine = async function() {
       const horizon = document.getElementById("aiHorizon").value;
       const category = document.getElementById("aiCategory").value;
@@ -573,7 +570,6 @@
         return;
       }
 
-      // Shuffle pool for varied safe selections every time Generate is clicked
       pool = pool.sort(() => Math.random() - 0.5);
 
       const eliteTeams = ["barcelona", "real madrid", "manchester city", "arsenal", "liverpool", "bayern munich", "inter", "psg", "juventus", "ac milan", "atletico madrid", "chelsea", "tottenham", "leverkusen", "inter miami", "la galaxy", "celtic"];
@@ -751,7 +747,7 @@
 
     window.addMatchRow();
 
-    // TICKET PUBLISHING
+    // TICKET PUBLISHING (Stores Exact League, Date, Time & Pick)
     document.getElementById("ticketForm").addEventListener("submit", async (e) => {
       e.preventDefault();
       
@@ -862,7 +858,6 @@
       }
     };
 
-    // AI NEWS & GRAPHICS STUDIO
     let generatedImgUrl = "";
     window.generateAINews = function() {
       const directive = document.getElementById('newsDirective').value || "Major League Transfer & Tactical Shift";
