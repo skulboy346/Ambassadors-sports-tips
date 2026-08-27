@@ -17,11 +17,21 @@
       background: linear-gradient(to right, #0f172a, #1e293b);
       border-top: 4px solid #0f172a;
     }
-    .sub-glow {
-      box-shadow: 0 0 15px 5px rgba(52, 211, 153, 0.6);
-      border-color: #34d399 !important;
+    
+    /* Out-of-box Breathing Avatar Animations */
+    @keyframes breathe {
+      0% { transform: scale(1) translateY(0); }
+      50% { transform: scale(1.06) translateY(-4px); filter: drop-shadow(0 10px 10px rgba(0,0,0,0.5)); }
+      100% { transform: scale(1) translateY(0); }
+    }
+    .breathe {
+      animation: breathe 3.5s infinite ease-in-out;
+    }
+    .sub-glow-effect {
+      filter: drop-shadow(0 0 12px #34d399);
       animation: pulse 1.5s infinite;
     }
+    
     .chip-active {
       background: linear-gradient(135deg, #10b981 0%, #06b6d4 100%);
       color: #022c22 !important;
@@ -58,10 +68,10 @@
   </header>
 
   <!-- Gameweek Deadline & Status Banner -->
-  <div class="bg-slate-950 border-b border-slate-800 text-center py-2 flex flex-col md:flex-row justify-center items-center gap-4 text-xs font-bold text-slate-400">
+  <div class="bg-slate-950 border-b border-slate-800 text-center py-2 flex flex-col md:flex-row justify-center items-center gap-4 text-xs font-bold text-slate-400 z-40 relative sticky top-[60px] md:top-[65px]">
     <div class="flex items-center gap-2">
-      <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> 
-      <span id="gwBannerTitle">Gameweek 2 Active</span>
+      <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" id="deadlineIndicator"></span> 
+      <span id="gwBannerTitle">Gameweek Deadline: Syncing...</span>
     </div>
     <div class="hidden md:block w-px h-4 bg-slate-800"></div>
     <div>Manager: <strong id="managerNameDisplay" class="text-white">Guest</strong></div>
@@ -81,7 +91,7 @@
       <div class="flex items-center gap-6 w-full md:w-auto justify-center">
         <div class="flex flex-col text-right">
           <span class="text-[10px] text-slate-400 font-bold uppercase">Budget</span>
-          <span class="text-xl font-black text-emerald-400">£<span id="budgetDisplay">120.0</span>m</span>
+          <span class="text-xl font-black text-emerald-400">£<span id="budgetDisplay">100.0</span>m</span>
         </div>
         <div class="h-10 w-px bg-slate-800"></div>
         <div class="flex flex-col text-left">
@@ -143,7 +153,7 @@
 
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
       
-      <!-- LEFT: Virtual Pitch & Bench (Optimized Size) -->
+      <!-- LEFT: Virtual Pitch & Bench (Transparent Floating Avatars) -->
       <div class="lg:col-span-7 bg-slate-900 border border-slate-800 rounded-3xl overflow-hidden shadow-2xl flex flex-col relative">
         <div class="bg-slate-950 px-4 py-3 border-b border-slate-800 flex justify-between items-center z-10">
           <div class="flex items-center gap-4">
@@ -154,6 +164,7 @@
         </div>
         
         <div class="pitch-bg relative p-3 flex flex-col justify-around min-h-[400px]">
+          <!-- SVG Pitch Lines -->
           <svg class="absolute inset-0 w-full h-full pointer-events-none opacity-20" preserveAspectRatio="none">
              <rect x="20%" y="-10" width="60%" height="15%" fill="none" stroke="#fff" stroke-width="2"/>
              <rect x="35%" y="-10" width="30%" height="6%" fill="none" stroke="#fff" stroke-width="2"/>
@@ -165,10 +176,10 @@
              <circle cx="50%" cy="85%" r="5%" fill="none" stroke="#fff" stroke-width="2"/>
           </svg>
 
-          <div class="flex justify-center gap-1 sm:gap-4 z-10" id="pitch-fwd"></div>
+          <div class="flex justify-center gap-1 sm:gap-4 z-10 pt-2" id="pitch-fwd"></div>
           <div class="flex justify-center gap-1 sm:gap-4 z-10" id="pitch-mid"></div>
           <div class="flex justify-center gap-1 sm:gap-4 z-10" id="pitch-def"></div>
-          <div class="flex justify-center gap-1 sm:gap-4 z-10" id="pitch-gk"></div>
+          <div class="flex justify-center gap-1 sm:gap-4 z-10 pb-2" id="pitch-gk"></div>
         </div>
 
         <div class="bench-bg p-3 z-20">
@@ -190,7 +201,7 @@
         <div id="panel-points" class="hidden bg-slate-900 border border-slate-800 rounded-3xl p-4 shadow-2xl flex flex-col h-[700px]">
            <div class="flex justify-between items-center bg-slate-950 p-4 rounded-xl border border-slate-800 mb-4 shadow-inner">
               <div class="text-center flex-1">
-                 <div class="text-[10px] text-slate-500 font-bold uppercase">GW 2 Points</div>
+                 <div class="text-[10px] text-slate-500 font-bold uppercase">GW Points</div>
                  <div class="text-3xl font-black text-emerald-400" id="gwPointsDisplay">0</div>
               </div>
               <div class="w-px h-10 bg-slate-800"></div>
@@ -255,7 +266,9 @@
     <div class="bg-slate-900 border border-slate-700 rounded-3xl p-6 w-full max-w-sm shadow-2xl relative text-center">
       <button onclick="closeActionModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white font-black text-lg">✕</button>
       
-      <div id="modalPlayerAvatar" class="w-20 h-20 mx-auto bg-slate-200 bg-cover bg-top rounded-full border-4 border-slate-800 mb-3 shadow-lg flex items-end justify-center overflow-hidden"></div>
+      <div class="w-24 h-24 mx-auto mb-2 flex items-end justify-center drop-shadow-2xl relative">
+         <img id="modalPlayerAvatar" src="" class="w-full h-full object-contain object-bottom" onerror="this.onerror=null; this.src='https://cdn-icons-png.flaticon.com/512/1077/1077063.png'; this.style.filter='invert(1) opacity(0.6)';" />
+      </div>
       <h3 id="modalPlayerName" class="text-lg font-black text-white">Player Name</h3>
       <div class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-6">
         <span id="modalPlayerPos" class="text-emerald-400">POS</span> • <span id="modalPlayerTeam">TEAM</span> • £<span id="modalPlayerPrice">0.0</span>m
@@ -339,6 +352,8 @@
       NFO: "https://media.api-sports.io/football/teams/65.png",
       FUL: "https://media.api-sports.io/football/teams/36.png",
       BRE: "https://media.api-sports.io/football/teams/55.png",
+      SOU: "https://media.api-sports.io/football/teams/41.png",
+      LEI: "https://media.api-sports.io/football/teams/46.png",
       RMA: "https://media.api-sports.io/football/teams/541.png",
       BAR: "https://media.api-sports.io/football/teams/529.png",
       BAY: "https://media.api-sports.io/football/teams/157.png",
@@ -351,160 +366,142 @@
       JUV: "https://media.api-sports.io/football/teams/496.png"
     };
 
-    // GAMEWEEK SCHEDULE MATRIX (EPL & UCL)
+    // GAMEWEEK SCHEDULE MATRIX (Strict 24h Deadline Logic)
+    // Dynamic generation so the UI never locks out immediately during testing.
+    const mockDeadline = new Date(Date.now() + 86400000 * 1.5); // Opens market for 36 hours
+    const mockDeadlineUCL = new Date(Date.now() + 86400000 * 2.5); // Opens market for 60 hours
+    
     const scheduleEPL = {
-      1: [
-        { home: "MCI", away: "ARS", date: "Sat 12:30", fdr: 4 },
-        { home: "LIV", away: "CHE", date: "Sat 15:00", fdr: 3 },
-        { home: "NEW", away: "TOT", date: "Sat 17:30", fdr: 3 },
-        { home: "AVL", away: "EVE", date: "Sun 14:00", fdr: 2 }
-      ],
-      2: [
-        { home: "CRY", away: "MCI", date: "Fri 20:00", fdr: 4 },
-        { home: "LIV", away: "NFO", date: "Sat 12:30", fdr: 2 },
-        { home: "TOT", away: "NEW", date: "Sat 17:30", fdr: 3 },
-        { home: "CHE", away: "BHA", date: "Sun 14:00", fdr: 3 },
-        { home: "MUN", away: "FUL", date: "Sun 16:30", fdr: 2 },
-        { home: "AVL", away: "ARS", date: "Mon 20:00", fdr: 4 }
-      ],
-      3: [
-        { home: "BRE", away: "LIV", date: "Fri 20:00", fdr: 3 },
-        { home: "NEW", away: "BOU", date: "Sat 12:30", fdr: 2 },
-        { home: "MCI", away: "WHU", date: "Sat 15:00", fdr: 2 },
-        { home: "EVE", away: "MUN", date: "Sun 14:00", fdr: 3 },
-        { home: "ARS", away: "CHE", date: "Sun 16:30", fdr: 4 }
-      ]
+      2: {
+        deadline: mockDeadline, 
+        fixtures: [
+          { home: "CRY", away: "MCI", date: "Fri 20:00", fdr: 4 },
+          { home: "LIV", away: "NFO", date: "Sat 12:30", fdr: 2 },
+          { home: "TOT", away: "NEW", date: "Sat 17:30", fdr: 3 },
+          { home: "CHE", away: "BHA", date: "Sun 14:00", fdr: 3 },
+          { home: "MUN", away: "FUL", date: "Sun 16:30", fdr: 2 },
+          { home: "AVL", away: "ARS", date: "Mon 20:00", fdr: 4 }
+        ]
+      },
+      3: {
+        deadline: new Date(mockDeadline.getTime() + 86400000 * 7),
+        fixtures: [
+          { home: "BRE", away: "LIV", date: "Fri 20:00", fdr: 3 },
+          { home: "NEW", away: "BOU", date: "Sat 12:30", fdr: 2 },
+          { home: "MCI", away: "WHU", date: "Sat 15:00", fdr: 2 },
+          { home: "EVE", away: "MUN", date: "Sun 14:00", fdr: 3 },
+          { home: "ARS", away: "CHE", date: "Sun 16:30", fdr: 4 }
+        ]
+      }
     };
 
     const scheduleUCL = {
-      1: [
-        { home: "RMA", away: "BAY", date: "Tue 20:00", fdr: 5 },
-        { home: "BAR", away: "MCI", date: "Tue 20:00", fdr: 4 },
-        { home: "INT", away: "PSG", date: "Wed 20:00", fdr: 4 },
-        { home: "LEV", away: "ATM", date: "Wed 20:00", fdr: 3 }
-      ],
-      2: [
-        { home: "BAY", away: "BAR", date: "Tue 20:00", fdr: 4 },
-        { home: "PSG", away: "RMA", date: "Tue 20:00", fdr: 5 },
-        { home: "MCI", away: "INT", date: "Wed 20:00", fdr: 4 },
-        { home: "ATM", away: "LEV", date: "Wed 20:00", fdr: 3 },
-        { home: "JUV", away: "MIL", date: "Wed 20:00", fdr: 4 }
-      ],
-      3: [
-        { home: "RMA", away: "INT", date: "Tue 20:00", fdr: 4 },
-        { home: "BAR", away: "PSG", date: "Tue 20:00", fdr: 4 },
-        { home: "BAY", away: "LEV", date: "Wed 20:00", fdr: 3 },
-        { home: "MCI", away: "ATM", date: "Wed 20:00", fdr: 3 }
-      ]
+      1: {
+        deadline: mockDeadlineUCL,
+        fixtures: [
+          { home: "RMA", away: "BAY", date: "Tue 20:00", fdr: 5 },
+          { home: "BAR", away: "MCI", date: "Tue 20:00", fdr: 4 },
+          { home: "INT", away: "PSG", date: "Wed 20:00", fdr: 4 },
+          { home: "LEV", away: "ATM", date: "Wed 20:00", fdr: 3 }
+        ]
+      },
+      2: {
+        deadline: new Date(mockDeadlineUCL.getTime() + 86400000 * 14),
+        fixtures: [
+          { home: "BAY", away: "BAR", date: "Tue 20:00", fdr: 4 },
+          { home: "PSG", away: "RMA", date: "Tue 20:00", fdr: 5 },
+          { home: "MCI", away: "INT", date: "Wed 20:00", fdr: 4 },
+          { home: "ATM", away: "LEV", date: "Wed 20:00", fdr: 3 },
+          { home: "JUV", away: "MIL", date: "Wed 20:00", fdr: 4 }
+        ]
+      }
     };
 
     // HELPER FUNCTION: Get Photo Avatar
-    function getPhoto(id, name) {
-      if(id) return `https://media.api-sports.io/football/players/${id}.png`;
-      return `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=random&color=fff&rounded=true`;
+    function getPhoto(id) {
+      return `https://media.api-sports.io/football/players/${id}.png`;
     }
 
-    // MASSIVE EXPANDED EPL DATABASE 
+    // MASSIVE EXPANDED EPL DATABASE WITH 100M BUDGET TUNING
     const dbEPL = [
-      { id: 'e1', name: 'E. Haaland', pos: 'FWD', team: 'MCI', price: 15.0, photo: getPhoto(1100, 'EH'), opp: 'CRY (A)' },
-      { id: 'e2', name: 'P. Foden', pos: 'MID', team: 'MCI', price: 9.5, photo: getPhoto(636, 'PF'), opp: 'CRY (A)' },
-      { id: 'e3', name: 'K. De Bruyne', pos: 'MID', team: 'MCI', price: 10.0, photo: getPhoto(627, 'KD'), opp: 'CRY (A)' },
-      { id: 'e4', name: 'J. Gvardiol', pos: 'DEF', team: 'MCI', price: 6.0, photo: getPhoto(121081, 'JG'), opp: 'CRY (A)' },
-      { id: 'e5', name: 'Ederson', pos: 'GK', team: 'MCI', price: 5.5, photo: getPhoto(618, 'E'), opp: 'CRY (A)' },
-      { id: 'e6', name: 'B. Saka', pos: 'MID', team: 'ARS', price: 10.5, photo: getPhoto(146026, 'BS'), opp: 'AVL (A)' },
-      { id: 'e7', name: 'M. Odegaard', pos: 'MID', team: 'ARS', price: 8.5, photo: getPhoto(41042, 'MO'), opp: 'AVL (A)' },
-      { id: 'e8', name: 'K. Havertz', pos: 'FWD', team: 'ARS', price: 8.0, photo: getPhoto(25615, 'KH'), opp: 'AVL (A)' },
-      { id: 'e9', name: 'W. Saliba', pos: 'DEF', team: 'ARS', price: 6.0, photo: getPhoto(131758, 'WS'), opp: 'AVL (A)' },
-      { id: 'e10', name: 'G. Gabriel', pos: 'DEF', team: 'ARS', price: 6.0, photo: getPhoto(22532, 'GG'), opp: 'AVL (A)' },
-      { id: 'e11', name: 'D. Raya', pos: 'GK', team: 'ARS', price: 5.5, photo: getPhoto(18850, 'DR'), opp: 'AVL (A)' },
-      { id: 'e12', name: 'L. Diaz', pos: 'MID', team: 'LIV', price: 7.5, photo: getPhoto(24893, 'LD'), opp: 'NFO (H)' },
-      { id: 'e13', name: 'D. Jota', pos: 'MID', team: 'LIV', price: 7.5, photo: getPhoto(2581, 'DJ'), opp: 'NFO (H)' },
-      { id: 'e14', name: 'T. Alexander-Arnold', pos: 'DEF', team: 'LIV', price: 7.0, photo: getPhoto(283, 'TAA'), opp: 'NFO (H)' },
-      { id: 'e15', name: 'A. Robertson', pos: 'DEF', team: 'LIV', price: 6.0, photo: getPhoto(291, 'AR'), opp: 'NFO (H)' },
-      { id: 'e16', name: 'A. Becker', pos: 'GK', team: 'LIV', price: 5.5, photo: getPhoto(10609, 'AB'), opp: 'NFO (H)' },
-      { id: 'e17', name: 'C. Palmer', pos: 'MID', team: 'CHE', price: 10.5, photo: getPhoto(152982, 'CP'), opp: 'BHA (H)' },
-      { id: 'e18', name: 'N. Jackson', pos: 'FWD', team: 'CHE', price: 7.5, photo: getPhoto(284364, 'NJ'), opp: 'BHA (H)' },
-      { id: 'e19', name: 'M. Gusto', pos: 'DEF', team: 'CHE', price: 5.0, photo: getPhoto(162121, 'MG'), opp: 'BHA (H)' },
-      { id: 'e20', name: 'H. Son', pos: 'MID', team: 'TOT', price: 9.5, photo: getPhoto(186, 'HS'), opp: 'NEW (A)' },
-      { id: 'e21', name: 'D. Solanke', pos: 'FWD', team: 'TOT', price: 7.5, photo: getPhoto(19035, 'DS'), opp: 'NEW (A)' },
-      { id: 'e22', name: 'P. Porro', pos: 'DEF', team: 'TOT', price: 5.5, photo: getPhoto(135111, 'PP'), opp: 'NEW (A)' },
-      { id: 'e23', name: 'B. Fernandes', pos: 'MID', team: 'MUN', price: 8.5, photo: getPhoto(742, 'BF'), opp: 'FUL (H)' },
-      { id: 'e24', name: 'M. Rashford', pos: 'MID', team: 'MUN', price: 7.0, photo: getPhoto(745, 'MR'), opp: 'FUL (H)' },
-      { id: 'e25', name: 'A. Garnacho', pos: 'MID', team: 'MUN', price: 6.5, photo: getPhoto(284322, 'AG'), opp: 'FUL (H)' },
-      { id: 'e26', name: 'A. Onana', pos: 'GK', team: 'MUN', price: 5.0, photo: getPhoto(15286, 'AO'), opp: 'FUL (H)' },
-      { id: 'e27', name: 'A. Isak', pos: 'FWD', team: 'NEW', price: 8.5, photo: getPhoto(11467, 'AI'), opp: 'TOT (H)' },
-      { id: 'e28', name: 'A. Gordon', pos: 'MID', team: 'NEW', price: 7.5, photo: getPhoto(153106, 'AG'), opp: 'TOT (H)' },
-      { id: 'e29', name: 'K. Trippier', pos: 'DEF', team: 'NEW', price: 6.5, photo: getPhoto(174, 'KT'), opp: 'TOT (H)' },
-      { id: 'e30', name: 'O. Watkins', pos: 'FWD', team: 'AVL', price: 9.0, photo: getPhoto(19150, 'OW'), opp: 'ARS (H)' },
-      { id: 'e31', name: 'L. Bailey', pos: 'MID', team: 'AVL', price: 6.5, photo: getPhoto(19036, 'LB'), opp: 'ARS (H)' },
-      { id: 'e32', name: 'E. Konsa', pos: 'DEF', team: 'AVL', price: 4.5, photo: getPhoto(18973, 'EK'), opp: 'ARS (H)' },
-      { id: 'e33', name: 'J. Bowen', pos: 'MID', team: 'WHU', price: 7.5, photo: getPhoto(18760, 'JB'), opp: 'MCI (A)' },
-      { id: 'e34', name: 'M. Kudus', pos: 'MID', team: 'WHU', price: 6.5, photo: getPhoto(110196, 'MK'), opp: 'MCI (A)' },
-      { id: 'e35', name: 'A. Areola', pos: 'GK', team: 'WHU', price: 4.5, photo: getPhoto(266, 'AA'), opp: 'MCI (A)' },
-      { id: 'e36', name: 'E. Eze', pos: 'MID', team: 'CRY', price: 7.0, photo: getPhoto(18898, 'EE'), opp: 'MCI (H)' },
-      { id: 'e37', name: 'J. Mateta', pos: 'FWD', team: 'CRY', price: 7.5, photo: getPhoto(42205, 'JM'), opp: 'MCI (H)' },
-      { id: 'e38', name: 'M. Guehi', pos: 'DEF', team: 'CRY', price: 4.5, photo: getPhoto(19231, 'MG'), opp: 'MCI (H)' },
-      { id: 'e39', name: 'J. Pedro', pos: 'FWD', team: 'BHA', price: 5.5, photo: getPhoto(163013, 'JP'), opp: 'CHE (A)' },
-      { id: 'e40', name: 'K. Mitoma', pos: 'MID', team: 'BHA', price: 6.5, photo: getPhoto(157777, 'KM'), opp: 'CHE (A)' },
-      { id: 'e41', name: 'J. Pickford', pos: 'GK', team: 'EVE', price: 5.0, photo: getPhoto(18758, 'JP'), opp: 'AVL (H)' },
-      { id: 'e42', name: 'J. Branthwaite', pos: 'DEF', team: 'EVE', price: 4.5, photo: getPhoto(138760, 'JB'), opp: 'AVL (H)' },
-      { id: 'e43', name: 'C. Wood', pos: 'FWD', team: 'NFO', price: 6.0, photo: getPhoto(18837, 'CW'), opp: 'LIV (A)' },
-      { id: 'e44', name: 'M. Gibbs-White', pos: 'MID', team: 'NFO', price: 6.5, photo: getPhoto(18968, 'MGW'), opp: 'LIV (A)' },
-      { id: 'e45', name: 'A. Robinson', pos: 'DEF', team: 'FUL', price: 4.5, photo: getPhoto(19000, 'AR'), opp: 'MUN (A)' },
-      { id: 'e46', name: 'R. Muniz', pos: 'FWD', team: 'FUL', price: 6.0, photo: getPhoto(162080, 'RM'), opp: 'MUN (A)' },
-      { id: 'e47', name: 'B. Mbeumo', pos: 'MID', team: 'BRE', price: 7.0, photo: getPhoto(18884, 'BM'), opp: 'LIV (H)' },
-      { id: 'e48', name: 'Y. Wissa', pos: 'FWD', team: 'BRE', price: 6.0, photo: getPhoto(111663, 'YW'), opp: 'LIV (H)' }
+      { id: 'e1', name: 'E. Haaland', pos: 'FWD', team: 'MCI', price: 14.0, photo: getPhoto(1100), opp: 'CRY (A)' },
+      { id: 'e2', name: 'M. Salah', pos: 'MID', team: 'LIV', price: 12.5, photo: getPhoto(306), opp: 'NFO (H)' },
+      { id: 'e3', name: 'B. Saka', pos: 'MID', team: 'ARS', price: 10.0, photo: getPhoto(146026), opp: 'AVL (A)' },
+      { id: 'e4', name: 'C. Palmer', pos: 'MID', team: 'CHE', price: 10.5, photo: getPhoto(152982), opp: 'BHA (H)' },
+      { id: 'e5', name: 'K. De Bruyne', pos: 'MID', team: 'MCI', price: 9.5, photo: getPhoto(627), opp: 'CRY (A)' },
+      { id: 'e6', name: 'P. Foden', pos: 'MID', team: 'MCI', price: 9.0, photo: getPhoto(636), opp: 'CRY (A)' },
+      { id: 'e7', name: 'H. Son', pos: 'MID', team: 'TOT', price: 9.5, photo: getPhoto(186), opp: 'NEW (A)' },
+      { id: 'e8', name: 'O. Watkins', pos: 'FWD', team: 'AVL', price: 9.0, photo: getPhoto(19150), opp: 'ARS (H)' },
+      { id: 'e9', name: 'A. Isak', pos: 'FWD', team: 'NEW', price: 8.5, photo: getPhoto(11467), opp: 'TOT (H)' },
+      { id: 'e10', name: 'M. Odegaard', pos: 'MID', team: 'ARS', price: 8.5, photo: getPhoto(41042), opp: 'AVL (A)' },
+      { id: 'e11', name: 'K. Havertz', pos: 'FWD', team: 'ARS', price: 8.0, photo: getPhoto(25615), opp: 'AVL (A)' },
+      { id: 'e12', name: 'L. Diaz', pos: 'MID', team: 'LIV', price: 7.5, photo: getPhoto(24893), opp: 'NFO (H)' },
+      { id: 'e13', name: 'D. Jota', pos: 'MID', team: 'LIV', price: 7.5, photo: getPhoto(2581), opp: 'NFO (H)' },
+      { id: 'e14', name: 'A. Gordon', pos: 'MID', team: 'NEW', price: 7.5, photo: getPhoto(153106), opp: 'TOT (H)' },
+      { id: 'e15', name: 'D. Solanke', pos: 'FWD', team: 'TOT', price: 7.5, photo: getPhoto(19035), opp: 'NEW (A)' },
+      { id: 'e16', name: 'N. Jackson', pos: 'FWD', team: 'CHE', price: 7.5, photo: getPhoto(284364), opp: 'BHA (H)' },
+      { id: 'e17', name: 'J. Bowen', pos: 'MID', team: 'WHU', price: 7.5, photo: getPhoto(18760), opp: 'MCI (A)' },
+      { id: 'e18', name: 'E. Eze', pos: 'MID', team: 'CRY', price: 7.0, photo: getPhoto(18898), opp: 'MCI (H)' },
+      { id: 'e19', name: 'T. Alexander-Arnold', pos: 'DEF', team: 'LIV', price: 7.0, photo: getPhoto(283), opp: 'NFO (H)' },
+      { id: 'e20', name: 'J. Gvardiol', pos: 'DEF', team: 'MCI', price: 6.0, photo: getPhoto(121081), opp: 'CRY (A)' },
+      { id: 'e21', name: 'W. Saliba', pos: 'DEF', team: 'ARS', price: 6.0, photo: getPhoto(131758), opp: 'AVL (A)' },
+      { id: 'e22', name: 'G. Gabriel', pos: 'DEF', team: 'ARS', price: 6.0, photo: getPhoto(22532), opp: 'AVL (A)' },
+      { id: 'e23', name: 'P. Porro', pos: 'DEF', team: 'TOT', price: 5.5, photo: getPhoto(135111), opp: 'NEW (A)' },
+      { id: 'e24', name: 'A. Becker', pos: 'GK', team: 'LIV', price: 5.5, photo: getPhoto(10609), opp: 'NFO (H)' },
+      { id: 'e25', name: 'Ederson', pos: 'GK', team: 'MCI', price: 5.5, photo: getPhoto(618), opp: 'CRY (A)' },
+      { id: 'e26', name: 'D. Raya', pos: 'GK', team: 'ARS', price: 5.5, photo: getPhoto(18850), opp: 'AVL (A)' },
+      { id: 'e27', name: 'M. Gusto', pos: 'DEF', team: 'CHE', price: 5.0, photo: getPhoto(162121), opp: 'BHA (H)' },
+      { id: 'e28', name: 'A. Onana', pos: 'GK', team: 'MUN', price: 5.0, photo: getPhoto(15286), opp: 'FUL (H)' },
+      { id: 'e29', name: 'J. Pickford', pos: 'GK', team: 'EVE', price: 5.0, photo: getPhoto(18758), opp: 'AVL (H)' },
+      
+      // Budget Enablers & Gems
+      { id: 'e30', name: 'B. Mbeumo', pos: 'MID', team: 'BRE', price: 7.0, photo: getPhoto(18884), opp: 'LIV (H)' },
+      { id: 'e31', name: 'M. Gibbs-White', pos: 'MID', team: 'NFO', price: 6.5, photo: getPhoto(18968), opp: 'LIV (A)' },
+      { id: 'e32', name: 'A. Garnacho', pos: 'MID', team: 'MUN', price: 6.5, photo: getPhoto(284322), opp: 'FUL (H)' },
+      { id: 'e33', name: 'C. Wood', pos: 'FWD', team: 'NFO', price: 6.0, photo: getPhoto(18837), opp: 'LIV (A)' },
+      { id: 'e34', name: 'J. Pedro', pos: 'FWD', team: 'BHA', price: 5.5, photo: getPhoto(163013), opp: 'CHE (A)' },
+      { id: 'e35', name: 'E. Konsa', pos: 'DEF', team: 'AVL', price: 4.5, photo: getPhoto(18973), opp: 'ARS (H)' },
+      { id: 'e36', name: 'A. Robinson', pos: 'DEF', team: 'FUL', price: 4.5, photo: getPhoto(19000), opp: 'MUN (A)' },
+      { id: 'e37', name: 'M. Guehi', pos: 'DEF', team: 'CRY', price: 4.5, photo: getPhoto(19231), opp: 'MCI (H)' },
+      { id: 'e38', name: 'A. Areola', pos: 'GK', team: 'WHU', price: 4.5, photo: getPhoto(266), opp: 'MCI (A)' },
+      { id: 'e39', name: 'D. Henderson', pos: 'GK', team: 'CRY', price: 4.5, photo: getPhoto(18755), opp: 'MCI (H)' },
+      { id: 'e40', name: 'T. Harwood-Bellis', pos: 'DEF', team: 'SOU', price: 4.0, photo: getPhoto(138809), opp: 'BRE (A)' },
+      { id: 'e41', name: 'W. Faes', pos: 'DEF', team: 'LEI', price: 4.0, photo: getPhoto(1116), opp: 'AVL (H)' },
+      { id: 'e42', name: 'M. Turner', pos: 'GK', team: 'NFO', price: 4.0, photo: getPhoto(17586), opp: 'LIV (A)' }
     ];
 
     // MASSIVE EXPANDED UCL DATABASE
     const dbUCL = [
-      { id: 'u1', name: 'K. Mbappe', pos: 'FWD', team: 'RMA', price: 13.5, photo: getPhoto(278, 'KM'), opp: 'PSG (A)' },
-      { id: 'u2', name: 'V. Junior', pos: 'FWD', team: 'RMA', price: 12.0, photo: getPhoto(738, 'VJ'), opp: 'PSG (A)' },
-      { id: 'u3', name: 'J. Bellingham', pos: 'MID', team: 'RMA', price: 11.0, photo: getPhoto(163054, 'JB'), opp: 'PSG (A)' },
-      { id: 'u4', name: 'F. Valverde', pos: 'MID', team: 'RMA', price: 8.5, photo: getPhoto(739, 'FV'), opp: 'PSG (A)' },
-      { id: 'u5', name: 'A. Rudiger', pos: 'DEF', team: 'RMA', price: 6.0, photo: getPhoto(157, 'AR'), opp: 'PSG (A)' },
-      { id: 'u6', name: 'T. Courtois', pos: 'GK', team: 'RMA', price: 6.0, photo: getPhoto(732, 'TC'), opp: 'PSG (A)' },
-      { id: 'u7', name: 'H. Kane', pos: 'FWD', team: 'BAY', price: 12.0, photo: getPhoto(184, 'HK'), opp: 'BAR (A)' },
-      { id: 'u8', name: 'J. Musiala', pos: 'MID', team: 'BAY', price: 9.5, photo: getPhoto(161860, 'JM'), opp: 'BAR (A)' },
-      { id: 'u9', name: 'M. Olise', pos: 'MID', team: 'BAY', price: 8.5, photo: getPhoto(158694, 'MO'), opp: 'BAR (A)' },
-      { id: 'u10', name: 'A. Davies', pos: 'DEF', team: 'BAY', price: 6.5, photo: getPhoto(51554, 'AD'), opp: 'BAR (A)' },
-      { id: 'u11', name: 'J. Kimmich', pos: 'DEF', team: 'BAY', price: 6.5, photo: getPhoto(170, 'JK'), opp: 'BAR (A)' },
-      { id: 'u12', name: 'M. Neuer', pos: 'GK', team: 'BAY', price: 5.5, photo: getPhoto(168, 'MN'), opp: 'BAR (A)' },
-      { id: 'u13', name: 'R. Lewandowski', pos: 'FWD', team: 'BAR', price: 10.5, photo: getPhoto(120, 'RL'), opp: 'BAY (H)' },
-      { id: 'u14', name: 'L. Yamal', pos: 'MID', team: 'BAR', price: 9.0, photo: getPhoto(399066, 'LY'), opp: 'BAY (H)' },
-      { id: 'u15', name: 'Raphinha', pos: 'MID', team: 'BAR', price: 9.5, photo: getPhoto(1155, 'R'), opp: 'BAY (H)' },
-      { id: 'u16', name: 'Pedri', pos: 'MID', team: 'BAR', price: 8.0, photo: getPhoto(135203, 'P'), opp: 'BAY (H)' },
-      { id: 'u17', name: 'J. Kounde', pos: 'DEF', team: 'BAR', price: 5.5, photo: getPhoto(39070, 'JK'), opp: 'BAY (H)' },
-      { id: 'u18', name: 'M. ter Stegen', pos: 'GK', team: 'BAR', price: 5.5, photo: getPhoto(128, 'MTS'), opp: 'BAY (H)' },
-      { id: 'u19', name: 'L. Martinez', pos: 'FWD', team: 'INT', price: 10.0, photo: getPhoto(1054, 'LM'), opp: 'MCI (A)' },
-      { id: 'u20', name: 'M. Thuram', pos: 'FWD', team: 'INT', price: 8.5, photo: getPhoto(21693, 'MT'), opp: 'MCI (A)' },
-      { id: 'u21', name: 'N. Barella', pos: 'MID', team: 'INT', price: 8.0, photo: getPhoto(31011, 'NB'), opp: 'MCI (A)' },
-      { id: 'u22', name: 'A. Bastoni', pos: 'DEF', team: 'INT', price: 5.5, photo: getPhoto(31034, 'AB'), opp: 'MCI (A)' },
-      { id: 'u23', name: 'F. Dimarco', pos: 'DEF', team: 'INT', price: 6.0, photo: getPhoto(31024, 'FD'), opp: 'MCI (A)' },
-      { id: 'u24', name: 'Y. Sommer', pos: 'GK', team: 'INT', price: 5.0, photo: getPhoto(1039, 'YS'), opp: 'MCI (A)' },
-      { id: 'u25', name: 'O. Dembele', pos: 'MID', team: 'PSG', price: 8.5, photo: getPhoto(125, 'OD'), opp: 'RMA (H)' },
-      { id: 'u26', name: 'B. Barcola', pos: 'FWD', team: 'PSG', price: 8.0, photo: getPhoto(162590, 'BB'), opp: 'RMA (H)' },
-      { id: 'u27', name: 'Vitinha', pos: 'MID', team: 'PSG', price: 7.5, photo: getPhoto(161718, 'V'), opp: 'RMA (H)' },
-      { id: 'u28', name: 'A. Hakimi', pos: 'DEF', team: 'PSG', price: 6.5, photo: getPhoto(729, 'AH'), opp: 'RMA (H)' },
-      { id: 'u29', name: 'G. Donnarumma', pos: 'GK', team: 'PSG', price: 5.5, photo: getPhoto(135, 'GD'), opp: 'RMA (H)' },
-      { id: 'u30', name: 'F. Wirtz', pos: 'MID', team: 'LEV', price: 9.5, photo: getPhoto(161994, 'FW'), opp: 'ATM (A)' },
-      { id: 'u31', name: 'V. Boniface', pos: 'FWD', team: 'LEV', price: 8.5, photo: getPhoto(163048, 'VB'), opp: 'ATM (A)' },
-      { id: 'u32', name: 'A. Grimaldo', pos: 'DEF', team: 'LEV', price: 6.5, photo: getPhoto(579, 'AG'), opp: 'ATM (A)' },
-      { id: 'u33', name: 'J. Frimpong', pos: 'DEF', team: 'LEV', price: 6.5, photo: getPhoto(137683, 'JF'), opp: 'ATM (A)' },
-      { id: 'u34', name: 'A. Griezmann', pos: 'FWD', team: 'ATM', price: 9.0, photo: getPhoto(133, 'AG'), opp: 'LEV (H)' },
-      { id: 'u35', name: 'J. Alvarez', pos: 'FWD', team: 'ATM', price: 9.5, photo: getPhoto(616, 'JA'), opp: 'LEV (H)' },
-      { id: 'u36', name: 'J. Oblak', pos: 'GK', team: 'ATM', price: 5.5, photo: getPhoto(111, 'JO'), opp: 'LEV (H)' },
-      { id: 'u37', name: 'S. Guirassy', pos: 'FWD', team: 'DOR', price: 8.0, photo: getPhoto(1131, 'SG'), opp: 'ARS (A)' },
-      { id: 'u38', name: 'J. Brandt', pos: 'MID', team: 'DOR', price: 7.5, photo: getPhoto(175, 'JB'), opp: 'ARS (A)' },
-      { id: 'u39', name: 'R. Leao', pos: 'MID', team: 'MIL', price: 9.0, photo: getPhoto(121063, 'RL'), opp: 'JUV (A)' },
-      { id: 'u40', name: 'C. Pulisic', pos: 'MID', team: 'MIL', price: 8.0, photo: getPhoto(154, 'CP'), opp: 'JUV (A)' },
-      { id: 'u41', name: 'T. Hernandez', pos: 'DEF', team: 'MIL', price: 6.0, photo: getPhoto(727, 'TH'), opp: 'JUV (A)' },
-      { id: 'u42', name: 'D. Vlahovic', pos: 'FWD', team: 'JUV', price: 8.5, photo: getPhoto(30910, 'DV'), opp: 'MIL (H)' },
-      { id: 'u43', name: 'G. Bremer', pos: 'DEF', team: 'JUV', price: 5.0, photo: getPhoto(31005, 'GB'), opp: 'MIL (H)' }
+      { id: 'u1', name: 'K. Mbappe', pos: 'FWD', team: 'RMA', price: 13.5, photo: getPhoto(278), opp: 'BAY (A)' },
+      { id: 'u2', name: 'V. Junior', pos: 'FWD', team: 'RMA', price: 12.0, photo: getPhoto(738), opp: 'BAY (A)' },
+      { id: 'u3', name: 'H. Kane', pos: 'FWD', team: 'BAY', price: 12.0, photo: getPhoto(184), opp: 'RMA (H)' },
+      { id: 'u4', name: 'J. Bellingham', pos: 'MID', team: 'RMA', price: 11.0, photo: getPhoto(163054), opp: 'BAY (A)' },
+      { id: 'u5', name: 'F. Wirtz', pos: 'MID', team: 'LEV', price: 9.5, photo: getPhoto(161994), opp: 'ATM (A)' },
+      { id: 'u6', name: 'L. Martinez', pos: 'FWD', team: 'INT', price: 10.0, photo: getPhoto(1054), opp: 'PSG (A)' },
+      { id: 'u7', name: 'J. Musiala', pos: 'MID', team: 'BAY', price: 9.5, photo: getPhoto(161860), opp: 'RMA (H)' },
+      { id: 'u8', name: 'M. Olise', pos: 'MID', team: 'BAY', price: 8.5, photo: getPhoto(158694), opp: 'RMA (H)' },
+      { id: 'u9', name: 'A. Davies', pos: 'DEF', team: 'BAY', price: 6.5, photo: getPhoto(51554), opp: 'RMA (H)' },
+      { id: 'u10', name: 'T. Courtois', pos: 'GK', team: 'RMA', price: 6.0, photo: getPhoto(732), opp: 'BAY (A)' },
+      { id: 'u11', name: 'G. Donnarumma', pos: 'GK', team: 'PSG', price: 5.5, photo: getPhoto(135), opp: 'INT (H)' },
+      { id: 'u12', name: 'R. Lewandowski', pos: 'FWD', team: 'BAR', price: 10.5, photo: getPhoto(120), opp: 'MCI (H)' },
+      { id: 'u13', name: 'L. Yamal', pos: 'MID', team: 'BAR', price: 9.0, photo: getPhoto(399066), opp: 'MCI (H)' },
+      { id: 'u14', name: 'Raphinha', pos: 'MID', team: 'BAR', price: 9.5, photo: getPhoto(1155), opp: 'MCI (H)' },
+      { id: 'u15', name: 'J. Kimmich', pos: 'DEF', team: 'BAY', price: 6.5, photo: getPhoto(170), opp: 'RMA (H)' },
+      { id: 'u16', name: 'Y. Sommer', pos: 'GK', team: 'INT', price: 5.0, photo: getPhoto(1039), opp: 'PSG (A)' },
+      { id: 'u17', name: 'A. Hakimi', pos: 'DEF', team: 'PSG', price: 6.5, photo: getPhoto(729), opp: 'INT (H)' },
+      { id: 'u18', name: 'J. Alvarez', pos: 'FWD', team: 'ATM', price: 9.5, photo: getPhoto(616), opp: 'LEV (H)' },
+      { id: 'u19', name: 'A. Griezmann', pos: 'FWD', team: 'ATM', price: 9.0, photo: getPhoto(133), opp: 'LEV (H)' },
+      { id: 'u20', name: 'A. Bastoni', pos: 'DEF', team: 'INT', price: 5.5, photo: getPhoto(31034), opp: 'PSG (A)' },
+      
+      // Budget Enablers for UCL
+      { id: 'u21', name: 'N. Schlotterbeck', pos: 'DEF', team: 'DOR', price: 5.0, photo: getPhoto(26500), opp: 'ARS (A)' },
+      { id: 'u22', name: 'P. Cubarsi', pos: 'DEF', team: 'BAR', price: 4.5, photo: getPhoto(422119), opp: 'MCI (H)' },
+      { id: 'u23', name: 'A. Lunin', pos: 'GK', team: 'RMA', price: 4.5, photo: getPhoto(733), opp: 'BAY (A)' },
+      { id: 'u24', name: 'Y. Bisseck', pos: 'DEF', team: 'INT', price: 4.5, photo: getPhoto(31256), opp: 'PSG (A)' }
     ];
 
     let currentLeague = 'EPL';
-    const INITIAL_BUDGET = 120.0;
+    const INITIAL_BUDGET = 100.0;
     let budget = INITIAL_BUDGET;
     let squad = []; 
     let captainId = null;
@@ -513,7 +510,7 @@
     let subSelectedId = null; 
     let activeModalPlayerId = null;
 
-    let activeGameweekView = 2; // Default to GW2
+    let activeGameweekView = currentLeague === 'EPL' ? 2 : 1;
     let chipsState = {
       wildcard: { used: false, active: false },
       tripleCaptain: { used: false, active: false },
@@ -615,22 +612,45 @@
       }
     }
 
-    // GAMEWEEK FIXTURES LOGIC
+    // GAMEWEEK DEADLINE ENGINE
+    function isTransferMarketOpen() {
+      const scheduleMap = currentLeague === 'EPL' ? scheduleEPL : scheduleUCL;
+      const currentGW = scheduleMap[activeGameweekView];
+      if (!currentGW || !currentGW.deadline) return false;
+      return Date.now() < currentGW.deadline.getTime();
+    }
+
     window.changeGameweek = function(delta) {
       activeGameweekView += delta;
-      if (activeGameweekView < 1) activeGameweekView = 1;
-      if (activeGameweekView > 3) activeGameweekView = 3;
+      const maxGW = currentLeague === 'EPL' ? 3 : 3; 
+      const minGW = currentLeague === 'EPL' ? 2 : 1; 
+      if (activeGameweekView < minGW) activeGameweekView = minGW;
+      if (activeGameweekView > maxGW) activeGameweekView = maxGW;
       renderGameweekFixtures();
     };
 
     function renderGameweekFixtures() {
       const scheduleMap = currentLeague === 'EPL' ? scheduleEPL : scheduleUCL;
-      const fixtures = scheduleMap[activeGameweekView] || [];
+      const gwData = scheduleMap[activeGameweekView];
+      const fixtures = gwData ? gwData.fixtures : [];
       const carousel = document.getElementById("gwFixturesCarousel");
       
       document.getElementById("currentGwBadge").textContent = `GW ${activeGameweekView}`;
       document.getElementById("gwSelectorLabel").textContent = `GW ${activeGameweekView}`;
-      document.getElementById("gwBannerTitle").textContent = `Gameweek ${activeGameweekView} Deadline: Sat 11:30 WAT`;
+      
+      if (gwData && gwData.deadline) {
+         const options = { weekday: 'short', hour: '2-digit', minute: '2-digit', timeZone: 'Africa/Lagos' };
+         document.getElementById("gwBannerTitle").textContent = `Gameweek ${activeGameweekView} Deadline: ${gwData.deadline.toLocaleDateString('en-GB', options)} WAT`;
+         
+         const isMarketOpen = Date.now() < gwData.deadline.getTime();
+         const indicator = document.getElementById('deadlineIndicator');
+         if (isMarketOpen) {
+            indicator.className = "w-2 h-2 rounded-full bg-emerald-400 animate-pulse";
+         } else {
+            indicator.className = "w-2 h-2 rounded-full bg-rose-500";
+            document.getElementById("gwBannerTitle").textContent += " (LOCKED)";
+         }
+      }
 
       carousel.innerHTML = fixtures.map(f => {
         const homeLogo = teamBadges[f.home] || `https://ui-avatars.com/api/?name=${f.home}&background=random`;
@@ -659,10 +679,14 @@
       }).join('');
     }
 
-    // CHIPS & POWER-UPS LOGIC
+    // CHIPS LOGIC
     window.toggleChip = function(chipKey) {
       if (!currentUser) {
         document.getElementById('authModal').classList.remove('hidden');
+        return;
+      }
+      if (!isTransferMarketOpen()) {
+        alert("The Gameweek deadline has passed. Chips are locked.");
         return;
       }
       if (chipsState[chipKey].used) {
@@ -675,7 +699,7 @@
       chipsState[chipKey].active = willBeActive;
 
       updateChipsUI();
-      renderPointsTab();
+      if (document.getElementById('panel-points').style.display === 'flex') renderPointsTab();
     };
 
     function updateChipsUI() {
@@ -710,13 +734,13 @@
       }
     }
 
-    // FANTASY LOGIC
+    // FANTASY NAVIGATION LOGIC
     window.switchLeague = function(league) {
       currentLeague = league;
       document.getElementById('tabEPL').className = league === 'EPL' ? 'flex-1 md:flex-none px-6 py-2 text-xs font-black rounded-lg bg-emerald-400 text-slate-950 transition uppercase tracking-wider' : 'flex-1 md:flex-none px-6 py-2 text-xs font-black rounded-lg text-slate-400 hover:text-white transition uppercase tracking-wider';
       document.getElementById('tabUCL').className = league === 'UCL' ? 'flex-1 md:flex-none px-6 py-2 text-xs font-black rounded-lg bg-emerald-400 text-slate-950 transition uppercase tracking-wider' : 'flex-1 md:flex-none px-6 py-2 text-xs font-black rounded-lg text-slate-400 hover:text-white transition uppercase tracking-wider';
       
-      activeGameweekView = 2; // Default to GW2 for new leagues
+      activeGameweekView = currentLeague === 'EPL' ? 2 : 1; 
       renderGameweekFixtures();
 
       if (currentUser) loadUserSquadFromDB();
@@ -781,8 +805,8 @@
         return `
         <div class="flex justify-between items-center bg-slate-950 border border-slate-800 p-3 rounded-xl hover:border-emerald-500/30 transition">
           <div class="flex items-center gap-3">
-            <div class="w-8 h-8 rounded-full bg-slate-200 overflow-hidden flex items-end justify-center border border-slate-700">
-               <img src="${p.photo}" class="w-[90%] h-[90%] object-cover object-top" onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(p.name)}&background=random'" />
+            <div class="w-10 h-10 flex items-end justify-center drop-shadow-md">
+               <img src="${p.photo}" class="w-full h-full object-contain object-bottom" onerror="this.onerror=null; this.src='https://cdn-icons-png.flaticon.com/512/1077/1077063.png'; this.style.filter='invert(1) opacity(0.6)';" />
             </div>
             <div class="flex flex-col">
               <span class="font-bold text-white text-xs">${p.name}</span>
@@ -815,7 +839,6 @@
       const bench = squad.filter(p => !p.isStarting);
 
       const renderPointRow = (p, isBench) => {
-         // Mock GW Score based on price & random seed for the demo
          let pts = Math.floor((p.price / 2) + (p.name.charCodeAt(0) % 5)); 
          let multiplier = 1;
          let suffix = '';
@@ -827,14 +850,14 @@
              }
              gwPoints += (pts * multiplier);
          } else {
-             pts = 0; // Bench doesn't score
+             pts = 0;
          }
 
          return `
            <div class="flex justify-between items-center bg-slate-950 border border-slate-800 p-2.5 rounded-xl ${isBench && !chipsState.benchBoost.active ? 'opacity-50' : ''}">
              <div class="flex items-center gap-3">
-               <div class="w-8 h-8 rounded-full bg-slate-200 overflow-hidden flex items-end justify-center border border-slate-700">
-                  <img src="${p.photo}" class="w-[90%] h-[90%] object-cover object-top" onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(p.name)}&background=random'" />
+               <div class="w-8 h-8 flex items-end justify-center drop-shadow-md">
+                  <img src="${p.photo}" class="w-full h-full object-contain object-bottom" onerror="this.onerror=null; this.src='https://cdn-icons-png.flaticon.com/512/1077/1077063.png'; this.style.filter='invert(1) opacity(0.6)';" />
                </div>
                <div>
                  <div class="text-white font-bold text-xs">${p.name} <span class="text-emerald-400 font-black">${suffix}</span></div>
@@ -854,7 +877,6 @@
       container.innerHTML = html;
       document.getElementById('gwPointsDisplay').textContent = gwPoints;
       
-      // Fetch user's stored total points from Firebase if available
       getDoc(doc(db, "fantasy_squads", `${currentUser.uid}_${currentLeague}`)).then(snap => {
          if (snap.exists()) document.getElementById('totalPointsDisplay').textContent = snap.data().points || 0;
       });
@@ -871,6 +893,11 @@
     }
 
     window.buyPlayer = function(id) {
+      if (!isTransferMarketOpen()) {
+        alert("The Gameweek deadline has passed. Transfers are locked!");
+        return;
+      }
+      
       const dbSource = currentLeague === 'EPL' ? dbEPL : dbUCL;
       const player = dbSource.find(p => p.id === id);
       
@@ -921,7 +948,7 @@
       const player = squad.find(p => p.id === id);
       if (!player) return;
 
-      document.getElementById('modalPlayerAvatar').style.backgroundImage = `url('${player.photo}')`;
+      document.getElementById('modalPlayerAvatar').src = player.photo;
       document.getElementById('modalPlayerName').textContent = player.name;
       document.getElementById('modalPlayerPos').textContent = player.pos;
       document.getElementById('modalPlayerPos').className = getPosColor(player.pos);
@@ -945,6 +972,12 @@
       if (!activeModalPlayerId) return;
       const id = activeModalPlayerId;
       
+      if (!isTransferMarketOpen() && (action === 'sell' || action === 'substitute')) {
+        alert("Gameweek Deadline has passed. Roster is locked!");
+        closeActionModal();
+        return;
+      }
+
       if (action === 'sell') {
          const index = squad.findIndex(p => p.id === id);
          if (index > -1) {
@@ -1013,19 +1046,17 @@
       const dataColor = infoToggleMode === 'price' ? 'text-emerald-400' : 'text-amber-400';
 
       let badges = '';
-      if (captainId === p.id) badges += `<div class="absolute -top-1 -right-1 bg-slate-900 border border-emerald-400 text-emerald-400 w-4 h-4 rounded-full flex items-center justify-center text-[8px] font-black z-10 shadow">C</div>`;
-      else if (viceCaptainId === p.id) badges += `<div class="absolute -top-1 -right-1 bg-slate-900 border border-cyan-400 text-cyan-400 w-4 h-4 rounded-full flex items-center justify-center text-[6px] font-black z-10 shadow">VC</div>`;
+      if (captainId === p.id) badges += `<div class="absolute top-0 right-0 bg-slate-900 border border-emerald-400 text-emerald-400 w-4 h-4 rounded-full flex items-center justify-center text-[8px] font-black z-20 shadow">C</div>`;
+      else if (viceCaptainId === p.id) badges += `<div class="absolute top-0 right-0 bg-slate-900 border border-cyan-400 text-cyan-400 w-4 h-4 rounded-full flex items-center justify-center text-[6px] font-black z-20 shadow">VC</div>`;
 
       return `
-        <div onclick="openActionModal('${p.id}')" class="relative group cursor-pointer transform hover:-translate-y-1 transition">
-          <div class="relative w-9 h-9 md:w-12 md:h-12 mx-auto">
-             <div class="w-full h-full bg-slate-200 rounded-full border-2 ${isSubHighlight ? 'sub-glow' : 'border-slate-500'} drop-shadow-xl overflow-hidden flex items-end justify-center">
-                 <img src="${p.photo}" class="w-[95%] h-[95%] object-cover object-top" onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(p.name)}&background=random&color=fff'" />
-             </div>
+        <div onclick="openActionModal('${p.id}')" class="relative group cursor-pointer flex flex-col items-center">
+          <div class="relative w-12 h-14 md:w-16 md:h-20 mx-auto flex items-end justify-center breathe ${isSubHighlight ? 'sub-glow-effect' : ''} drop-shadow-2xl">
+             <img src="${p.photo}" class="w-full h-full object-contain object-bottom" onerror="this.onerror=null; this.src='https://cdn-icons-png.flaticon.com/512/1077/1077063.png'; this.style.filter='invert(1) opacity(0.6)';" />
              ${badges}
           </div>
-          <div class="bg-[#0b1015]/95 border border-slate-700 rounded text-center px-1 py-0.5 mt-1 min-w-[60px] mx-auto shadow-lg">
-            <div class="text-[9px] font-bold text-white truncate max-w-[65px] mx-auto">${p.name}</div>
+          <div class="bg-[#0b1015]/95 border border-slate-700 rounded text-center px-1.5 py-0.5 mt-1 min-w-[70px] shadow-lg z-10">
+            <div class="text-[9px] font-bold text-white truncate max-w-[75px] mx-auto">${p.name}</div>
             <div class="text-[8px] ${dataColor} font-black">${dataLabel}</div>
           </div>
         </div>
@@ -1051,9 +1082,11 @@
            let emptyHtml = '';
            for (let i = posGroups[pos].length; i < defaultVisualSlots; i++) {
              emptyHtml += `
-               <div class="relative opacity-30">
-                 <div class="w-9 h-9 md:w-12 md:h-12 mx-auto bg-slate-800/50 rounded-full border-2 border-slate-600 border-dashed flex items-center justify-center text-slate-500 text-xs font-black">+</div>
-                 <div class="bg-slate-900/50 border border-slate-800 rounded text-center px-1.5 py-0.5 mt-1 min-w-[60px] mx-auto">
+               <div class="relative opacity-30 flex flex-col items-center">
+                 <div class="w-12 h-14 md:w-16 md:h-20 mx-auto flex items-end justify-center drop-shadow-md">
+                   <img src="https://cdn-icons-png.flaticon.com/512/1077/1077063.png" class="w-[80%] h-[80%] object-contain object-bottom" style="filter: invert(1);" />
+                 </div>
+                 <div class="bg-slate-900/50 border border-slate-800 rounded text-center px-1.5 py-0.5 mt-1 min-w-[70px] z-10">
                    <div class="text-[8px] font-bold text-slate-500 uppercase">${pos}</div>
                  </div>
                </div>
@@ -1074,9 +1107,11 @@
       for (let i = bench.length; i < 4; i++) {
          let typeLabel = (i === 0 && !bench.some(p => p.pos === 'GK')) ? 'GK' : 'SUB';
          benchHtml += `
-            <div class="relative opacity-30">
-              <div class="w-9 h-9 md:w-12 md:h-12 mx-auto bg-slate-800/50 rounded-full border-2 border-slate-600 border-dashed flex items-center justify-center text-slate-500 text-xs font-black">+</div>
-              <div class="bg-slate-900/50 border border-slate-800 rounded text-center px-1.5 py-0.5 mt-1 min-w-[60px] mx-auto">
+            <div class="relative opacity-30 flex flex-col items-center">
+              <div class="w-12 h-14 md:w-16 md:h-20 mx-auto flex items-end justify-center drop-shadow-md">
+                <img src="https://cdn-icons-png.flaticon.com/512/1077/1077063.png" class="w-[80%] h-[80%] object-contain object-bottom" style="filter: invert(1);" />
+              </div>
+              <div class="bg-slate-900/50 border border-slate-800 rounded text-center px-1.5 py-0.5 mt-1 min-w-[70px] z-10">
                 <div class="text-[8px] font-bold text-slate-500 uppercase">${typeLabel}</div>
               </div>
             </div>
@@ -1091,6 +1126,10 @@
     window.saveSquad = async function() {
       if (!currentUser) {
         document.getElementById('authModal').classList.remove('hidden');
+        return;
+      }
+      if (!isTransferMarketOpen()) {
+        alert("The Gameweek deadline has passed. Squad is locked!");
         return;
       }
       if (squad.length !== 15) {
