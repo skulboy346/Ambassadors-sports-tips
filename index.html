@@ -28,10 +28,13 @@
       </svg>
     </div>
     <div class="flex gap-2 items-center">
-      <button onclick="filterByFavoritesTab()" id="headerFavBtn" class="bg-slate-900 border border-amber-500/30 text-amber-400 font-bold text-xs px-3 py-1.5 rounded-lg hover:bg-amber-500/10 transition flex items-center gap-1.5 shadow-sm">
+      <button onclick="filterByFavoritesTab()" id="headerFavBtn" class="bg-slate-900 border border-amber-500/30 text-amber-400 font-bold text-xs px-3 py-1.5 rounded-lg hover:bg-amber-500/10 transition hidden md:flex items-center gap-1.5 shadow-sm">
         <span>⭐</span> <span id="favCountBadge">Favorites (0)</span>
       </button>
-      <button class="bg-slate-900 border border-slate-700 text-emerald-400 font-bold text-xs px-3 py-1.5 rounded-lg hover:bg-slate-800 transition">VIP Lounge</button>
+      <button onclick="window.location.href='fantasy.html'" class="bg-gradient-to-r from-emerald-500 to-cyan-500 text-slate-950 font-black text-xs px-3 py-1.5 rounded-lg shadow-lg hover:opacity-90 transition flex items-center gap-1.5">
+         🏆 Fantasy Draft
+      </button>
+      <button class="bg-slate-900 border border-slate-700 text-emerald-400 font-bold text-xs px-3 py-1.5 rounded-lg hover:bg-slate-800 transition">VIP</button>
     </div>
   </header>
 
@@ -44,10 +47,9 @@
         <button onclick="switchFeatured('tickets')" id="featBtn-tickets" class="flex-1 py-3 text-xs font-black uppercase tracking-wide text-slate-400 hover:text-slate-200 transition">💎 VIP Tickets</button>
         <button onclick="switchFeatured('news')" id="featBtn-news" class="flex-1 py-3 text-xs font-black uppercase tracking-wide text-slate-400 hover:text-slate-200 transition">📰 Intelligence</button>
       </div>
-
       <div class="p-4 relative">
         <div id="featContent-matches" class="flex gap-4 overflow-x-auto pb-2 scrollbar-hide snap-x scroll-smooth">
-          <div class="text-slate-500 text-xs py-4 text-center w-full">Syncing elite spotlights...</div>
+          <div class="text-slate-500 text-xs py-4 text-center w-full">Syncing today's top marquee spotlights...</div>
         </div>
         <div id="featContent-tickets" class="hidden flex gap-4 overflow-x-auto pb-2 scrollbar-hide snap-x">
           <div class="text-slate-500 text-xs py-4 text-center w-full">Syncing VIP Tickets...</div>
@@ -69,24 +71,24 @@
           <button onclick="switchArenaTab('results')" id="arenaResultsBtn" class="px-3 py-1 text-xs font-black rounded-lg text-slate-400 hover:text-white transition">🏁 Results</button>
         </div>
       </div>
-
       <div id="resultsFilterBar" class="flex flex-wrap gap-2 items-center bg-slate-900/80 p-3 rounded-2xl border border-slate-800 mx-2">
         <select id="resDay" class="bg-slate-950 border border-slate-700 text-xs rounded-lg px-2 py-1.5 text-emerald-400 font-bold outline-none" onchange="loadResultsArena()">
           <option value="today">Today</option>
           <option value="yesterday">Yesterday</option>
           <option value="day_before">2 Days Ago</option>
           <option value="week">Past 7 Days</option>
+          <option value="month1">Past 30 Days</option>
         </select>
         <select id="resCategory" class="bg-slate-950 border border-slate-700 text-xs rounded-lg px-2 py-1.5 text-white font-bold outline-none" onchange="populateLeagues('resCategory', 'resLeague'); loadResultsArena()">
-          <option value="all">🌍 All Sports & Countries</option>
+          <option value="all">🌍 All Sports & Locations</option>
           <option value="England">🏴󠁧󠁢󠁥󠁮󠁧󠁿 England</option>
           <option value="Spain">🇪🇸 Spain</option>
           <option value="Italy">🇮🇹 Italy</option>
           <option value="Germany">🇩🇪 Germany</option>
           <option value="France">🇫🇷 France</option>
-          <option value="USA">🇺🇸 USA (MLS / Next Pro)</option>
+          <option value="USA">🇺🇸 USA (MLS)</option>
           <option value="Americas">🌎 Americas</option>
-          <option value="World">🏆 International (UCL / UEL)</option>
+          <option value="World">🏆 International</option>
           <option value="Basketball">🏀 Basketball</option>
           <option value="Tennis">🎾 Tennis</option>
           <option value="Table Tennis">🏓 Table Tennis</option>
@@ -95,7 +97,6 @@
           <option value="all">All Leagues</option>
         </select>
       </div>
-
       <div id="arenaContainer" class="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden shadow-xl flex flex-col mx-2">
         <div class="text-slate-500 text-xs py-8 text-center">Fetching Arena Data...</div>
       </div>
@@ -106,7 +107,6 @@
     <section class="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden shadow-xl mx-2">
       <div class="flex flex-col md:flex-row gap-3 p-4 bg-slate-950 border-b border-slate-800" id="fixturesFilterBlock">
         <div class="flex flex-wrap items-center gap-2">
-          <!-- Horizon Selector -->
           <select id="fixtureHorizon" class="bg-slate-900 border border-slate-700 text-xs rounded-lg px-2 py-1.5 text-emerald-400 font-bold outline-none" onchange="fetchApiFootballFixtures()">
             <option value="today">Today (Upcoming)</option>
             <option value="tomorrow">Tomorrow</option>
@@ -121,8 +121,6 @@
             <option value="week2">Next 14 Days</option>
             <option value="month1">Next 15 Days Max</option>
           </select>
-
-          <!-- Sport / Location Selector -->
           <select id="fixtureCountry" class="bg-slate-900 border border-slate-700 text-xs rounded-lg px-2 py-1.5 text-white font-bold outline-none" onchange="populateLeagues('fixtureCountry', 'fixtureLeague'); fetchApiFootballFixtures()">
             <option value="all">🌍 All Sports & Locations</option>
             <option value="favorites">⭐ My Starred Favorites</option>
@@ -137,17 +135,13 @@
             <option value="Tennis">🎾 Tennis</option>
             <option value="Table Tennis">🏓 Table Tennis</option>
           </select>
-
-          <!-- Dynamic League Dropdown -->
           <select id="fixtureLeague" class="bg-slate-900 border border-slate-700 text-xs rounded-lg px-2 py-1.5 text-white font-bold outline-none" onchange="fetchApiFootballFixtures()">
             <option value="all">All Leagues</option>
           </select>
-
           <input type="text" id="clubSearch" placeholder="🔍 Search team..." class="bg-slate-900 border border-slate-700 text-xs rounded-lg px-3 py-1.5 text-white outline-none w-32 focus:border-emerald-400" oninput="fetchApiFootballFixtures()" />
         </div>
       </div>
 
-      <!-- MAIN TABS -->
       <div class="flex border-b border-slate-800 bg-[#0b1015]">
         <button onclick="switchMainTab('fixtures')" id="mainTabFixtures" class="flex-1 py-3 text-[10px] font-black uppercase tracking-widest text-emerald-400 border-b border-emerald-400 transition">Scheduled Matches</button>
         <button onclick="switchMainTab('tickets')" id="mainTabTickets" class="flex-1 py-3 text-[10px] font-black uppercase tracking-widest text-slate-500 hover:text-slate-300 transition">VIP Prediction Tickets</button>
@@ -177,10 +171,9 @@
           <button onclick="switchTicketMode('active')" id="ticketModeActive" class="flex-1 py-2 text-[10px] font-black uppercase tracking-widest text-emerald-400 bg-emerald-500/10 transition">🟢 Active Pending</button>
           <button onclick="switchTicketMode('outcomes')" id="ticketModeOutcomes" class="flex-1 py-2 text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-slate-200 transition">🏁 Ticket Outcomes</button>
         </div>
-
         <div id="activeTicketsWrapper" class="p-4 space-y-4">
           <div class="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
-            <button class="filter-btn active bg-emerald-400 text-slate-950 font-black px-4 py-1.5 rounded-lg text-xs whitespace-nowrap shadow" onclick="filterActiveTickets('all')">All Tickets</button>
+            <button class="filter-btn active bg-emerald-400 text-slate-950 font-black px-4 py-1.5 rounded-lg text-xs whitespace-nowrap shadow" onclick="filterActiveTickets('all')">All Active</button>
             <button class="filter-btn bg-slate-900 border border-slate-700 text-slate-300 font-bold px-4 py-1.5 rounded-lg text-xs whitespace-nowrap" onclick="filterActiveTickets('2_odds')">2 Odds</button>
             <button class="filter-btn bg-slate-900 border border-slate-700 text-slate-300 font-bold px-4 py-1.5 rounded-lg text-xs whitespace-nowrap" onclick="filterActiveTickets('5_odds')">5 Odds</button>
             <button class="filter-btn bg-slate-900 border border-slate-700 text-slate-300 font-bold px-4 py-1.5 rounded-lg text-xs whitespace-nowrap" onclick="filterActiveTickets('1000_odds')">1,000+ Acca</button>
@@ -189,7 +182,6 @@
              <div class="text-slate-500 text-xs py-10 text-center col-span-full">Loading VIP Tickets...</div>
           </div>
         </div>
-
         <div id="outcomesTicketsWrapper" class="p-4 space-y-4 hidden">
           <div class="flex flex-wrap gap-2 items-center">
             <select id="outcomeDayFilter" class="bg-slate-900 border border-slate-700 text-xs rounded-lg px-3 py-1.5 text-white font-bold outline-none" onchange="renderTicketOutcomes()">
@@ -213,7 +205,7 @@
     <section class="border-t border-slate-800 pt-8 space-y-4 mx-2">
       <div class="flex justify-between items-center px-1">
         <h2 class="text-base font-black text-white uppercase tracking-wide flex items-center gap-2">
-          🔥 Recent Sports Intelligence & Transfers
+          🔥 Recent Sports Intelligence
         </h2>
         <span class="text-[10px] text-slate-400 font-bold">Live Stream</span>
       </div>
@@ -236,13 +228,11 @@
   <div id="statsModal" class="fixed inset-0 z-50 bg-[#05070a]/90 backdrop-blur-md flex items-center justify-center p-3 md:p-6 hidden">
     <div class="bg-slate-900 border border-emerald-500/40 w-full max-w-2xl rounded-3xl p-5 md:p-6 shadow-2xl relative space-y-4 max-h-[92vh] overflow-y-auto">
       <button onclick="document.getElementById('statsModal').classList.add('hidden')" class="absolute top-4 right-4 text-slate-400 hover:text-white font-black text-lg bg-slate-950/80 px-2.5 py-1 rounded-xl border border-slate-800 transition">✕</button>
-      
       <div id="modalStatsHeader" class="border-b border-slate-800 pb-3">
         <span id="modalHeaderBadge" class="text-[10px] font-black uppercase text-emerald-400 tracking-wider">Match Telemetry</span>
         <h3 id="modalTeamTitle" class="text-lg font-black text-white mt-1">Match Details</h3>
         <p id="modalMatchDateTime" class="text-xs text-slate-400 font-bold mt-1">Syncing...</p>
       </div>
-
       <div id="modalStatsContent" class="space-y-4 text-xs text-slate-300">
         <div class="py-8 text-center text-slate-500">Querying live match events & statistics...</div>
       </div>
@@ -255,14 +245,12 @@
       <h2 id="seeAllModalTitle" class="text-sm font-black text-emerald-400 uppercase tracking-widest">All Matches</h2>
       <button onclick="document.getElementById('seeAllModal').classList.add('hidden'); document.getElementById('seeAllModal').classList.remove('flex');" class="bg-slate-900 border border-slate-700 text-white font-black px-3 py-1.5 rounded-lg text-xs hover:bg-rose-500/20 transition">✕ Close Terminal</button>
     </div>
-    
     <div class="flex-grow p-4 space-y-4 max-w-5xl mx-auto w-full">
       <div id="seeAllFilters" class="hidden flex-wrap gap-2 items-center bg-slate-900/80 p-3 rounded-2xl border border-slate-800">
         <select id="seeAllHorizon" class="bg-slate-950 border border-slate-700 text-xs rounded-xl px-3 py-2 text-emerald-400 font-bold outline-none" onchange="loadSeeAllFixtures()">
           <option value="today">Today</option>
           <option value="tomorrow">Tomorrow</option>
           <option value="week">Next 7 Days</option>
-          <option value="week2">Next 14 Days</option>
           <option value="month1">Next 15 Days</option>
         </select>
         <select id="seeAllCountry" class="bg-slate-950 border border-slate-700 text-xs rounded-xl px-3 py-2 text-white font-bold outline-none" onchange="populateLeagues('seeAllCountry', 'seeAllLeague'); loadSeeAllFixtures()">
@@ -284,7 +272,6 @@
         </select>
         <input type="text" id="seeAllSearch" placeholder="🔍 Search team..." class="bg-slate-950 border border-slate-700 text-xs rounded-xl px-3 py-2 text-white outline-none w-32" oninput="loadSeeAllFixtures()" />
       </div>
-
       <div id="seeAllMatrixHeader" class="hidden justify-between items-center px-4 py-2 bg-[#0b1015] text-[10px] font-bold text-slate-400 border border-slate-800 rounded-t-lg w-full mt-2">
         <div class="w-1/2 uppercase tracking-widest text-slate-500">Live Odds Matrix</div>
         <div class="w-1/2 flex gap-1 text-center pr-1">
@@ -293,7 +280,6 @@
           <span class="flex-1 bg-slate-900 rounded py-0.5 border border-slate-800 text-cyan-400">Away %</span>
         </div>
       </div>
-
       <div id="seeAllModalContent" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
     </div>
   </div>
@@ -323,6 +309,7 @@
     const allScoresApiKey = "afc868327bmsh38c47b6bc124e98p165ea1jsn015c0d841dd3";
 
     let globalArenaCache = [];
+    let globalFixturesCache = [];
     let allTickets = [];
     let favoriteLeagues = JSON.parse(localStorage.getItem('fav_leagues') || '[]');
 
@@ -393,11 +380,9 @@
       return false;
     };
 
-    // Deep Mathematical Probability Matrix
     window.calculateProbabilities = function(o1, oX, o2, homeTeam, awayTeam, h2hStats = null, sport = "Football") {
       const hStr = (homeTeam || "").toLowerCase();
       const aStr = (awayTeam || "").toLowerCase();
-
       const tier1 = ["barcelona", "real madrid", "manchester city", "arsenal", "liverpool", "bayern munich", "inter", "psg", "boston celtics", "denver nuggets", "alcaraz", "sinner", "djokovic"];
       const tier2 = ["juventus", "ac milan", "atletico madrid", "chelsea", "tottenham", "leverkusen", "dortmund", "la lakers", "golden state", "milwaukee bucks", "zverev", "medvedev"];
       
@@ -430,7 +415,6 @@
         }
       }
 
-      // Procedural Deep Analytics for when odds are missing
       let seed = 0;
       for (let i = 0; i < hStr.length; i++) seed += hStr.charCodeAt(i);
       for (let i = 0; i < aStr.length; i++) seed += aStr.charCodeAt(i) * 2;
@@ -442,7 +426,6 @@
         return { pct1: baseHome, pctX: 0, pct2: 100 - baseHome };
       }
 
-      // Soccer Form Matrix
       let hPower = 44 + (isHomeT1 ? 26 : isHomeT2 ? 12 : 0) + (seed % 9);
       let aPower = 30 + (isAwayT1 ? 26 : isAwayT2 ? 12 : 0) + ((seed * 3) % 9);
       let dPower = 26 - Math.abs(hPower - aPower) * 0.25;
@@ -535,7 +518,74 @@
       return { from: todayStr, to: todayStr };
     };
 
-    // MULTI-SPORT MOCK ENGINE TO ENSURE 100% RELIABILITY 
+    window.evaluatePick = function(pick, homeScore, awayScore) {
+      if (homeScore === "" || awayScore === "" || homeScore === null || awayScore === null) return 'pending';
+      const h = parseInt(homeScore) || 0;
+      const a = parseInt(awayScore) || 0;
+      const total = h + a;
+      const p = pick.toLowerCase();
+
+      if (p.includes("1 (home win)") || p === "1 (banker)") return h > a ? 'won' : 'lost';
+      if (p.includes("2 (away win)")) return a > h ? 'won' : 'lost';
+      if (p.includes("1x")) return h >= a ? 'won' : 'lost';
+      if (p.includes("x2")) return a >= h ? 'won' : 'lost';
+      if (p.includes("over 1.5")) return total > 1.5 ? 'won' : 'lost';
+      if (p.includes("over 2.5")) return total > 2.5 ? 'won' : 'lost';
+      if (p.includes("under 3.5")) return total < 3.5 ? 'won' : 'lost';
+      if (p.includes("under 4.5")) return total < 4.5 ? 'won' : 'lost';
+      if (p.includes("home over 0.5")) return h > 0.5 ? 'won' : 'lost';
+      if (p.includes("away over 0.5")) return a > 0.5 ? 'won' : 'lost';
+      if (p.includes("gg")) return (h > 0 && a > 0) ? 'won' : 'lost';
+      if (p.includes("195.5")) return total > 195.5 ? 'won' : 'lost';
+      if (p.includes("18.5")) return total > 18.5 ? 'won' : 'lost';
+      return 'pending';
+    };
+
+    window.enrichTicketMatches = function(ticket) {
+        let wonCount = 0;
+        let lostCount = 0;
+        let activeLiveCount = 0;
+        const allKnownMatches = [...globalArenaCache, ...globalFixturesCache];
+        
+        const enrichedMatches = ticket.matches.map(m => {
+            const mNameLower = (m.name || '').toLowerCase();
+            let liveData = allKnownMatches.find(liveM => 
+                liveM.match_hometeam_name && liveM.match_awayteam_name &&
+                mNameLower.includes(liveM.match_hometeam_name.toLowerCase()) && 
+                mNameLower.includes(liveM.match_awayteam_name.toLowerCase())
+            );
+
+            let status = 'pending';
+            let liveScoreStr = '';
+            let isLive = false;
+
+            if (liveData) {
+                isLive = isMatchLive(liveData);
+                const isFin = isMatchFinished(liveData);
+                if (isLive || isFin) {
+                    liveScoreStr = `${liveData.match_hometeam_score} - ${liveData.match_awayteam_score}`;
+                    if (isLive) activeLiveCount++;
+                    const evalResult = window.evaluatePick(m.pick, liveData.match_hometeam_score, liveData.match_awayteam_score);
+                    if (isFin) {
+                        status = evalResult; 
+                    } else if (evalResult === 'won' && m.pick.includes('over')) {
+                        status = 'won'; 
+                    }
+                }
+            }
+            if (status === 'won') wonCount++;
+            if (status === 'lost') lostCount++;
+            return { ...m, liveScoreStr, isLive, status, matchStatusStr: liveData ? liveData.match_status : '' };
+        });
+
+        let ticketStatus = ticket.status; 
+        if (ticket.status === 'pending') {
+            if (lostCount > 0) ticketStatus = 'lost';
+            else if (wonCount === ticket.matches.length && ticket.matches.length > 0) ticketStatus = 'won';
+        }
+        return { ...ticket, enrichedMatches, wonCount, lostCount, totalMatches: ticket.matches.length, activeLiveCount, ticketStatus };
+    };
+
     window.fetchBasketballDataRange = async function(from, to) {
       const teams = ["LA Lakers", "Golden State", "Boston Celtics", "Denver Nuggets", "Miami Heat", "Chicago Bulls", "Phoenix Suns", "Dallas Mavericks", "NY Knicks", "Brooklyn Nets"];
       let d1 = new Date(from);
@@ -623,15 +673,6 @@
       }
       return matches;
     };
-
-    async function fetchRealSportsNews() {
-      const url = 'https://allscores.p.rapidapi.com/api/allscores/news?sport=1&timezone=Africa%2FLagos&langId=1';
-      const options = { method: 'GET', headers: { 'x-rapidapi-key': allScoresApiKey, 'x-rapidapi-host': 'allscores.p.rapidapi.com' } };
-      try {
-        const data = await fetchWithTimeout(url, options, 4000);
-        return data && data.news ? data.news : [];
-      } catch (err) { return []; }
-    }
 
     const countryLeagues = {
       all: ["Premier League", "La Liga", "Serie A", "Bundesliga", "Ligue 1", "UEFA Champions League", "UEFA Europa League", "NBA", "EuroLeague", "ATP Tour", "WTA Tour", "WTT Smash"],
@@ -812,7 +853,6 @@
       container.addEventListener('mouseleave', () => initSpotlightAutoSlide());
     }
 
-    // ELITE SPOTLIGHT ENGINE (Filters out any Live or Finished matches)
     async function fetchSpotlightMatches() {
       const featContainer = document.getElementById('featContent-matches');
       if (!featContainer) return;
@@ -836,17 +876,15 @@
         const eliteLeagues = [
           "Premier League", "La Liga", "Serie A", "Bundesliga", "Ligue 1", 
           "UEFA Champions League", "Champions League", "UEFA Europa League", 
-          "Europa League", "NBA", "EuroLeague", "ATP", "WTA"
+          "Europa League", "NBA", "EuroLeague", "ATP Tour", "WTA Tour"
         ];
 
-        // Only include matches that are strictly UPCOMING
         let spotlightList = combined.filter(m => {
-          if (isMatchFinished(m) || isMatchLive(m)) return false;
+          if (isMatchFinished(m) || isMatchLive(m)) return false; 
           const lName = (m.league_name || "").toLowerCase();
           return eliteLeagues.some(el => lName.includes(el.toLowerCase()));
         });
 
-        // Strict Chronological Kickoff Sorting
         spotlightList.sort((a, b) => {
           const dtA = `${a.match_date || ''} ${a.match_time || '00:00'}`;
           const dtB = `${b.match_date || ''} ${b.match_time || '00:00'}`;
@@ -926,6 +964,8 @@
         if (Array.isArray(tennisData)) combined = [...combined, ...tennisData];
         if (Array.isArray(ttData)) combined = [...combined, ...ttData];
 
+        globalArenaCache = combined; 
+
         if (combined.length === 0) {
            container.innerHTML = `<div class="text-slate-500 text-xs py-8 text-center">No active match stream.</div>`;
            return;
@@ -958,6 +998,7 @@
         }
 
         container.innerHTML = preview.map(m => renderArenaCard(m)).join('');
+        loadPublicTickets(); 
       } catch (err) {
         container.innerHTML = `<div class="text-slate-500 text-xs py-8 text-center">No active live matches found.</div>`;
       }
@@ -990,7 +1031,8 @@
         if (Array.isArray(tennisData)) upcoming = [...upcoming, ...tennisData];
         if (Array.isArray(ttData)) upcoming = [...upcoming, ...ttData];
 
-        // Filter out matches already played or live
+        globalFixturesCache = upcoming;
+
         upcoming = upcoming.filter(f => !isMatchFinished(f) && !isMatchLive(f));
 
         if (country === 'favorites') {
@@ -1015,11 +1057,12 @@
           upcoming = upcoming.filter(f => f.match_hometeam_name.toLowerCase().includes(search) || f.match_awayteam_name.toLowerCase().includes(search));
         }
 
-        const prestigeLeagues = ["Premier League", "La Liga", "Serie A", "Bundesliga", "Ligue 1", "UEFA Champions League", "Champions League", "NBA"];
+        const prestigeLeagues = ["Premier League", "La Liga", "Serie A", "Bundesliga", "Ligue 1", "UEFA Champions League", "Champions League", "NBA", "ATP Tour"];
 
         upcoming.sort((a, b) => {
           const dtA = `${a.match_date || ''} ${a.match_time || '00:00'}`;
           const dtB = `${b.match_date || ''} ${b.match_time || '00:00'}`;
+          
           if (dtA !== dtB) return dtA.localeCompare(dtB);
           
           const aIsPrestige = prestigeLeagues.some(pl => (a.league_name || '').toLowerCase().includes(pl.toLowerCase()));
@@ -1070,8 +1113,8 @@
       document.getElementById('statsModal').classList.remove('hidden');
 
       if (isLive || isFin) {
-        let goalsList = [];
-        let cardsList = [];
+        let goalsList = '';
+        let cardsList = '';
         let statsHtml = '';
 
         if (sport === "Basketball") {
@@ -1325,38 +1368,54 @@
         return;
       }
       container.innerHTML = tickets.map(t => {
-        const matchesPreview = t.matches ? t.matches.slice(0, 3).map(m => {
+        const et = window.enrichTicketMatches(t);
+        const matchesPreview = et.enrichedMatches.slice(0, 3).map(m => {
            const formattedDT = formatToWAT(m.match_date, m.match_time);
            return `
            <div class="flex flex-col text-[10px] text-slate-300 mb-1.5 border-b border-slate-800/50 pb-1.5 last:border-0 last:pb-0">
              <div class="flex items-center justify-between">
                 <span class="text-[8px] font-bold text-emerald-400 uppercase tracking-wider">🏆 ${m.league || 'Competition'}</span>
-                <span class="text-[9px] text-slate-500 font-semibold">📅 ${formattedDT}</span>
+                <span class="text-[9px] text-slate-500 font-semibold">${formattedDT}</span>
              </div>
              <div class="flex justify-between items-center mt-0.5">
-               <span class="font-bold text-slate-200 truncate pr-2">⚽ ${m.name}</span>
-               <span class="text-emerald-400 font-black text-[11px]">${m.pick}</span>
+               <span class="font-bold text-slate-200 truncate pr-2">
+                 ${m.isLive ? '<span class="text-rose-500 animate-pulse text-[8px] mr-1">🔴</span>' : ''}⚽ ${m.name} 
+                 ${m.liveScoreStr ? `<strong class="ml-1 text-white bg-slate-800 px-1 py-0.5 rounded">${m.liveScoreStr}</strong>` : ''}
+               </span>
+               <span class="text-emerald-400 font-black text-[11px] flex items-center gap-1">
+                  ${m.pick} ${m.status === 'won' ? '✅' : m.status === 'lost' ? '❌' : ''}
+               </span>
              </div>
            </div>`;
-        }).join('') : '';
-        const extraCount = t.matches && t.matches.length > 3 ? `<div class="text-[9px] text-slate-500 mt-1 font-bold">+${t.matches.length - 3} more matches...</div>` : '';
+        }).join('');
+        const extraCount = et.enrichedMatches.length > 3 ? `<div class="text-[9px] text-slate-500 mt-1 font-bold">+${et.enrichedMatches.length - 3} more matches...</div>` : '';
 
         return `
-        <div onclick="openTicketModal('${t.id}')" class="bg-slate-900 border border-slate-800 rounded-3xl p-5 shadow-2xl flex flex-col justify-between cursor-pointer hover:border-emerald-500/50 transition">
-          <div>
+        <div onclick="openTicketModal('${et.id}')" class="bg-slate-900 border border-slate-800 rounded-3xl p-5 shadow-2xl flex flex-col justify-between cursor-pointer hover:border-emerald-500/50 transition relative overflow-hidden">
+          ${et.ticketStatus === 'won' ? '<div class="absolute inset-0 bg-emerald-500/5 pointer-events-none"></div>' : ''}
+          ${et.ticketStatus === 'lost' ? '<div class="absolute inset-0 bg-rose-500/5 pointer-events-none"></div>' : ''}
+          <div class="relative z-10">
             <div class="flex justify-between items-start mb-3">
-              <div><span class="text-[9px] font-black uppercase text-emerald-400 bg-emerald-500/10 px-2.5 py-1 rounded-md border border-emerald-500/20">${t.category}</span><h3 class="text-sm font-black text-white mt-2">${t.title}</h3></div>
-              <div class="text-right"><div class="text-xl font-black text-emerald-400">${t.totalOdds}</div><span class="text-[9px] text-slate-400 font-bold uppercase">Odds</span></div>
+              <div>
+                <span class="text-[9px] font-black uppercase text-emerald-400 bg-emerald-500/10 px-2.5 py-1 rounded-md border border-emerald-500/20">${et.category}</span>
+                <h3 class="text-sm font-black text-white mt-2">${et.title}</h3>
+              </div>
+              <div class="text-right">
+                <div class="text-xl font-black text-emerald-400">${et.totalOdds}</div>
+                <span class="text-[9px] text-slate-400 font-bold uppercase">Odds</span>
+              </div>
             </div>
             <div class="bg-slate-950 p-2.5 rounded-2xl border border-slate-800 space-y-1 mb-3">
               ${matchesPreview}
               ${extraCount}
             </div>
           </div>
-          <div class="flex justify-between items-center border-t border-slate-800 pt-3 text-xs font-black uppercase text-amber-400">
-            <span>Status: <strong class="text-amber-400">${t.status}</strong></span>
+          <div class="flex justify-between items-center border-t border-slate-800 pt-3 text-xs font-black uppercase relative z-10">
+            <span class="${et.ticketStatus === 'won' ? 'text-emerald-400' : et.ticketStatus === 'lost' ? 'text-rose-400' : 'text-amber-400'}">
+              Status: <strong>${et.ticketStatus}</strong> <span class="text-[9px] ml-1 text-slate-400">(${et.wonCount}/${et.totalMatches} Won)</span>
+            </span>
             <div class="flex items-center gap-2">
-              <button onclick="event.stopPropagation(); shareTicket('${t.id}')" class="bg-slate-950 text-emerald-400 border border-emerald-500/30 px-2.5 py-1 rounded-lg text-[9px] font-bold hover:bg-emerald-500/20">🔗 Share</button>
+              <button onclick="event.stopPropagation(); shareTicket('${et.id}')" class="bg-slate-950 text-emerald-400 border border-emerald-500/30 px-2.5 py-1 rounded-lg text-[9px] font-bold hover:bg-emerald-500/20">🔗 Share</button>
               <span class="text-[9px] text-emerald-400 underline">Tap Slip</span>
             </div>
           </div>
@@ -1395,26 +1454,27 @@
       container.innerHTML = concluded.map(t => {
         const d = new Date(t.createdAt?.toMillis() || Date.now());
         const createdStr = d.toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' });
+        const et = window.enrichTicketMatches(t);
         
         return `
-        <div onclick="openTicketModal('${t.id}')" class="bg-slate-900 border border-slate-800 rounded-3xl p-5 shadow-2xl flex flex-col justify-between cursor-pointer hover:border-slate-600 transition">
+        <div onclick="openTicketModal('${et.id}')" class="bg-slate-900 border border-slate-800 rounded-3xl p-5 shadow-2xl flex flex-col justify-between cursor-pointer hover:border-slate-600 transition">
           <div>
             <div class="flex justify-between items-start mb-3">
               <div>
-                <span class="text-[9px] font-black uppercase text-emerald-400 bg-emerald-500/10 px-2.5 py-1 rounded-md border border-emerald-500/20">${t.category}</span>
-                <h3 class="text-sm font-black text-slate-300 mt-2 line-clamp-1">${t.title}</h3>
+                <span class="text-[9px] font-black uppercase text-emerald-400 bg-emerald-500/10 px-2.5 py-1 rounded-md border border-emerald-500/20">${et.category}</span>
+                <h3 class="text-sm font-black text-slate-300 mt-2 line-clamp-1">${et.title}</h3>
                 <span class="text-[9px] text-slate-500 font-bold mt-1 block">Created: ${createdStr}</span>
               </div>
-              <div class="text-right"><div class="text-xl font-black text-slate-400">${t.totalOdds}</div><span class="text-[9px] text-slate-500 font-bold uppercase">Odds</span></div>
+              <div class="text-right"><div class="text-xl font-black text-slate-400">${et.totalOdds}</div><span class="text-[9px] text-slate-500 font-bold uppercase">Odds</span></div>
             </div>
             <div class="bg-slate-950 p-2.5 rounded-2xl border border-slate-800 space-y-1 mb-3">
-              <div class="text-[10px] text-slate-400 font-bold">${t.matches ? t.matches.length : 0} Matches Evaluated</div>
+              <div class="text-[10px] text-slate-400 font-bold">${et.totalMatches} Matches Evaluated</div>
             </div>
           </div>
           <div class="flex justify-between items-center border-t border-slate-800 pt-3 text-xs font-black uppercase">
-            <span>Result: <strong class="${t.status==='won'?'text-emerald-400':'text-rose-400'}">${t.status}</strong></span>
+            <span>Result: <strong class="${et.ticketStatus==='won'?'text-emerald-400':'text-rose-400'}">${et.ticketStatus}</strong> <span class="text-[9px] ml-1 text-slate-400">(${et.wonCount}/${et.totalMatches} Won)</span></span>
             <div class="flex items-center gap-2">
-              <button onclick="event.stopPropagation(); shareTicket('${t.id}')" class="bg-slate-950 text-slate-400 border border-slate-700 px-2.5 py-1 rounded-lg text-[9px] font-bold hover:text-white">🔗 Share</button>
+              <button onclick="event.stopPropagation(); shareTicket('${et.id}')" class="bg-slate-950 text-slate-400 border border-slate-700 px-2.5 py-1 rounded-lg text-[9px] font-bold hover:text-white">🔗 Share</button>
               <span class="text-[9px] text-slate-400 underline">Tap Slip</span>
             </div>
           </div>
@@ -1423,50 +1483,60 @@
     };
 
     window.openTicketModal = function(id) {
-      const t = allTickets.find(x => x.id === id);
-      if(!t) return;
+      const tRaw = allTickets.find(x => x.id === id);
+      if(!tRaw) return;
+      const t = window.enrichTicketMatches(tRaw);
       
       const content = document.getElementById('ticketModalContent');
       content.innerHTML = `
-        <div class="bg-slate-900 border border-slate-800 rounded-3xl p-6 shadow-2xl flex flex-col">
-          <div class="flex justify-between items-start mb-4 border-b border-slate-800 pb-4">
-            <div>
-              <span class="text-[10px] font-black uppercase text-emerald-400 bg-emerald-500/10 px-2.5 py-1 rounded-md border border-emerald-500/20">${t.category}</span>
-              <h3 class="text-lg font-black text-white mt-2">${t.title}</h3>
+        <div class="bg-slate-900 border border-slate-800 rounded-3xl p-6 shadow-2xl flex flex-col relative overflow-hidden">
+          ${t.ticketStatus === 'won' ? '<div class="absolute inset-0 bg-emerald-500/5 pointer-events-none"></div>' : ''}
+          ${t.ticketStatus === 'lost' ? '<div class="absolute inset-0 bg-rose-500/5 pointer-events-none"></div>' : ''}
+          <div class="relative z-10">
+            <div class="flex justify-between items-start mb-4 border-b border-slate-800 pb-4">
+              <div>
+                <span class="text-[10px] font-black uppercase text-emerald-400 bg-emerald-500/10 px-2.5 py-1 rounded-md border border-emerald-500/20">${t.category}</span>
+                <h3 class="text-lg font-black text-white mt-2">${t.title}</h3>
+              </div>
+              <div class="text-right">
+                <div class="text-2xl font-black text-emerald-400">${t.totalOdds}</div>
+                <span class="text-[10px] text-slate-400 font-bold uppercase">Total Odds</span>
+              </div>
             </div>
-            <div class="text-right">
-              <div class="text-2xl font-black text-emerald-400">${t.totalOdds}</div>
-              <span class="text-[10px] text-slate-400 font-bold uppercase">Total Odds</span>
+            <div class="space-y-3 mb-6 max-h-[50vh] overflow-y-auto pr-2">
+              ${t.enrichedMatches ? t.enrichedMatches.map(m => {
+                const formattedDT = formatToWAT(m.match_date, m.match_time);
+                return `
+                <div class="bg-slate-950 p-3.5 rounded-2xl border border-slate-800 text-sm">
+                  <div class="flex justify-between items-center mb-1">
+                     <span class="text-[9px] font-black uppercase text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">🏆 ${m.league || 'League'}</span>
+                     <span class="text-[9px] text-slate-400 font-bold">📅 ${formattedDT}</span>
+                  </div>
+                  <div class="flex justify-between items-center mt-2">
+                    <span class="font-bold text-slate-100 text-xs">
+                      ${m.isLive ? '<span class="text-rose-500 animate-pulse text-[10px] mr-1">🔴</span>' : ''}⚽ ${m.name} 
+                      ${m.liveScoreStr ? `<strong class="ml-2 text-white bg-slate-800 px-1.5 py-0.5 rounded">${m.liveScoreStr}</strong>` : ''}
+                    </span>
+                    <span class="text-emerald-400 font-black">@${m.odds}</span>
+                  </div>
+                  <div class="flex justify-between items-center mt-2 pt-2 border-t border-slate-800/50">
+                    <span class="text-slate-400 font-semibold text-xs">Safe Prediction: <strong class="text-cyan-400 font-bold">${m.pick}</strong></span>
+                    <span class="font-black text-lg">${m.status === 'won' ? '✅' : m.status === 'lost' ? '❌' : '🕒'}</span>
+                  </div>
+                </div>`
+              }).join('') : ''}
             </div>
-          </div>
-          <div class="space-y-3 mb-6 max-h-[50vh] overflow-y-auto pr-2">
-            ${t.matches ? t.matches.map(m => {
-              const formattedDT = formatToWAT(m.match_date, m.match_time);
-              return `
-              <div class="bg-slate-950 p-3.5 rounded-2xl border border-slate-800 text-sm">
-                <div class="flex justify-between items-center mb-1">
-                   <span class="text-[9px] font-black uppercase text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">🏆 ${m.league || 'League'}</span>
-                   <span class="text-[9px] text-slate-400 font-bold">📅 ${formattedDT}</span>
-                </div>
-                <div class="flex justify-between items-center mt-2">
-                  <span class="font-bold text-slate-100 text-xs">⚽ ${m.name}</span>
-                  <span class="text-emerald-400 font-black">@${m.odds}</span>
-                </div>
-                <div class="flex justify-between items-center mt-2 pt-2 border-t border-slate-800/50">
-                  <span class="text-slate-400 font-semibold text-xs">Safe Prediction: <strong class="text-cyan-400 font-bold">${m.pick}</strong></span>
-                </div>
-              </div>`
-            }).join('') : ''}
-          </div>
-          <div class="flex justify-between items-center border-t border-slate-800 pt-4">
-            <button onclick="shareTicket('${t.id}')" class="bg-emerald-400 text-slate-950 font-black px-4 py-2 rounded-xl text-xs flex items-center gap-1.5 shadow-lg">🔗 Share Slip</button>
-            <div class="font-black uppercase text-sm ${t.status==='won'?'text-emerald-400':t.status==='lost'?'text-rose-400':'text-amber-400'}">
-              Status: ${t.status}
+            <div class="flex justify-between items-center border-t border-slate-800 pt-4">
+              <button onclick="shareTicket('${t.id}')" class="bg-emerald-400 text-slate-950 font-black px-4 py-2 rounded-xl text-xs flex items-center gap-1.5 shadow-lg">🔗 Share Slip</button>
+              <div class="font-black uppercase text-sm ${t.ticketStatus==='won'?'text-emerald-400':t.ticketStatus==='lost'?'text-rose-400':'text-amber-400'}">
+                Status: ${t.ticketStatus} <span class="text-[10px] text-slate-400 ml-1">(${t.wonCount}/${t.totalMatches} Won)</span>
+              </div>
             </div>
           </div>
         </div>
       `;
       document.getElementById('ticketModal').classList.remove('hidden');
+      document.getElementById('ticketModal').classList.add('flex');
     };
 
     window.shareTicket = function(ticketId) {
@@ -1486,6 +1556,109 @@
       }
     };
 
+    window.openSeeAllModal = async function(type) {
+      document.getElementById('seeAllModalTitle').textContent = type === 'arena' ? "Live & Results Arena" : "Full Schedule Terminal";
+      
+      const filters = document.getElementById('seeAllFilters');
+      const matrixHeader = document.getElementById('seeAllMatrixHeader');
+      const content = document.getElementById('seeAllModalContent');
+
+      content.innerHTML = `<div class="text-slate-500 text-xs py-10 text-center col-span-full">Loading Data...</div>`;
+      document.getElementById('seeAllModal').classList.remove('hidden');
+      document.getElementById('seeAllModal').classList.add('flex'); 
+
+      if (type === 'arena') {
+        filters.classList.add('hidden');
+        filters.classList.remove('flex');
+        if(matrixHeader) { matrixHeader.classList.add('hidden'); matrixHeader.classList.remove('flex'); }
+        content.className = 'grid grid-cols-1 md:grid-cols-2 gap-4';
+
+        const isLiveMode = document.getElementById('arenaLiveBtn').classList.contains('bg-emerald-400');
+        let filtered = globalArenaCache.filter(m => isLiveMode ? isMatchLive(m) : isMatchFinished(m));
+        content.innerHTML = filtered.length ? filtered.map(m => renderArenaCard(m)).join('') : `<div class="text-slate-500 text-xs py-10 text-center col-span-full">No records found.</div>`;
+      } else {
+        filters.classList.remove('hidden');
+        filters.classList.add('flex');
+        if(matrixHeader) { matrixHeader.classList.remove('hidden'); matrixHeader.classList.add('flex'); }
+        content.className = 'flex flex-col border border-slate-800 rounded-lg overflow-hidden';
+        loadSeeAllFixtures();
+      }
+    };
+
+    window.loadSeeAllFixtures = async function() {
+      const content = document.getElementById('seeAllModalContent');
+      content.innerHTML = `<div class="text-slate-500 text-xs py-10 text-center col-span-full">Syncing fixtures...</div>`;
+      const search = document.getElementById('seeAllSearch').value.toLowerCase();
+      const horizon = document.getElementById('seeAllHorizon').value;
+      const country = document.getElementById('seeAllCountry').value;
+      const league = document.getElementById('seeAllLeague').value;
+      const { from, to } = resolveDateRange(horizon);
+
+      try {
+        const soccerUrl = `https://apiv2.apifootball.com/?action=get_events&from=${from}&to=${to}&APIkey=${soccerApiKey}`;
+        const [soccerRes, bballData, tennisData, ttData] = await Promise.all([
+          (country !== 'Basketball' && country !== 'Tennis' && country !== 'Table Tennis') ? fetchWithTimeout(soccerUrl, {}, 5500) : Promise.resolve([]),
+          (country === 'all' || country === 'Basketball' || country === 'favorites') ? window.fetchBasketballDataRange(from, to) : Promise.resolve([]),
+          (country === 'all' || country === 'Tennis' || country === 'favorites') ? window.fetchOtherSportsDataRange(from, to, 'Tennis') : Promise.resolve([]),
+          (country === 'all' || country === 'Table Tennis' || country === 'favorites') ? window.fetchOtherSportsDataRange(from, to, 'Table Tennis') : Promise.resolve([])
+        ]);
+        
+        let upcoming = [];
+        if (Array.isArray(soccerRes)) upcoming = [...upcoming, ...soccerRes];
+        if (Array.isArray(bballData)) upcoming = [...upcoming, ...bballData];
+        if (Array.isArray(tennisData)) upcoming = [...upcoming, ...tennisData];
+        if (Array.isArray(ttData)) upcoming = [...upcoming, ...ttData];
+
+        upcoming = upcoming.filter(f => !isMatchFinished(f) && !isMatchLive(f));
+
+        if (country === 'favorites') {
+          upcoming = upcoming.filter(f => favoriteLeagues.includes(f.league_name));
+        } else if (country !== 'all') {
+          upcoming = upcoming.filter(f => {
+             const cName = (f.country_name || "").toLowerCase();
+             const lName = (f.league_name || "").toLowerCase();
+             const searchKey = country.toLowerCase();
+             if (searchKey === 'usa') return cName.includes('usa') || lName.includes('mls');
+             if (searchKey === 'americas') return cName.includes('mexico') || cName.includes('americas') || lName.includes('copa') || lName.includes('liga mx');
+             return cName.includes(searchKey) || lName.includes(searchKey);
+          });
+        }
+
+        updateDynamicLeagues(upcoming, 'seeAllLeague');
+
+        if (league !== 'all') {
+          upcoming = upcoming.filter(f => f.league_name && f.league_name.toLowerCase().includes(league.toLowerCase()));
+        }
+        if (search) {
+          upcoming = upcoming.filter(f => f.match_hometeam_name.toLowerCase().includes(search) || f.match_awayteam_name.toLowerCase().includes(search));
+        }
+
+        const prestigeLeagues = ["Premier League", "La Liga", "Serie A", "Bundesliga", "Ligue 1", "UEFA Champions League", "Champions League", "NBA", "ATP Tour"];
+
+        upcoming.sort((a, b) => {
+          const dtA = `${a.match_date || ''} ${a.match_time || '00:00'}`;
+          const dtB = `${b.match_date || ''} ${b.match_time || '00:00'}`;
+          if (dtA !== dtB) return dtA.localeCompare(dtB);
+          
+          const aIsPrestige = prestigeLeagues.some(pl => (a.league_name || '').toLowerCase().includes(pl.toLowerCase()));
+          const bIsPrestige = prestigeLeagues.some(pl => (b.league_name || '').toLowerCase().includes(pl.toLowerCase()));
+          
+          if (aIsPrestige && !bIsPrestige) return -1;
+          if (!aIsPrestige && bIsPrestige) return 1;
+          return 0;
+        });
+
+        if (upcoming.length === 0) {
+          content.innerHTML = `<div class="text-slate-500 text-xs py-8 text-center w-full">No matches found matching criteria.</div>`;
+          return;
+        }
+
+        content.innerHTML = upcoming.map(f => renderListCard(f)).join('');
+      } catch (err) {
+        content.innerHTML = `<div class="text-rose-400 text-xs py-8 text-center w-full">Failed to connect to API stream.</div>`;
+      }
+    };
+
     async function loadPublicTickets() {
       try {
         const querySnapshot = await getDocs(collection(db, "daily_tickets"));
@@ -1500,23 +1673,28 @@
         const fCont = document.getElementById("featContent-tickets");
         if (pendingTickets.length > 0 && fCont) {
           fCont.innerHTML = pendingTickets.map(t => {
-            const matchesPreview = t.matches ? t.matches.slice(0, 3).map(m => `<div class="text-[10px] text-slate-300 truncate"><span class="text-slate-500 text-[8px] font-bold uppercase">${m.league ? m.league.substring(0,12) : ''}</span> ⚽ ${m.name} <span class="text-emerald-400 font-bold">(${m.pick})</span></div>`).join('') : '';
-            const extraCount = t.matches && t.matches.length > 3 ? `<div class="text-[9px] text-slate-500 mt-1">+${t.matches.length - 3} more...</div>` : '';
+            const et = window.enrichTicketMatches(t);
+            const matchesPreview = et.enrichedMatches.slice(0, 3).map(m => `<div class="text-[10px] text-slate-300 truncate"><span class="text-slate-500 text-[8px] font-bold uppercase">${m.league ? m.league.substring(0,12) : ''}</span> ${m.isLive ? '<span class="text-rose-500 animate-pulse">🔴</span>' : ''}⚽ ${m.name} <span class="text-emerald-400 font-bold">(${m.pick})</span></div>`).join('');
+            const extraCount = et.enrichedMatches.length > 3 ? `<div class="text-[9px] text-slate-500 mt-1">+${et.enrichedMatches.length - 3} more...</div>` : '';
             
             return `
-            <div onclick="openTicketModal('${t.id}')" class="min-w-[280px] bg-slate-900 border border-slate-800 p-4 rounded-xl shadow-xl flex flex-col justify-between snap-start cursor-pointer hover:border-emerald-500/50 transition">
-              <div class="flex justify-between items-start mb-2 border-b border-slate-800 pb-2">
-                <span class="text-[9px] font-black uppercase text-emerald-400">${t.category}</span>
-                <span class="text-sm font-black text-emerald-400">${t.totalOdds} Odds</span>
-              </div>
-              <h3 class="text-xs font-bold text-white mb-2 truncate">${t.title}</h3>
-              <div class="bg-slate-950 p-2.5 rounded-lg mb-2 border border-slate-800 space-y-1">
-                 ${matchesPreview}
-                 ${extraCount}
-              </div>
-              <div class="flex justify-between items-center mt-auto pt-2">
-                <span class="text-[9px] font-bold uppercase text-amber-400">${t.status}</span>
-                <span class="text-[9px] text-emerald-400 underline">Tap to view</span>
+            <div onclick="openTicketModal('${et.id}')" class="min-w-[280px] bg-slate-900 border border-slate-800 p-4 rounded-xl shadow-xl flex flex-col justify-between snap-start cursor-pointer hover:border-emerald-500/50 transition relative overflow-hidden">
+              ${et.ticketStatus === 'won' ? '<div class="absolute inset-0 bg-emerald-500/5 pointer-events-none"></div>' : ''}
+              ${et.ticketStatus === 'lost' ? '<div class="absolute inset-0 bg-rose-500/5 pointer-events-none"></div>' : ''}
+              <div class="relative z-10">
+                <div class="flex justify-between items-start mb-2 border-b border-slate-800 pb-2">
+                  <span class="text-[9px] font-black uppercase text-emerald-400">${et.category}</span>
+                  <span class="text-sm font-black text-emerald-400">${et.totalOdds} Odds</span>
+                </div>
+                <h3 class="text-xs font-bold text-white mb-2 truncate">${et.title}</h3>
+                <div class="bg-slate-950 p-2.5 rounded-lg mb-2 border border-slate-800 space-y-1">
+                   ${matchesPreview}
+                   ${extraCount}
+                </div>
+                <div class="flex justify-between items-center mt-auto pt-2">
+                  <span class="text-[9px] font-bold uppercase ${et.ticketStatus==='won'?'text-emerald-400':et.ticketStatus==='lost'?'text-rose-400':'text-amber-400'}">${et.ticketStatus} <span class="text-slate-400 ml-1">(${et.wonCount}/${et.totalMatches})</span></span>
+                  <span class="text-[9px] text-emerald-400 underline">Tap to view</span>
+                </div>
               </div>
             </div>
           `}).join('');

@@ -1,0 +1,908 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Elite Fantasy Manager | Ambassadors Sports Tips</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%2307090e'/><text x='50' y='72' font-family='Arial Black' font-weight='900' font-size='65' text-anchor='middle' fill='%2334d399'>A</text></svg>">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    .scrollbar-hide::-webkit-scrollbar { display: none; }
+    .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+    .pitch-bg {
+      background: linear-gradient(180deg, #064e3b 0%, #065f46 100%);
+      background-image: repeating-linear-gradient(0deg, transparent, transparent 10%, rgba(255,255,255,0.03) 10%, rgba(255,255,255,0.03) 20%);
+    }
+    .bench-bg {
+      background: linear-gradient(to right, #0f172a, #1e293b);
+      border-top: 4px solid #0f172a;
+    }
+    .sub-glow {
+      box-shadow: 0 0 15px 5px rgba(52, 211, 153, 0.6);
+      border-color: #34d399 !important;
+      animation: pulse 1.5s infinite;
+    }
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+      100% { transform: scale(1); }
+    }
+  </style>
+</head>
+<body class="bg-[#05070a] text-slate-200 font-sans min-h-screen antialiased selection:bg-emerald-400 selection:text-slate-950">
+
+  <!-- Header -->
+  <header class="border-b border-emerald-500/20 bg-[#070b14]/95 backdrop-blur-2xl sticky top-0 z-50 px-4 md:px-6 py-3 flex justify-between items-center shadow-2xl">
+    <div class="flex items-center space-x-3 cursor-pointer" onclick="window.location.href='index.html'">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 380 130" class="h-8 md:h-9 w-auto">
+        <defs>
+          <linearGradient id="neonA" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#34d399"/><stop offset="100%" stop-color="#06b6d4"/></linearGradient>
+          <radialGradient id="ballGlow" cx="30%" cy="30%" r="70%"><stop offset="0%" stop-color="#fff"/><stop offset="100%" stop-color="#475569"/></radialGradient>
+        </defs>
+        <g transform="translate(10, 35)"><circle cx="14" cy="14" r="13" fill="url(#ballGlow)"/><path d="M14 5 L19 10 L16 17 L12 17 L9 10 Z" fill="#0f172a"/></g>
+        <text x="60" y="92" font-family="'Inter', Arial Black, sans-serif" font-weight="900" font-size="70" text-anchor="middle" fill="url(#neonA)">A</text>
+        <text x="135" y="58" font-family="Inter, sans-serif" font-weight="900" font-size="20" fill="#ffffff" letter-spacing="1">AMBASSADORS</text>
+        <text x="137" y="80" font-family="Inter, sans-serif" font-weight="700" font-size="12" fill="#34d399" letter-spacing="2.5">FANTASY LEAGUE</text>
+      </svg>
+    </div>
+    <div class="flex gap-2 items-center">
+      <button onclick="window.location.href='index.html'" class="bg-slate-900 border border-slate-700 text-slate-300 font-bold text-xs px-3 py-1.5 rounded-lg hover:text-white transition shadow-sm hidden md:block">⬅ Main Terminal</button>
+      <button id="authHeaderBtn" onclick="document.getElementById('authModal').classList.remove('hidden')" class="bg-emerald-400 hover:bg-emerald-300 text-slate-950 font-black text-xs px-4 py-1.5 rounded-lg shadow-lg transition">Login / Sign Up</button>
+    </div>
+  </header>
+
+  <!-- Gameweek Deadline Banner -->
+  <div class="bg-slate-950 border-b border-slate-800 text-center py-2 flex flex-col md:flex-row justify-center items-center gap-4 text-xs font-bold text-slate-400">
+    <div class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> Gameweek Active • Transfers Unlimited</div>
+    <div class="hidden md:block w-px h-4 bg-slate-800"></div>
+    <div>Manager: <strong id="managerNameDisplay" class="text-white">Guest</strong></div>
+  </div>
+
+  <main class="max-w-7xl mx-auto px-2 md:px-4 py-6 space-y-6">
+    
+    <!-- League Switcher & Manager Telemetry -->
+    <div class="flex flex-col md:flex-row justify-between items-center bg-slate-900 border border-slate-800 p-4 rounded-2xl shadow-xl gap-4">
+      <div class="flex bg-slate-950 p-1 rounded-xl border border-slate-800 w-full md:w-auto">
+        <button onclick="switchLeague('EPL')" id="tabEPL" class="flex-1 md:flex-none px-6 py-2 text-xs font-black rounded-lg bg-emerald-400 text-slate-950 transition uppercase tracking-wider">🏴󠁧󠁢󠁥󠁮󠁧󠁿 EPL Fantasy</button>
+        <button onclick="switchLeague('UCL')" id="tabUCL" class="flex-1 md:flex-none px-6 py-2 text-xs font-black rounded-lg text-slate-400 hover:text-white transition uppercase tracking-wider">🇪🇺 UCL Fantasy</button>
+      </div>
+      
+      <div class="flex items-center gap-6 w-full md:w-auto justify-center">
+        <div class="flex flex-col text-right">
+          <span class="text-[10px] text-slate-400 font-bold uppercase">Budget</span>
+          <span class="text-xl font-black text-emerald-400">£<span id="budgetDisplay">150.0</span>m</span>
+        </div>
+        <div class="h-10 w-px bg-slate-800"></div>
+        <div class="flex flex-col text-left">
+          <span class="text-[10px] text-slate-400 font-bold uppercase">Squad Roster</span>
+          <span class="text-xl font-black text-cyan-400"><span id="playerCount">0</span>/15</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+      
+      <!-- LEFT: Virtual Pitch & Bench (Squad Builder) -->
+      <div class="lg:col-span-8 bg-slate-900 border border-slate-800 rounded-3xl overflow-hidden shadow-2xl flex flex-col relative">
+        <div class="bg-slate-950 px-4 py-3 border-b border-slate-800 flex justify-between items-center z-10">
+          <div class="flex items-center gap-4">
+            <h2 class="text-sm font-black text-white uppercase tracking-widest flex items-center gap-2">🏟️ Tactical Pitch</h2>
+            <button onclick="togglePitchInfo()" id="infoToggleBtn" class="bg-slate-900 border border-slate-700 text-slate-300 text-[10px] font-bold px-3 py-1 rounded-lg hover:text-white transition">Data: Price</button>
+          </div>
+          <button onclick="saveSquad()" class="bg-emerald-400 hover:bg-emerald-300 text-slate-950 px-4 py-1.5 rounded-lg text-xs font-black shadow-lg transition" id="saveSquadBtn">💾 Save Squad</button>
+        </div>
+        
+        <div class="pitch-bg relative p-4 flex flex-col justify-around min-h-[500px]">
+          <svg class="absolute inset-0 w-full h-full pointer-events-none opacity-20" preserveAspectRatio="none">
+             <rect x="20%" y="-10" width="60%" height="15%" fill="none" stroke="#fff" stroke-width="2"/>
+             <rect x="35%" y="-10" width="30%" height="6%" fill="none" stroke="#fff" stroke-width="2"/>
+             <circle cx="50%" cy="15%" r="5%" fill="none" stroke="#fff" stroke-width="2"/>
+             <rect x="0" y="50%" width="100%" height="2" fill="#fff"/>
+             <circle cx="50%" cy="50%" r="10%" fill="none" stroke="#fff" stroke-width="2"/>
+             <rect x="20%" y="85%" width="60%" height="16%" fill="none" stroke="#fff" stroke-width="2"/>
+             <rect x="35%" y="94%" width="30%" height="7%" fill="none" stroke="#fff" stroke-width="2"/>
+             <circle cx="50%" cy="85%" r="5%" fill="none" stroke="#fff" stroke-width="2"/>
+          </svg>
+
+          <div class="flex justify-center gap-2 sm:gap-6 z-10" id="pitch-fwd"></div>
+          <div class="flex justify-center gap-2 sm:gap-6 z-10" id="pitch-mid"></div>
+          <div class="flex justify-center gap-2 sm:gap-6 z-10" id="pitch-def"></div>
+          <div class="flex justify-center gap-2 sm:gap-6 z-10" id="pitch-gk"></div>
+        </div>
+
+        <div class="bench-bg p-4 z-20">
+          <div class="text-[10px] font-black text-slate-400 uppercase tracking-widest text-center mb-3">Substitutes Bench</div>
+          <div class="flex justify-center gap-2 sm:gap-6" id="bench-slots"></div>
+        </div>
+      </div>
+
+      <!-- RIGHT: Market, Leaderboard & Mini-Leagues -->
+      <div class="lg:col-span-4 flex flex-col gap-6">
+        <div class="flex bg-slate-900 border border-slate-800 rounded-xl overflow-hidden p-1 shadow-lg">
+          <button onclick="switchRightTab('market')" id="rtab-market" class="flex-1 py-2 text-[10px] sm:text-xs font-black rounded-lg bg-emerald-400 text-slate-950 transition uppercase">🛒 Market</button>
+          <button onclick="switchRightTab('leaderboard')" id="rtab-leaderboard" class="flex-1 py-2 text-[10px] sm:text-xs font-black rounded-lg text-slate-400 hover:text-white transition uppercase">🏆 Global</button>
+          <button onclick="switchRightTab('leagues')" id="rtab-leagues" class="flex-1 py-2 text-[10px] sm:text-xs font-black rounded-lg text-slate-400 hover:text-white transition uppercase">🛡️ Leagues</button>
+        </div>
+
+        <!-- Transfer Market Panel -->
+        <div id="panel-market" class="bg-slate-900 border border-slate-800 rounded-3xl p-4 shadow-2xl flex flex-col h-[700px]">
+          <input type="text" id="playerSearch" placeholder="🔍 Search player name..." class="w-full bg-slate-950 border border-slate-700 rounded-xl p-3 text-xs text-white outline-none mb-3 focus:border-emerald-400" oninput="renderMarket()" />
+          <div class="flex gap-2 mb-3">
+            <select id="posFilter" class="bg-slate-950 border border-slate-700 text-[10px] rounded-lg px-2 py-2 text-white font-bold outline-none flex-1" onchange="renderMarket()">
+              <option value="ALL">All Pos</option>
+              <option value="GK">Goalkeepers</option>
+              <option value="DEF">Defenders</option>
+              <option value="MID">Midfielders</option>
+              <option value="FWD">Forwards</option>
+            </select>
+            <select id="sortFilter" class="bg-slate-950 border border-slate-700 text-[10px] rounded-lg px-2 py-2 text-white font-bold outline-none flex-1" onchange="renderMarket()">
+              <option value="price_desc">Price: High to Low</option>
+              <option value="price_asc">Price: Low to High</option>
+            </select>
+          </div>
+          <div id="marketList" class="overflow-y-auto pr-1 space-y-2 flex-grow scrollbar-hide"></div>
+        </div>
+
+        <!-- Global Leaderboard Panel -->
+        <div id="panel-leaderboard" class="hidden bg-slate-900 border border-slate-800 rounded-3xl p-4 shadow-2xl flex flex-col h-[700px]">
+          <h3 class="text-sm font-black text-amber-400 uppercase tracking-widest text-center border-b border-slate-800 pb-3 mb-3">Global Rankings</h3>
+          <div id="leaderboardList" class="overflow-y-auto pr-1 space-y-2 flex-grow scrollbar-hide"></div>
+        </div>
+
+        <!-- Mini-Leagues Panel -->
+        <div id="panel-leagues" class="hidden bg-slate-900 border border-slate-800 rounded-3xl p-4 shadow-2xl flex flex-col h-[700px]">
+          <h3 class="text-sm font-black text-cyan-400 uppercase tracking-widest text-center border-b border-slate-800 pb-3 mb-4">Private Mini-Leagues</h3>
+          
+          <div class="flex gap-2 mb-4">
+            <button onclick="createLeague()" class="flex-1 bg-cyan-500/10 text-cyan-400 border border-cyan-500/30 font-black py-2 rounded-xl text-xs hover:bg-cyan-500/20 transition">➕ Create League</button>
+            <button onclick="joinLeaguePrompt()" class="flex-1 bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 font-black py-2 rounded-xl text-xs hover:bg-emerald-500/20 transition">🤝 Join Code</button>
+          </div>
+
+          <h4 class="text-[10px] font-bold text-slate-500 uppercase mb-2">My Joined Leagues</h4>
+          <div id="myLeaguesList" class="space-y-2 mb-4 min-h-[100px] overflow-y-auto max-h-[220px]">
+            <div class="text-xs text-slate-500 text-center py-4">Login to view your leagues.</div>
+          </div>
+
+          <h4 id="leagueDetailTitle" class="text-[10px] font-bold text-slate-500 uppercase mb-2 hidden">League Standings</h4>
+          <div id="leagueDetailList" class="overflow-y-auto pr-1 space-y-2 flex-grow scrollbar-hide"></div>
+        </div>
+
+      </div>
+    </div>
+  </main>
+
+  <!-- PLAYER ACTION MODAL -->
+  <div id="playerActionModal" class="fixed inset-0 z-50 bg-[#05070a]/90 backdrop-blur-sm hidden items-center justify-center p-4">
+    <div class="bg-slate-900 border border-slate-700 rounded-3xl p-6 w-full max-w-sm shadow-2xl relative text-center">
+      <button onclick="closeActionModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white font-black text-lg">✕</button>
+      
+      <div id="modalPlayerAvatar" class="w-20 h-20 mx-auto bg-cover bg-center rounded-full border-4 border-slate-800 mb-3 shadow-lg bg-white"></div>
+      <h3 id="modalPlayerName" class="text-lg font-black text-white">Player Name</h3>
+      <div class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-6">
+        <span id="modalPlayerPos" class="text-emerald-400">POS</span> • <span id="modalPlayerTeam">TEAM</span> • £<span id="modalPlayerPrice">0.0</span>m
+      </div>
+
+      <div class="space-y-3">
+        <button onclick="handleAction('substitute')" id="btnSubstitute" class="w-full bg-cyan-500/10 text-cyan-400 border border-cyan-500/30 font-black py-3 rounded-xl hover:bg-cyan-500/20 transition flex items-center justify-center gap-2">🔄 Substitute</button>
+        <button onclick="handleAction('captain')" id="btnCaptain" class="w-full bg-amber-500/10 text-amber-400 border border-amber-500/30 font-black py-3 rounded-xl hover:bg-amber-500/20 transition flex items-center justify-center gap-2">©️ Make Captain</button>
+        <button onclick="handleAction('vice')" id="btnVice" class="w-full bg-slate-800 text-slate-300 border border-slate-700 font-black py-3 rounded-xl hover:bg-slate-700 transition flex items-center justify-center gap-2">Ⓥ Make Vice-Captain</button>
+        <button onclick="handleAction('sell')" class="w-full bg-rose-500/10 text-rose-400 border border-rose-500/30 font-black py-3 rounded-xl hover:bg-rose-500/20 transition mt-4 flex items-center justify-center gap-2">🛒 Sell Player</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- AUTHENTICATION & PASSWORD RESET MODAL -->
+  <div id="authModal" class="fixed inset-0 z-50 bg-[#05070a]/90 backdrop-blur-sm hidden items-center justify-center p-4">
+    <div class="bg-slate-900 border border-slate-700 rounded-3xl p-8 w-full max-w-md shadow-2xl relative">
+      <button onclick="document.getElementById('authModal').classList.add('hidden')" class="absolute top-4 right-4 text-slate-400 hover:text-white font-black text-lg">✕</button>
+      
+      <div class="text-center mb-6">
+        <h2 class="text-2xl font-black text-white uppercase tracking-wide">Manager Access</h2>
+        <p class="text-xs text-slate-400 mt-1">Sign in to save your squad, create leagues & rank globally</p>
+      </div>
+
+      <div class="flex bg-slate-950 rounded-xl p-1 mb-6 border border-slate-800">
+         <button id="tabLogin" onclick="switchAuthTab('login')" class="flex-1 py-2 text-xs font-black rounded-lg bg-emerald-400 text-slate-950 transition">Login</button>
+         <button id="tabRegister" onclick="switchAuthTab('register')" class="flex-1 py-2 text-xs font-black rounded-lg text-slate-400 hover:text-white transition">Register</button>
+      </div>
+
+      <form id="authForm" class="space-y-4">
+        <div id="nameField" class="hidden">
+          <label class="block text-xs font-bold text-slate-400 mb-1">Manager / Club Name</label>
+          <input type="text" id="authName" placeholder="e.g. Invincibles XI" class="w-full bg-slate-950 border border-slate-700 rounded-xl p-3 text-sm text-white outline-none focus:border-emerald-400" />
+        </div>
+        <div>
+          <label class="block text-xs font-bold text-slate-400 mb-1">Email Address</label>
+          <input type="email" id="authEmail" class="w-full bg-slate-950 border border-slate-700 rounded-xl p-3 text-sm text-white outline-none focus:border-emerald-400" required />
+        </div>
+        <div>
+          <div class="flex justify-between items-center mb-1">
+            <label class="block text-xs font-bold text-slate-400">Password</label>
+            <button type="button" onclick="handleForgotPassword()" class="text-[10px] text-cyan-400 hover:underline font-semibold">Forgot Password?</button>
+          </div>
+          <input type="password" id="authPassword" class="w-full bg-slate-950 border border-slate-700 rounded-xl p-3 text-sm text-white outline-none focus:border-emerald-400" required />
+        </div>
+        <button type="submit" id="authSubmitBtn" class="w-full bg-emerald-400 hover:bg-emerald-300 text-slate-950 font-black py-3.5 rounded-xl text-sm shadow-lg transition mt-2">Access Terminal</button>
+      </form>
+    </div>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getFirestore, doc, setDoc, getDoc, collection, getDocs, query, orderBy, limit, updateDoc, arrayUnion, where } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+    import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, sendPasswordResetEmail, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyBuzHlvjtdi40ucfuwQIbWqyQJJeoGYABA",
+      authDomain: "powertips-cc902.firebaseapp.com",
+      projectId: "powertips-cc902",
+      storageBucket: "powertips-cc902.firebasestorage.app"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const auth = getAuth(app);
+
+    // MOCK PLAYER DATABASE (REAL & CURRENT CLUB AFFILIATIONS)
+    const dbEPL = [
+      { id: 'e1', name: 'E. Haaland', pos: 'FWD', team: 'MCI', price: 15.0, photo: 'https://media.api-sports.io/football/players/1100.png', opp: 'ARS (H)' },
+      { id: 'e2', name: 'M. Salah', pos: 'MID', team: 'LIV', price: 13.5, photo: 'https://media.api-sports.io/football/players/306.png', opp: 'CHE (A)' },
+      { id: 'e3', name: 'B. Saka', pos: 'MID', team: 'ARS', price: 10.5, photo: 'https://media.api-sports.io/football/players/146026.png', opp: 'MCI (A)' },
+      { id: 'e4', name: 'O. Watkins', pos: 'FWD', team: 'AVL', price: 9.0, photo: 'https://media.api-sports.io/football/players/19150.png', opp: 'WHU (H)' },
+      { id: 'e5', name: 'K. De Bruyne', pos: 'MID', team: 'MCI', price: 10.0, photo: 'https://media.api-sports.io/football/players/627.png', opp: 'ARS (H)' },
+      { id: 'e6', name: 'P. Foden', pos: 'MID', team: 'MCI', price: 9.5, photo: 'https://media.api-sports.io/football/players/636.png', opp: 'ARS (H)' },
+      { id: 'e7', name: 'A. Gordon', pos: 'MID', team: 'NEW', price: 7.5, photo: 'https://media.api-sports.io/football/players/153106.png', opp: 'MUN (H)' },
+      { id: 'e8', name: 'T. Alexander-Arnold', pos: 'DEF', team: 'LIV', price: 7.0, photo: 'https://media.api-sports.io/football/players/283.png', opp: 'CHE (A)' },
+      { id: 'e9', name: 'W. Saliba', pos: 'DEF', team: 'ARS', price: 6.0, photo: 'https://media.api-sports.io/football/players/131758.png', opp: 'MCI (A)' },
+      { id: 'e10', name: 'A. Becker', pos: 'GK', team: 'LIV', price: 5.5, photo: 'https://media.api-sports.io/football/players/10609.png', opp: 'CHE (A)' },
+      { id: 'e11', name: 'Ederson', pos: 'GK', team: 'MCI', price: 5.5, photo: 'https://media.api-sports.io/football/players/618.png', opp: 'ARS (H)' },
+      { id: 'e12', name: 'A. Isak', pos: 'FWD', team: 'NEW', price: 8.5, photo: 'https://media.api-sports.io/football/players/11467.png', opp: 'MUN (H)' },
+      { id: 'e13', name: 'D. Nunez', pos: 'FWD', team: 'LIV', price: 7.5, photo: 'https://media.api-sports.io/football/players/51617.png', opp: 'CHE (A)' },
+      { id: 'e14', name: 'M. Odegaard', pos: 'MID', team: 'ARS', price: 8.5, photo: 'https://media.api-sports.io/football/players/41042.png', opp: 'MCI (A)' },
+      { id: 'e15', name: 'G. Gabriel', pos: 'DEF', team: 'ARS', price: 6.0, photo: 'https://media.api-sports.io/football/players/22532.png', opp: 'MCI (A)' },
+      { id: 'e16', name: 'D. Raya', pos: 'GK', team: 'ARS', price: 5.5, photo: 'https://media.api-sports.io/football/players/18850.png', opp: 'MCI (A)' },
+      { id: 'e17', name: 'C. Palmer', pos: 'MID', team: 'CHE', price: 10.5, photo: 'https://media.api-sports.io/football/players/152982.png', opp: 'LIV (H)' },
+      { id: 'e18', name: 'N. Jackson', pos: 'FWD', team: 'CHE', price: 7.5, photo: 'https://media.api-sports.io/football/players/284364.png', opp: 'LIV (H)' },
+      { id: 'e19', name: 'J. Pickford', pos: 'GK', team: 'EVE', price: 5.0, photo: 'https://media.api-sports.io/football/players/18758.png', opp: 'FUL (A)' },
+      { id: 'e20', name: 'J. Gvardiol', pos: 'DEF', team: 'MCI', price: 6.0, photo: 'https://media.api-sports.io/football/players/121081.png', opp: 'ARS (H)' },
+      { id: 'e21', name: 'H. Son', pos: 'MID', team: 'TOT', price: 9.5, photo: 'https://media.api-sports.io/football/players/186.png', opp: 'CRY (A)' },
+      { id: 'e22', name: 'D. Solanke', pos: 'FWD', team: 'TOT', price: 7.5, photo: 'https://media.api-sports.io/football/players/19035.png', opp: 'CRY (A)' }
+    ];
+
+    const dbUCL = [
+      { id: 'u1', name: 'K. Mbappe', pos: 'FWD', team: 'RMA', price: 13.5, photo: 'https://media.api-sports.io/football/players/278.png', opp: 'BAY (A)' },
+      { id: 'u2', name: 'V. Junior', pos: 'FWD', team: 'RMA', price: 12.0, photo: 'https://media.api-sports.io/football/players/738.png', opp: 'BAY (A)' },
+      { id: 'u3', name: 'H. Kane', pos: 'FWD', team: 'BAY', price: 12.0, photo: 'https://media.api-sports.io/football/players/184.png', opp: 'RMA (H)' },
+      { id: 'u4', name: 'J. Bellingham', pos: 'MID', team: 'RMA', price: 11.0, photo: 'https://media.api-sports.io/football/players/163054.png', opp: 'BAY (A)' },
+      { id: 'u5', name: 'F. Wirtz', pos: 'MID', team: 'LEV', price: 9.5, photo: 'https://media.api-sports.io/football/players/161994.png', opp: 'MIL (H)' },
+      { id: 'u6', name: 'L. Martinez', pos: 'FWD', team: 'INT', price: 10.0, photo: 'https://media.api-sports.io/football/players/1054.png', opp: 'PSG (A)' },
+      { id: 'u7', name: 'J. Musiala', pos: 'MID', team: 'BAY', price: 9.5, photo: 'https://media.api-sports.io/football/players/161860.png', opp: 'RMA (H)' },
+      { id: 'u8', name: 'M. Olise', pos: 'MID', team: 'BAY', price: 8.5, photo: 'https://media.api-sports.io/football/players/158694.png', opp: 'RMA (H)' },
+      { id: 'u9', name: 'A. Davies', pos: 'DEF', team: 'BAY', price: 6.5, photo: 'https://media.api-sports.io/football/players/51554.png', opp: 'RMA (H)' },
+      { id: 'u10', name: 'T. Courtois', pos: 'GK', team: 'RMA', price: 6.0, photo: 'https://media.api-sports.io/football/players/732.png', opp: 'BAY (A)' },
+      { id: 'u11', name: 'G. Donnarumma', pos: 'GK', team: 'PSG', price: 5.5, photo: 'https://media.api-sports.io/football/players/135.png', opp: 'INT (H)' },
+      { id: 'u12', name: 'R. Lewandowski', pos: 'FWD', team: 'BAR', price: 10.5, photo: 'https://media.api-sports.io/football/players/120.png', opp: 'MCI (H)' },
+      { id: 'u13', name: 'L. Yamal', pos: 'MID', team: 'BAR', price: 9.0, photo: 'https://media.api-sports.io/football/players/399066.png', opp: 'MCI (H)' },
+      { id: 'u14', name: 'Raphinha', pos: 'MID', team: 'BAR', price: 9.5, photo: 'https://media.api-sports.io/football/players/1155.png', opp: 'MCI (H)' },
+      { id: 'u15', name: 'J. Kimmich', pos: 'DEF', team: 'BAY', price: 6.5, photo: 'https://media.api-sports.io/football/players/170.png', opp: 'RMA (H)' },
+      { id: 'u16', name: 'Y. Sommer', pos: 'GK', team: 'INT', price: 5.0, photo: 'https://media.api-sports.io/football/players/1039.png', opp: 'PSG (A)' },
+      { id: 'u17', name: 'A. Hakimi', pos: 'DEF', team: 'PSG', price: 6.5, photo: 'https://media.api-sports.io/football/players/729.png', opp: 'INT (H)' },
+      { id: 'u18', name: 'J. Alvarez', pos: 'FWD', team: 'ATM', price: 9.5, photo: 'https://media.api-sports.io/football/players/616.png', opp: 'JUV (H)' },
+      { id: 'u19', name: 'A. Griezmann', pos: 'FWD', team: 'ATM', price: 9.0, photo: 'https://media.api-sports.io/football/players/133.png', opp: 'JUV (H)' },
+      { id: 'u20', name: 'A. Bastoni', pos: 'DEF', team: 'INT', price: 5.5, photo: 'https://media.api-sports.io/football/players/31034.png', opp: 'PSG (A)' }
+    ];
+
+    let currentLeague = 'EPL';
+    const INITIAL_BUDGET = 150.0;
+    let budget = INITIAL_BUDGET;
+    let squad = []; 
+    let captainId = null;
+    let viceCaptainId = null;
+    let infoToggleMode = 'price'; 
+    let subSelectedId = null; 
+    let activeModalPlayerId = null;
+
+    let currentUser = null;
+    let managerNameGlobal = "Guest";
+    let authMode = 'login'; 
+
+    onAuthStateChanged(auth, async (user) => {
+      currentUser = user;
+      const authBtn = document.getElementById('authHeaderBtn');
+      if (user) {
+        const userDoc = await getDoc(doc(db, "users", user.uid));
+        if (userDoc.exists()) managerNameGlobal = userDoc.data().managerName;
+        else managerNameGlobal = "Pro Manager";
+
+        document.getElementById('managerNameDisplay').textContent = managerNameGlobal;
+        authBtn.textContent = "Log Out";
+        authBtn.onclick = () => signOut(auth);
+        
+        await loadUserSquadFromDB(); 
+        await loadMiniLeagues();
+        checkForAutoJoinURL();
+      } else {
+        managerNameGlobal = "Guest";
+        document.getElementById('managerNameDisplay').textContent = managerNameGlobal;
+        authBtn.textContent = "Login / Sign Up";
+        authBtn.onclick = () => document.getElementById('authModal').classList.remove('hidden');
+        squad = [];
+        budget = INITIAL_BUDGET;
+        updateUI();
+        document.getElementById('myLeaguesList').innerHTML = `<div class="text-xs text-slate-500 text-center py-4">Login to view your leagues.</div>`;
+      }
+    });
+
+    window.switchAuthTab = function(mode) {
+      authMode = mode;
+      document.getElementById('tabLogin').className = mode === 'login' ? 'flex-1 py-2 text-xs font-black rounded-lg bg-emerald-400 text-slate-950 transition' : 'flex-1 py-2 text-xs font-black rounded-lg text-slate-400 hover:text-white transition';
+      document.getElementById('tabRegister').className = mode === 'register' ? 'flex-1 py-2 text-xs font-black rounded-lg bg-emerald-400 text-slate-950 transition' : 'flex-1 py-2 text-xs font-black rounded-lg text-slate-400 hover:text-white transition';
+      document.getElementById('nameField').style.display = mode === 'register' ? 'block' : 'none';
+      document.getElementById('authSubmitBtn').textContent = mode === 'register' ? 'Create Account' : 'Access Terminal';
+    };
+
+    document.getElementById("authForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const email = document.getElementById("authEmail").value;
+      const pass = document.getElementById("authPassword").value;
+      const name = document.getElementById("authName").value;
+
+      try {
+        if (authMode === 'register') {
+           const cred = await createUserWithEmailAndPassword(auth, email, pass);
+           await setDoc(doc(db, "users", cred.user.uid), { managerName: name, email: email, createdAt: new Date() });
+           alert("Account created successfully!");
+        } else {
+           await signInWithEmailAndPassword(auth, email, pass);
+        }
+        document.getElementById('authModal').classList.add('hidden');
+      } catch (err) {
+        alert("Auth Error: " + err.message);
+      }
+    });
+
+    window.handleForgotPassword = async function() {
+      const email = document.getElementById("authEmail").value;
+      if (!email) {
+        alert("Please enter your email address in the field above first, then click 'Forgot Password?'.");
+        return;
+      }
+      try {
+        await sendPasswordResetEmail(auth, email);
+        alert(`✅ Password reset link has been sent to: ${email}\nPlease check your inbox/spam folder.`);
+      } catch (err) {
+        alert("Reset Error: " + err.message);
+      }
+    };
+
+    async function loadUserSquadFromDB() {
+      if (!currentUser) return;
+      const docRef = doc(db, "fantasy_squads", `${currentUser.uid}_${currentLeague}`);
+      const snap = await getDoc(docRef);
+      if (snap.exists()) {
+         const data = snap.data();
+         squad = data.squad;
+         captainId = data.captain;
+         viceCaptainId = data.viceCaptain;
+         budget = INITIAL_BUDGET - squad.reduce((acc, p) => acc + p.price, 0);
+         updateUI();
+      } else {
+         squad = [];
+         budget = INITIAL_BUDGET;
+         updateUI();
+      }
+    }
+
+    window.switchLeague = function(league) {
+      currentLeague = league;
+      document.getElementById('tabEPL').className = league === 'EPL' ? 'flex-1 md:flex-none px-6 py-2 text-xs font-black rounded-lg bg-emerald-400 text-slate-950 transition uppercase tracking-wider' : 'flex-1 md:flex-none px-6 py-2 text-xs font-black rounded-lg text-slate-400 hover:text-white transition uppercase tracking-wider';
+      document.getElementById('tabUCL').className = league === 'UCL' ? 'flex-1 md:flex-none px-6 py-2 text-xs font-black rounded-lg bg-emerald-400 text-slate-950 transition uppercase tracking-wider' : 'flex-1 md:flex-none px-6 py-2 text-xs font-black rounded-lg text-slate-400 hover:text-white transition uppercase tracking-wider';
+      
+      if(currentUser) loadUserSquadFromDB();
+      else { squad = []; budget = INITIAL_BUDGET; captainId = null; viceCaptainId = null; subSelectedId = null; updateUI(); }
+      loadLeaderboard();
+    };
+
+    window.switchRightTab = function(tab) {
+      document.getElementById('panel-market').style.display = tab === 'market' ? 'flex' : 'none';
+      document.getElementById('panel-leaderboard').style.display = tab === 'leaderboard' ? 'flex' : 'none';
+      document.getElementById('panel-leagues').style.display = tab === 'leagues' ? 'flex' : 'none';
+      
+      const unactiveClass = "flex-1 py-2 text-[10px] sm:text-xs font-black rounded-lg text-slate-400 hover:text-white transition uppercase";
+      const activeClass = "flex-1 py-2 text-[10px] sm:text-xs font-black rounded-lg bg-emerald-400 text-slate-950 transition uppercase";
+
+      document.getElementById('rtab-market').className = tab === 'market' ? activeClass : unactiveClass;
+      document.getElementById('rtab-leaderboard').className = tab === 'leaderboard' ? activeClass : unactiveClass;
+      document.getElementById('rtab-leagues').className = tab === 'leagues' ? activeClass : unactiveClass;
+    };
+
+    window.togglePitchInfo = function() {
+      infoToggleMode = infoToggleMode === 'price' ? 'opp' : 'price';
+      const btn = document.getElementById('infoToggleBtn');
+      btn.textContent = infoToggleMode === 'price' ? 'Data: Price' : 'Data: Opponent';
+      btn.className = infoToggleMode === 'price' 
+        ? 'bg-slate-900 border border-slate-700 text-slate-300 text-[10px] font-bold px-3 py-1 rounded-lg hover:text-white transition'
+        : 'bg-emerald-500/20 border border-emerald-500/50 text-emerald-400 text-[10px] font-bold px-3 py-1 rounded-lg transition';
+      updateUI();
+    };
+
+    window.renderMarket = function() {
+      const marketList = document.getElementById('marketList');
+      const searchQuery = document.getElementById('playerSearch').value.toLowerCase();
+      const posFilter = document.getElementById('posFilter').value;
+      const sortFilter = document.getElementById('sortFilter').value;
+      
+      let dbSource = currentLeague === 'EPL' ? dbEPL : dbUCL;
+      
+      let filtered = dbSource.filter(p => {
+        if (squad.some(s => s.id === p.id)) return false;
+        if (posFilter !== 'ALL' && p.pos !== posFilter) return false;
+        if (searchQuery && !p.name.toLowerCase().includes(searchQuery)) return false;
+        return true;
+      });
+
+      if (sortFilter === 'price_desc') filtered.sort((a, b) => b.price - a.price);
+      else filtered.sort((a, b) => a.price - b.price);
+
+      if(filtered.length === 0) {
+        marketList.innerHTML = `<div class="text-slate-500 text-xs text-center py-8">No players found.</div>`;
+        return;
+      }
+
+      marketList.innerHTML = filtered.map(p => {
+        const teamCount = squad.filter(s => s.team === p.team).length;
+        const isTeamMaxed = teamCount >= 3;
+        
+        return `
+        <div class="flex justify-between items-center bg-slate-950 border border-slate-800 p-3 rounded-xl hover:border-emerald-500/30 transition">
+          <div class="flex items-center gap-3">
+            <div class="w-8 h-8 rounded-full bg-cover bg-center border border-slate-700 bg-white" style="background-image: url('${p.photo}')"></div>
+            <div class="flex flex-col">
+              <span class="font-bold text-white text-xs">${p.name}</span>
+              <div class="flex gap-2 text-[9px] font-bold">
+                <span class="${getPosColor(p.pos)} uppercase">${p.pos}</span>
+                <span class="text-slate-500">${p.team} (${teamCount}/3)</span>
+                <span class="text-emerald-400">£${p.price.toFixed(1)}m</span>
+              </div>
+            </div>
+          </div>
+          <button onclick="buyPlayer('${p.id}')" ${isTeamMaxed ? 'disabled' : ''} class="${isTeamMaxed ? 'bg-slate-800 text-slate-600 border border-slate-800 cursor-not-allowed' : 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 hover:bg-emerald-400 hover:text-slate-950'} w-8 h-8 rounded-lg flex items-center justify-center font-black transition shadow">
+             ${isTeamMaxed ? '✕' : '+'}
+          </button>
+        </div>
+      `}).join('');
+    };
+
+    function getPosColor(pos) {
+      switch(pos) {
+        case 'GK': return 'text-amber-400';
+        case 'DEF': return 'text-cyan-400';
+        case 'MID': return 'text-emerald-400';
+        case 'FWD': return 'text-rose-400';
+        default: return 'text-slate-400';
+      }
+    }
+
+    window.buyPlayer = function(id) {
+      const dbSource = currentLeague === 'EPL' ? dbEPL : dbUCL;
+      const player = dbSource.find(p => p.id === id);
+      
+      if (squad.length >= 15) { alert("Squad is full! Max 15 players."); return; }
+      if (budget - player.price < 0) { alert("Insufficient budget!"); return; }
+
+      // Maximum 3 players per club rule
+      const teamCount = squad.filter(p => p.team === player.team).length;
+      if (teamCount >= 3) {
+        alert(`Team Limit Exceeded! You can only select a maximum of 3 players from ${player.team}.`);
+        return;
+      }
+
+      const counts = { GK: 0, DEF: 0, MID: 0, FWD: 0 };
+      squad.forEach(p => counts[p.pos]++);
+      if (player.pos === 'GK' && counts.GK >= 2) { alert("Max 2 Goalkeepers allowed!"); return; }
+      if (player.pos === 'DEF' && counts.DEF >= 5) { alert("Max 5 Defenders allowed!"); return; }
+      if (player.pos === 'MID' && counts.MID >= 5) { alert("Max 5 Midfielders allowed!"); return; }
+      if (player.pos === 'FWD' && counts.FWD >= 3) { alert("Max 3 Forwards allowed!"); return; }
+
+      let isStarting = false;
+      const startingCount = squad.filter(p => p.isStarting).length;
+      if (startingCount < 11) {
+          const sCounts = { GK: 0, DEF: 0, MID: 0, FWD: 0 };
+          squad.filter(p => p.isStarting).forEach(p => sCounts[p.pos]++);
+          
+          if (player.pos === 'GK' && sCounts.GK < 1) isStarting = true;
+          else if (player.pos === 'DEF' && sCounts.DEF < 5) isStarting = true;
+          else if (player.pos === 'MID' && sCounts.MID < 5) isStarting = true;
+          else if (player.pos === 'FWD' && sCounts.FWD < 3) isStarting = true;
+      }
+
+      budget -= player.price;
+      squad.push({ ...player, isStarting });
+      
+      if (squad.length === 1) captainId = player.id;
+      else if (squad.length === 2) viceCaptainId = player.id;
+
+      updateUI();
+    };
+
+    window.openActionModal = function(id) {
+      if (subSelectedId) {
+         executeSubSwap(id);
+         return;
+      }
+
+      activeModalPlayerId = id;
+      const player = squad.find(p => p.id === id);
+      if(!player) return;
+
+      document.getElementById('modalPlayerAvatar').style.backgroundImage = `url('${player.photo}')`;
+      document.getElementById('modalPlayerName').textContent = player.name;
+      document.getElementById('modalPlayerPos').textContent = player.pos;
+      document.getElementById('modalPlayerPos').className = getPosColor(player.pos);
+      document.getElementById('modalPlayerTeam').textContent = player.team;
+      document.getElementById('modalPlayerPrice').textContent = player.price.toFixed(1);
+
+      document.getElementById('btnCaptain').style.display = (player.isStarting && captainId !== id) ? 'flex' : 'none';
+      document.getElementById('btnVice').style.display = (player.isStarting && viceCaptainId !== id) ? 'flex' : 'none';
+      
+      document.getElementById('playerActionModal').classList.remove('hidden');
+      document.getElementById('playerActionModal').classList.add('flex');
+    };
+
+    window.closeActionModal = function() {
+      document.getElementById('playerActionModal').classList.add('hidden');
+      document.getElementById('playerActionModal').classList.remove('flex');
+      activeModalPlayerId = null;
+    };
+
+    window.handleAction = function(action) {
+      if (!activeModalPlayerId) return;
+      const id = activeModalPlayerId;
+      
+      if (action === 'sell') {
+         const index = squad.findIndex(p => p.id === id);
+         if (index > -1) {
+           budget += squad[index].price;
+           squad.splice(index, 1);
+           if (captainId === id) captainId = squad.find(p => p.isStarting)?.id || null;
+           if (viceCaptainId === id) viceCaptainId = squad.find(p => p.isStarting && p.id !== captainId)?.id || null;
+         }
+      } else if (action === 'captain') {
+         if (viceCaptainId === id) viceCaptainId = captainId; 
+         captainId = id;
+      } else if (action === 'vice') {
+         if (captainId === id) captainId = viceCaptainId; 
+         viceCaptainId = id;
+      } else if (action === 'substitute') {
+         subSelectedId = id;
+      }
+
+      closeActionModal();
+      updateUI();
+    };
+
+    function executeSubSwap(targetId) {
+      if (!subSelectedId || subSelectedId === targetId) {
+        subSelectedId = null;
+        updateUI();
+        return;
+      }
+      const p1 = squad.find(p => p.id === subSelectedId);
+      const p2 = squad.find(p => p.id === targetId);
+
+      if (p1.isStarting === p2.isStarting) {
+        alert("You must select one starting player and one bench player to swap.");
+        subSelectedId = null;
+        updateUI();
+        return;
+      }
+
+      p1.isStarting = !p1.isStarting;
+      p2.isStarting = !p2.isStarting;
+
+      const sCounts = { GK: 0, DEF: 0, MID: 0, FWD: 0 };
+      squad.filter(p => p.isStarting).forEach(p => sCounts[p.pos]++);
+
+      const isValid = (sCounts.GK === 1) && (sCounts.DEF >= 3) && (sCounts.DEF <= 5) && 
+                      (sCounts.MID >= 2) && (sCounts.MID <= 5) && 
+                      (sCounts.FWD >= 1) && (sCounts.FWD <= 3);
+
+      if (!isValid) {
+         p1.isStarting = !p1.isStarting;
+         p2.isStarting = !p2.isStarting;
+         alert(`Invalid Formation! Starting XI requires exactly 1 GK, at least 3 DEF, and at least 1 FWD.`);
+      } else {
+         if (!p1.isStarting && captainId === p1.id) captainId = p2.id;
+         if (!p2.isStarting && captainId === p2.id) captainId = p1.id;
+         if (!p1.isStarting && viceCaptainId === p1.id) viceCaptainId = null;
+         if (!p2.isStarting && viceCaptainId === p2.id) viceCaptainId = null;
+      }
+      subSelectedId = null;
+      updateUI();
+    }
+
+    function renderPlayerCard(p) {
+      const isSubHighlight = subSelectedId === p.id;
+      const dataLabel = infoToggleMode === 'price' ? `£${p.price.toFixed(1)}m` : p.opp;
+      const dataColor = infoToggleMode === 'price' ? 'text-emerald-400' : 'text-amber-400';
+
+      let badges = '';
+      if (captainId === p.id) badges += `<div class="absolute -top-1 -right-1 bg-slate-900 border border-emerald-400 text-emerald-400 w-4 h-4 rounded-full flex items-center justify-center text-[8px] font-black z-10 shadow">C</div>`;
+      else if (viceCaptainId === p.id) badges += `<div class="absolute -top-1 -right-1 bg-slate-900 border border-cyan-400 text-cyan-400 w-4 h-4 rounded-full flex items-center justify-center text-[6px] font-black z-10 shadow">VC</div>`;
+
+      return `
+        <div onclick="openActionModal('${p.id}')" class="relative group cursor-pointer transform hover:-translate-y-1 transition">
+          <div class="relative w-10 h-10 md:w-14 md:h-14 mx-auto bg-white bg-cover bg-center rounded-full border-2 ${isSubHighlight ? 'sub-glow' : 'border-slate-500'} drop-shadow-xl" style="background-image: url('${p.photo}')">
+             ${badges}
+          </div>
+          <div class="bg-[#0b1015]/95 border border-slate-700 rounded text-center px-1 py-0.5 mt-1 min-w-[65px] mx-auto shadow-lg">
+            <div class="text-[9px] font-bold text-white truncate max-w-[70px] mx-auto">${p.name}</div>
+            <div class="text-[8px] ${dataColor} font-black">${dataLabel}</div>
+          </div>
+        </div>
+      `;
+    }
+
+    function updateUI() {
+      document.getElementById('budgetDisplay').textContent = budget.toFixed(1);
+      document.getElementById('playerCount').textContent = squad.length;
+
+      const starters = squad.filter(p => p.isStarting);
+      const bench = squad.filter(p => !p.isStarting);
+
+      const posGroups = { FWD: [], MID: [], DEF: [], GK: [] };
+      starters.forEach(p => posGroups[p.pos].push(p));
+
+      ['FWD', 'MID', 'DEF', 'GK'].forEach(pos => {
+        const container = document.getElementById(`pitch-${pos.toLowerCase()}`);
+        container.innerHTML = posGroups[pos].map(p => renderPlayerCard(p)).join('');
+
+        if (squad.length < 11) {
+           let defaultVisualSlots = pos === 'GK' ? 1 : (pos === 'DEF' ? 4 : (pos === 'MID' ? 4 : 2));
+           let emptyHtml = '';
+           for(let i=posGroups[pos].length; i<defaultVisualSlots; i++) {
+             emptyHtml += `
+               <div class="relative opacity-30">
+                 <div class="w-10 h-10 md:w-14 md:h-14 mx-auto bg-slate-800/50 rounded-full border-2 border-slate-600 border-dashed flex items-center justify-center text-slate-500 text-xs font-black">+</div>
+                 <div class="bg-slate-900/50 border border-slate-800 rounded text-center px-1.5 py-0.5 mt-1 min-w-[65px] mx-auto">
+                   <div class="text-[8px] font-bold text-slate-500 uppercase">${pos}</div>
+                 </div>
+               </div>
+             `;
+           }
+           container.innerHTML += emptyHtml;
+        }
+      });
+
+      const benchContainer = document.getElementById('bench-slots');
+      bench.sort((a, b) => {
+         if (a.pos === 'GK' && b.pos !== 'GK') return -1;
+         if (b.pos === 'GK' && a.pos !== 'GK') return 1;
+         return 0;
+      });
+
+      let benchHtml = bench.map(p => renderPlayerCard(p)).join('');
+      for(let i=bench.length; i<4; i++) {
+         let typeLabel = (i === 0 && !bench.some(p => p.pos === 'GK')) ? 'GK' : 'SUB';
+         benchHtml += `
+            <div class="relative opacity-30">
+              <div class="w-10 h-10 md:w-14 md:h-14 mx-auto bg-slate-800/50 rounded-full border-2 border-slate-600 border-dashed flex items-center justify-center text-slate-500 text-xs font-black">+</div>
+              <div class="bg-slate-900/50 border border-slate-800 rounded text-center px-1.5 py-0.5 mt-1 min-w-[65px] mx-auto">
+                <div class="text-[8px] font-bold text-slate-500 uppercase">${typeLabel}</div>
+              </div>
+            </div>
+         `;
+      }
+      benchContainer.innerHTML = benchHtml;
+      renderMarket();
+    }
+
+    window.saveSquad = async function() {
+      if (!currentUser) {
+        document.getElementById('authModal').classList.remove('hidden');
+        return;
+      }
+      if (squad.length !== 15) {
+        alert("You must complete your full 15-man squad before saving!");
+        return;
+      }
+
+      document.getElementById('saveSquadBtn').textContent = "Saving...";
+      try {
+        await setDoc(doc(db, "fantasy_squads", `${currentUser.uid}_${currentLeague}`), {
+          manager: managerNameGlobal,
+          userId: currentUser.uid,
+          league: currentLeague,
+          squad: squad,
+          captain: captainId,
+          viceCaptain: viceCaptainId,
+          points: 0, 
+          createdAt: new Date()
+        }, { merge: true });
+        
+        alert(`🎉 ${managerNameGlobal}, your ${currentLeague} squad is locked in! Points update automatically during the gameweek.`);
+        switchRightTab('leaderboard');
+        loadLeaderboard();
+      } catch (err) {
+        alert("Failed to save squad. Check connection.");
+      } finally {
+        document.getElementById('saveSquadBtn').textContent = "💾 Save Squad";
+      }
+    };
+
+    async function loadLeaderboard() {
+      const container = document.getElementById("leaderboardList");
+      container.innerHTML = `<div class="text-center py-10 text-slate-500 text-xs">Syncing ranks...</div>`;
+      
+      try {
+        const q = query(collection(db, "fantasy_squads"), where("league", "==", currentLeague), orderBy("points", "desc"), limit(50));
+        const snapshot = await getDocs(q);
+        
+        let ranks = [];
+        snapshot.forEach(doc => { ranks.push(doc.data()); });
+
+        if (ranks.length === 0) {
+          container.innerHTML = `<div class="text-center py-10 text-slate-500 text-xs">No managers have submitted a complete squad for ${currentLeague} yet. Be the first!</div>`;
+          return;
+        }
+
+        container.innerHTML = ranks.map((r, index) => {
+          let medal = index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : `<span class="text-slate-500 font-bold">${index+1}</span>`;
+          return `
+          <div class="flex items-center justify-between bg-slate-950 border border-slate-800 p-3 rounded-xl hover:border-slate-600 transition">
+            <div class="flex items-center gap-3">
+              <div class="w-6 text-center text-lg">${medal}</div>
+              <div class="flex flex-col">
+                <span class="font-black text-white text-xs">${r.manager}</span>
+              </div>
+            </div>
+            <div class="flex flex-col items-end">
+              <span class="text-emerald-400 font-black text-sm">${r.points} <span class="text-[9px] text-slate-500 uppercase">Pts</span></span>
+            </div>
+          </div>
+        `}).join('');
+      } catch (err) {
+        container.innerHTML = `<div class="text-rose-400 text-xs text-center py-8">Failed to load leaderboard.</div>`;
+      }
+    }
+
+    // MINI-LEAGUES SYSTEM WITH SHARABLE LINKS
+    window.createLeague = async function() {
+       if(!currentUser) { document.getElementById('authModal').classList.remove('hidden'); return; }
+       const name = prompt("Enter a name for your private Mini-League:");
+       if(!name) return;
+       
+       const code = Math.random().toString(36).substring(2, 8).toUpperCase();
+       try {
+         await setDoc(doc(db, "mini_leagues", code), {
+            name: name,
+            code: code,
+            admin: currentUser.uid,
+            members: [currentUser.uid],
+            createdAt: new Date()
+         });
+         
+         const shareUrl = `${window.location.origin}${window.location.pathname}?joinLeague=${code}`;
+         alert(`🎉 League "${name}" Created Successfully!\n\nLeague Code: ${code}\nShareable Link: ${shareUrl}`);
+         loadMiniLeagues();
+       } catch (err) {
+         alert("Error creating league.");
+       }
+    };
+
+    window.joinLeaguePrompt = async function() {
+       if(!currentUser) { document.getElementById('authModal').classList.remove('hidden'); return; }
+       const code = prompt("Enter the 6-character League Code:");
+       if(!code) return;
+       joinLeagueByCode(code.trim().toUpperCase());
+    };
+
+    async function joinLeagueByCode(code) {
+       try {
+         const ref = doc(db, "mini_leagues", code);
+         const snap = await getDoc(ref);
+         if(!snap.exists()) { alert("❌ Invalid League Code or Link!"); return; }
+         
+         await updateDoc(ref, { members: arrayUnion(currentUser.uid) });
+         alert(`✅ Welcome! You have joined "${snap.data().name}".`);
+         loadMiniLeagues();
+         viewLeague(code, snap.data().name);
+       } catch (err) {
+         alert("Error joining league.");
+       }
+    }
+
+    window.shareLeagueLink = function(e, code, name) {
+       e.stopPropagation();
+       const shareUrl = `${window.location.origin}${window.location.pathname}?joinLeague=${code}`;
+       const text = `🏆 Join my Mini-League "${name}" on Ambassadors Fantasy League!\nClick here to draft your team: ${shareUrl}`;
+
+       if (navigator.share) {
+          navigator.share({ title: `Join ${name}`, text: text, url: shareUrl }).catch(() => {});
+       } else {
+          navigator.clipboard.writeText(shareUrl);
+          alert("🔗 League invite link copied to clipboard! Send it to your friends on WhatsApp or Telegram.");
+       }
+    };
+
+    async function checkForAutoJoinURL() {
+       const urlParams = new URLSearchParams(window.location.search);
+       const joinCode = urlParams.get('joinLeague');
+       if (joinCode && currentUser) {
+          const cleanCode = joinCode.toUpperCase();
+          if (confirm(`Do you want to join the private Mini-League (Code: ${cleanCode})?`)) {
+             await joinLeagueByCode(cleanCode);
+             window.history.replaceState({}, document.title, window.location.pathname);
+          }
+       }
+    }
+
+    window.loadMiniLeagues = async function() {
+       if(!currentUser) return;
+       try {
+         const q = query(collection(db, "mini_leagues"), where("members", "array-contains", currentUser.uid));
+         const snap = await getDocs(q);
+         let html = '';
+         snap.forEach(d => {
+            let l = d.data();
+            html += `
+            <div class="bg-slate-950 border border-slate-800 p-3 rounded-xl flex justify-between items-center cursor-pointer hover:border-cyan-500/50 transition" onclick="viewLeague('${l.code}', '${l.name}')">
+               <div>
+                  <div class="text-white font-bold text-xs">${l.name}</div>
+                  <div class="text-[9px] text-cyan-400 mt-0.5">Code: ${l.code} • ${l.members.length} Members</div>
+               </div>
+               <div class="flex items-center gap-2">
+                 <button onclick="shareLeagueLink(event, '${l.code}', '${l.name}')" class="bg-slate-900 border border-slate-700 text-slate-300 hover:text-emerald-400 text-[10px] font-bold px-2 py-1 rounded-lg">🔗 Share</button>
+                 <span class="text-xs text-slate-500">➔</span>
+               </div>
+            </div>`;
+         });
+         document.getElementById('myLeaguesList').innerHTML = html || "<div class='text-xs text-slate-500 text-center py-4'>You haven't joined any private leagues yet.</div>";
+       } catch (err) {
+         document.getElementById('myLeaguesList').innerHTML = "<div class='text-xs text-rose-500 text-center py-4'>Error loading leagues.</div>";
+       }
+    };
+
+    window.viewLeague = async function(code, name) {
+       document.getElementById('leagueDetailTitle').classList.remove('hidden');
+       document.getElementById('leagueDetailTitle').textContent = `🏆 ${name} Standings`;
+       const list = document.getElementById('leagueDetailList');
+       list.innerHTML = `<div class="text-center py-6 text-slate-500 text-xs">Loading standings...</div>`;
+       
+       try {
+         const lSnap = await getDoc(doc(db, "mini_leagues", code));
+         const members = lSnap.data().members;
+         
+         const sqSnap = await getDocs(collection(db, "fantasy_squads"));
+         let ranks = [];
+         sqSnap.forEach(d => {
+            let s = d.data();
+            if(s.league === currentLeague && members.includes(s.userId)) ranks.push(s);
+         });
+         
+         ranks.sort((a,b) => b.points - a.points);
+         
+         if (ranks.length === 0) {
+            list.innerHTML = `<div class="text-center py-6 text-slate-500 text-[10px]">No members have set their ${currentLeague} squad yet.</div>`;
+            return;
+         }
+
+         list.innerHTML = ranks.map((r, index) => {
+            return `
+            <div class="flex items-center justify-between bg-slate-950 border border-slate-800 p-2.5 rounded-xl">
+              <div class="flex items-center gap-2">
+                <div class="text-[10px] text-slate-500 font-black w-4">${index+1}</div>
+                <div class="font-bold text-white text-[11px]">${r.manager}</div>
+              </div>
+              <span class="text-emerald-400 font-black text-xs">${r.points} <span class="text-[8px] text-slate-500">PTS</span></span>
+            </div>
+          `}).join('');
+       } catch (e) {
+          list.innerHTML = `<div class="text-center py-6 text-rose-500 text-xs">Failed to load standings.</div>`;
+       }
+    };
+
+    updateUI();
+  </script>
+</body>
+</html>

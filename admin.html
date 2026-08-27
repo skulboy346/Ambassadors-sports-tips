@@ -6,6 +6,10 @@
   <title>Admin Control Center | Ambassadors Sports Tips</title>
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%2307090e'/><text x='50' y='72' font-family='Arial Black' font-weight='900' font-size='65' text-anchor='middle' fill='%2334d399'>A</text></svg>">
   <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    .scrollbar-hide::-webkit-scrollbar { display: none; }
+    .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+  </style>
 </head>
 <body class="bg-[#05070a] text-slate-100 font-sans min-h-screen p-4 md:p-8 antialiased">
 
@@ -13,7 +17,7 @@
   <div id="loginSection" class="w-full max-w-md mx-auto bg-slate-900 border border-slate-800 p-8 rounded-3xl mt-16 shadow-2xl backdrop-blur-md">
     <div class="text-center mb-6">
       <h2 class="text-xl font-black text-white uppercase tracking-wide">Ambassadors Operator Portal</h2>
-      <p class="text-xs text-slate-400 mt-1">Authenticate to manage predictions, settlements & news</p>
+      <p class="text-xs text-slate-400 mt-1">Authenticate to manage predictions & fantasy ops</p>
     </div>
     <form id="loginForm" class="space-y-4">
       <div>
@@ -39,9 +43,10 @@
     </div>
 
     <!-- ADMIN TABS -->
-    <div class="flex border-b border-slate-800 gap-4">
-      <button onclick="switchAdminTab('tickets')" id="adminTabBtnTickets" class="pb-3 px-4 font-black text-sm text-emerald-400 border-b-2 border-emerald-400 uppercase tracking-wider transition">Tickets & Settlements</button>
-      <button onclick="switchAdminTab('news')" id="adminTabBtnNews" class="pb-3 px-4 font-black text-sm text-slate-400 hover:text-white uppercase tracking-wider transition">✨ AI News & Graphics Studio</button>
+    <div class="flex border-b border-slate-800 gap-4 overflow-x-auto scrollbar-hide">
+      <button onclick="switchAdminTab('tickets')" id="adminTabBtnTickets" class="pb-3 px-4 font-black text-sm text-emerald-400 border-b-2 border-emerald-400 uppercase tracking-wider transition whitespace-nowrap">Tickets & Settlements</button>
+      <button onclick="switchAdminTab('news')" id="adminTabBtnNews" class="pb-3 px-4 font-black text-sm text-slate-400 hover:text-white uppercase tracking-wider transition whitespace-nowrap">✨ AI Studio</button>
+      <button onclick="switchAdminTab('fantasy')" id="adminTabBtnFantasy" class="pb-3 px-4 font-black text-sm text-slate-400 hover:text-white uppercase tracking-wider transition whitespace-nowrap">🏆 Fantasy Ops</button>
     </div>
 
     <!-- TAB 1: TICKETS & SETTLEMENTS -->
@@ -97,8 +102,9 @@
                 <span class="text-[10px] text-slate-400 font-bold">Odds</span>
               </div>
               <div class="flex items-center bg-slate-950 border border-slate-700 rounded-xl px-2 py-1">
-                <span class="text-[10px] text-slate-400 font-bold mr-1">Matches:</span>
+                <span class="text-[10px] text-slate-400 font-bold mr-1">Exact:</span>
                 <input type="number" id="aiMaxMatches" value="5" min="1" max="15" class="w-10 bg-transparent text-xs text-emerald-400 text-center font-black outline-none" />
+                <span class="text-[10px] text-slate-400 font-bold">Games</span>
               </div>
             </div>
 
@@ -250,6 +256,21 @@
       </div>
     </div>
 
+    <!-- TAB 3: FANTASY OPS -->
+    <div id="adminViewFantasy" class="bg-slate-900 border border-slate-800 p-6 rounded-3xl shadow-2xl space-y-6 hidden">
+      <div class="flex flex-col md:flex-row justify-between items-start md:items-center border-b border-slate-800 pb-4 gap-4">
+        <div>
+          <span class="text-[10px] font-black text-amber-400 bg-amber-500/10 px-2.5 py-1 rounded-full uppercase border border-amber-500/20">🏆 Global Database</span>
+          <h2 class="text-xl font-black text-white mt-1 uppercase">Fantasy League Manager</h2>
+        </div>
+        <button onclick="triggerGameweekSim()" class="bg-amber-400 hover:bg-amber-300 text-slate-950 font-black px-6 py-2.5 rounded-xl text-xs shadow-lg transition">⚽ Simulate Live Gameweek Points</button>
+      </div>
+
+      <div id="fantasyAdminList" class="grid grid-cols-1 md:grid-cols-3 gap-4 max-h-[500px] overflow-y-auto pr-2 scrollbar-hide">
+         <div class="text-slate-500 text-xs py-10 col-span-full">Syncing Fantasy Managers...</div>
+      </div>
+    </div>
+
   </div>
 
   <script type="module">
@@ -269,7 +290,6 @@
     const db = getFirestore(app);
 
     const soccerApiKey = "15d684bf0ade8909fc993ff95ee5255877d70727dca00c078e641951cef3ec3d";
-    const allScoresApiKey = "afc868327bmsh38c47b6bc124e98p165ea1jsn015c0d841dd3";
 
     let rawAdminFixturesPool = [];
     let currentBuilderFilteredPool = [];
@@ -317,11 +337,15 @@
     document.getElementById("logoutBtn").addEventListener("click", () => signOut(auth));
 
     window.switchAdminTab = function(tab) {
-      document.getElementById('adminTabBtnTickets').className = tab === 'tickets' ? 'pb-3 px-4 font-black text-sm text-emerald-400 border-b-2 border-emerald-400 uppercase tracking-wider transition' : 'pb-3 px-4 font-black text-sm text-slate-400 hover:text-white uppercase tracking-wider transition';
-      document.getElementById('adminTabBtnNews').className = tab === 'news' ? 'pb-3 px-4 font-black text-sm text-cyan-400 border-b-2 border-cyan-400 uppercase tracking-wider transition' : 'pb-3 px-4 font-black text-sm text-slate-400 hover:text-white uppercase tracking-wider transition';
+      document.getElementById('adminTabBtnTickets').className = tab === 'tickets' ? 'pb-3 px-4 font-black text-sm text-emerald-400 border-b-2 border-emerald-400 uppercase tracking-wider transition whitespace-nowrap' : 'pb-3 px-4 font-black text-sm text-slate-400 hover:text-white uppercase tracking-wider transition whitespace-nowrap';
+      document.getElementById('adminTabBtnNews').className = tab === 'news' ? 'pb-3 px-4 font-black text-sm text-cyan-400 border-b-2 border-cyan-400 uppercase tracking-wider transition whitespace-nowrap' : 'pb-3 px-4 font-black text-sm text-slate-400 hover:text-white uppercase tracking-wider transition whitespace-nowrap';
+      document.getElementById('adminTabBtnFantasy').className = tab === 'fantasy' ? 'pb-3 px-4 font-black text-sm text-amber-400 border-b-2 border-amber-400 uppercase tracking-wider transition whitespace-nowrap' : 'pb-3 px-4 font-black text-sm text-slate-400 hover:text-white uppercase tracking-wider transition whitespace-nowrap';
 
       document.getElementById('adminViewTickets').classList.toggle('hidden', tab !== 'tickets');
       document.getElementById('adminViewNews').classList.toggle('hidden', tab !== 'news');
+      document.getElementById('adminViewFantasy').classList.toggle('hidden', tab !== 'fantasy');
+
+      if (tab === 'fantasy') loadAdminFantasy();
     };
 
     function resolveDateRange(horizonKey) {
@@ -352,94 +376,33 @@
       return { from: todayStr, to: todayStr };
     }
 
-    // MULTI-SPORT MOCK ENGINE FOR 100% RELIABILITY
-    window.fetchBasketballDataRange = async function(from, to) {
-      const teams = ["LA Lakers", "Golden State", "Boston Celtics", "Denver Nuggets", "Miami Heat", "Chicago Bulls", "Phoenix Suns", "Dallas Mavericks", "NY Knicks", "Brooklyn Nets"];
-      let d1 = new Date(from);
-      let d2 = new Date(to);
-      let days = Math.round((d2 - d1) / 86400000);
-      let max = Math.min(days, 2); 
+    async function fetchBasketballGames(dateStr) {
       let matches = [];
-
-      for(let i=0; i<=max; i++) {
-        let cd = new Date(d1);
-        cd.setDate(cd.getDate() + i);
-        let dateStr = window.getLocalYYYYMMDD(cd);
-        let seed = Array.from(dateStr).reduce((acc, char) => acc + char.charCodeAt(0), 0) + i;
-        
-        for(let j=0; j<3; j++) {
-            let p1 = teams[(seed + j) % teams.length];
-            let p2 = teams[(seed + j + 3) % teams.length];
-            if(p1 === p2) p2 = teams[(seed + j + 1) % teams.length];
-            
-            let hour = 18 + ((seed + j) % 6);
-            matches.push({
-              match_hometeam_name: p1,
-              match_awayteam_name: p2,
-              country_name: "Basketball",
-              league_name: "NBA",
-              match_time: `${hour}:30`,
-              match_date: dateStr,
-              team_home_badge: `https://ui-avatars.com/api/?name=${encodeURIComponent(p1)}&background=random&color=fff&rounded=true`,
-              team_away_badge: `https://ui-avatars.com/api/?name=${encodeURIComponent(p2)}&background=random&color=fff&rounded=true`,
-              match_status: "NS",
-              match_live: "0",
-              match_hometeam_score: "",
-              match_awayteam_score: "",
-              odd_1: (1.3 + ((seed + j)%5)*0.2).toFixed(2), 
-              odd_x: "0", 
-              odd_2: (1.6 + ((seed + j + 1)%5)*0.2).toFixed(2)
-            });
-        }
-      }
+      const teams = ["LA Lakers", "Golden State", "Boston Celtics", "Denver Nuggets"];
+      let seed = Array.from(dateStr).reduce((acc, char) => acc + char.charCodeAt(0), 0);
+      let p1 = teams[seed % teams.length];
+      let p2 = teams[(seed + 1) % teams.length];
+      matches.push({
+        home: p1, away: p2, league: "NBA", country: "Basketball",
+        match_date: dateStr, match_time: "19:30"
+      });
       return matches;
-    };
+    }
 
-    window.fetchOtherSportsDataRange = async function(from, to, sportName) {
+    async function fetchOtherSportsData(dateStr, sportName) {
+      let matches = [];
       const isTennis = sportName === 'Tennis';
-      const players = isTennis ? ["J. Sinner", "C. Alcaraz", "N. Djokovic", "D. Medvedev", "A. Zverev", "I. Swiatek", "A. Sabalenka", "C. Gauff"] : ["Fan Zhendong", "Wang Chuqin", "Ma Long", "Tomokazu Harimoto", "Hugo Calderano", "Lin Yun-Ju"];
-      const leagues = isTennis ? ["ATP Tour", "WTA Tour", "Grand Slam"] : ["WTT Smash", "WTT Contender", "ITTF World Cup"];
-      
-      let d1 = new Date(from);
-      let d2 = new Date(to);
-      let days = Math.round((d2 - d1) / 86400000);
-      let max = Math.min(days, 2); 
-      let matches = [];
-
-      for(let i=0; i<=max; i++) {
-        let cd = new Date(d1);
-        cd.setDate(cd.getDate() + i);
-        let dateStr = window.getLocalYYYYMMDD(cd);
-        let seed = Array.from(dateStr).reduce((acc, char) => acc + char.charCodeAt(0), 0) + (isTennis ? 1 : 2) + i;
-        
-        for(let j=0; j<3; j++) {
-            let p1 = players[(seed + j) % players.length];
-            let p2 = players[(seed + j + 3) % players.length];
-            if(p1 === p2) p2 = players[(seed + j + 1) % players.length];
-            
-            let lName = leagues[(seed + j) % leagues.length];
-            let hour = 10 + ((seed + j) % 10);
-            matches.push({
-              match_hometeam_name: p1,
-              match_awayteam_name: p2,
-              country_name: sportName,
-              league_name: lName,
-              match_time: `${hour}:00`,
-              match_date: dateStr,
-              team_home_badge: `https://ui-avatars.com/api/?name=${encodeURIComponent(p1)}&background=random&color=fff&rounded=true`,
-              team_away_badge: `https://ui-avatars.com/api/?name=${encodeURIComponent(p2)}&background=random&color=fff&rounded=true`,
-              match_status: "NS",
-              match_live: "0",
-              match_hometeam_score: "",
-              match_awayteam_score: "",
-              odd_1: (1.2 + ((seed + j)%5)*0.2).toFixed(2), 
-              odd_x: "0", 
-              odd_2: (1.5 + ((seed + j + 1)%5)*0.2).toFixed(2)
-            });
-        }
-      }
+      const players = isTennis ? ["J. Sinner", "C. Alcaraz", "N. Djokovic"] : ["Fan Zhendong", "Wang Chuqin"];
+      const leagues = isTennis ? "ATP Tour" : "WTT Smash";
+      let seed = Array.from(dateStr).reduce((acc, char) => acc + char.charCodeAt(0), 0);
+      let p1 = players[seed % players.length];
+      let p2 = players[(seed + 1) % players.length];
+      matches.push({
+        home: p1, away: p2, league: leagues, country: sportName,
+        match_date: dateStr, match_time: "10:00"
+      });
       return matches;
-    };
+    }
 
     async function fetchAdminFixtures(horizon = "today") {
       const { from, to } = resolveDateRange(horizon);
@@ -448,9 +411,9 @@
       try {
         const [soccerRes, bballRes, tennisData, ttData] = await Promise.all([
           fetchWithTimeout(soccerUrl, {}, 5500),
-          window.fetchBasketballDataRange(from, to),
-          window.fetchOtherSportsDataRange(from, to, 'Tennis'),
-          window.fetchOtherSportsDataRange(from, to, 'Table Tennis')
+          fetchBasketballGames(from),
+          fetchOtherSportsData(from, 'Tennis'),
+          fetchOtherSportsData(from, 'Table Tennis')
         ]);
 
         rawAdminFixturesPool = [];
@@ -482,7 +445,6 @@
       }
     }
 
-    // FILTER AI GENERATOR LEAGUES DYNAMICALLY
     window.filterAIGeneratorPool = function() {
       const category = document.getElementById('aiCategory').value;
       const country = document.getElementById('aiCountry').value;
@@ -510,7 +472,6 @@
       aiLeagueSelect.innerHTML = `<option value="all">All Leagues (${uniqueLeagues.length})</option>` + uniqueLeagues.map(l => `<option value="${l}" ${l === selected ? 'selected' : ''}>${l}</option>`).join('');
     };
 
-    // STRICT CASCADING FOR BUILD VIP PREDICTION TICKET
     window.onBuilderFiltersChange = async function() {
       const horizon = document.getElementById('builderHorizon').value;
       const country = document.getElementById('builderCountry').value;
@@ -573,7 +534,6 @@
       });
     };
 
-    // EXACT TARGET ODDS & EXACT MAX MATCHES AI GENERATOR
     window.runAIEngine = async function() {
       const horizon = document.getElementById("aiHorizon").value;
       const category = document.getElementById("aiCategory").value;
@@ -614,6 +574,58 @@
 
       pool = pool.sort(() => Math.random() - 0.5);
 
+      const eliteTeams = ["barcelona", "real madrid", "manchester city", "arsenal", "liverpool", "bayern munich", "inter", "psg", "juventus", "ac milan", "atletico madrid", "chelsea", "tottenham", "leverkusen", "inter miami", "la galaxy", "celtic"];
+
+      const evaluatedMatches = pool.map(m => {
+        const hName = m.home.toLowerCase();
+        const aName = m.away.toLowerCase();
+        const isHomeElite = eliteTeams.some(t => hName.includes(t));
+        const isAwayElite = eliteTeams.some(t => aName.includes(t));
+
+        let marketOptions = [];
+        if (m.country === "Basketball") {
+          marketOptions = [
+            { pick: "Over 195.5 Total Points", odds: 1.30, confidence: "98%" },
+            { pick: "1 (Home Win)", odds: 1.45, confidence: "90%" }
+          ];
+        } else if (m.country === "Tennis" || m.country === "Table Tennis") {
+          marketOptions = [
+            { pick: "1 (Match Win Banker)", odds: 1.25, confidence: "96%" },
+            { pick: "Over 18.5 Total Games", odds: 1.35, confidence: "92%" }
+          ];
+        } else if (isHomeElite && !isAwayElite) {
+          marketOptions = [
+            { pick: "1X (Home or Draw)", odds: 1.15, confidence: "99%" },
+            { pick: "Home Over 0.5 Goals", odds: 1.10, confidence: "98%" },
+            { pick: "Under 4.5 Goals", odds: 1.18, confidence: "96%" },
+            { pick: "1 (Home Win)", odds: 1.35, confidence: "93%" },
+            { pick: "Over 1.5 Match Goals", odds: 1.25, confidence: "91%" }
+          ];
+        } else if (isAwayElite && !isHomeElite) {
+          marketOptions = [
+            { pick: "X2 (Draw or Away)", odds: 1.18, confidence: "98%" },
+            { pick: "Away Over 0.5 Goals", odds: 1.12, confidence: "97%" },
+            { pick: "Under 4.5 Goals", odds: 1.20, confidence: "95%" },
+            { pick: "2 (Away Win)", odds: 1.45, confidence: "90%" }
+          ];
+        } else {
+          marketOptions = [
+            { pick: "Under 4.5 Goals", odds: 1.14, confidence: "97%" },
+            { pick: "1X (Home or Draw)", odds: 1.28, confidence: "94%" },
+            { pick: "Over 1.5 Match Goals", odds: 1.32, confidence: "91%" },
+            { pick: "GG (Both Teams Score)", odds: 1.70, confidence: "82%" }
+          ];
+        }
+
+        return {
+          matchTitle: `${m.home} vs ${m.away}`,
+          league: m.league,
+          match_date: m.match_date,
+          match_time: m.match_time,
+          options: marketOptions
+        };
+      });
+
       let accaPicks = [];
       let currentAccaOdds = 1.0;
       let remainingMatches = maxMatches;
@@ -625,11 +637,11 @@
         let idealOdds = Math.pow(requiredMultiplier, 1 / remainingMatches);
 
         let actualOdds = parseFloat((idealOdds + (Math.random() * 0.1 - 0.05)).toFixed(2));
-        actualOdds = Math.max(1.05, actualOdds); // Minimum odds safety
+        actualOdds = Math.max(1.05, actualOdds); 
 
         let pickName = "1 (Home Win)";
         let conf = "90%";
-        if (actualOdds < 1.30) { pickName = "Over 1.5 Goals"; conf = "98%"; }
+        if (actualOdds < 1.30) { pickName = "Over 1.5 Match Goals"; conf = "98%"; }
         else if (actualOdds < 1.60) { pickName = "1X (Home or Draw)"; conf = "94%"; }
         else if (actualOdds < 2.00) { pickName = "1 (Home Win)"; conf = "85%"; }
         else if (actualOdds < 2.50) { pickName = "GG (Both Score)"; conf = "75%"; }
@@ -655,7 +667,6 @@
         remainingMatches--;
       }
 
-      // Final normalizer to ensure exact targetOdds match mathematically
       if (accaPicks.length === maxMatches && currentAccaOdds !== targetOdds) {
           let shortfall = targetOdds / currentAccaOdds;
           accaPicks[accaPicks.length - 1].odds = parseFloat((accaPicks[accaPicks.length - 1].odds * shortfall).toFixed(2));
@@ -747,9 +758,6 @@
             <option value="2 (Away Win)" ${prefPick === '2 (Away Win)' ? 'selected' : ''}>2 (Away Win)</option>
             <option value="Over 1.5 Match Goals" ${prefPick.includes('Over 1.5') ? 'selected' : ''}>Over 1.5 Match Goals</option>
             <option value="GG (Both Score)" ${prefPick.includes('GG') ? 'selected' : ''}>GG (Both Score)</option>
-            <option value="Over 195.5 Points" ${prefPick.includes('195.5') ? 'selected' : ''}>Over 195.5 Points</option>
-            <option value="Over 18.5 Games" ${prefPick.includes('18.5') ? 'selected' : ''}>Over 18.5 Games</option>
-            <option value="1 (Banker)" ${prefPick === '1 (Banker)' ? 'selected' : ''}>1 (Banker)</option>
           </select>
           <input type="number" step="0.01" value="${prefOdds || '1.25'}" placeholder="Odds" class="match-odds col-span-4 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white p-2.5 text-right outline-none font-black" oninput="window.calculateTotalOdds()" required />
         </div>
@@ -766,7 +774,6 @@
 
     window.addMatchRow();
 
-    // TICKET PUBLISHING (Stores Exact League, Date, Time & Pick)
     document.getElementById("ticketForm").addEventListener("submit", async (e) => {
       e.preventDefault();
       
@@ -904,6 +911,40 @@
       alert("AI Intelligence article published live to Terminal!");
       document.getElementById('aiNewsPreview').classList.add('hidden');
       document.getElementById('newsDirective').value = "";
+    };
+
+    async function loadAdminFantasy() {
+      const container = document.getElementById("fantasyAdminList");
+      try {
+        const snap = await getDocs(collection(db, "fantasy_squads"));
+        let html = '';
+        snap.forEach(doc => {
+           const d = doc.data();
+           html += `
+            <div class="bg-slate-950 border border-slate-800 p-4 rounded-xl">
+               <div class="text-xs font-black text-white">${d.manager} <span class="text-[9px] text-emerald-400 ml-1">(${d.league})</span></div>
+               <div class="text-2xl font-black text-amber-400 mt-2">${d.points} <span class="text-[10px] text-slate-500 uppercase">Pts</span></div>
+            </div>
+           `;
+        });
+        container.innerHTML = html || `<div class="text-slate-500 text-xs py-4 col-span-full">No active managers yet.</div>`;
+      } catch (err) {
+        container.innerHTML = `<div class="text-rose-400 text-xs py-4 col-span-full">Error loading fantasy data.</div>`;
+      }
+    }
+
+    window.triggerGameweekSim = async function() {
+      if (!confirm("Are you sure? This will add live points to all registered users globally.")) return;
+      const snap = await getDocs(collection(db, "fantasy_squads"));
+      let batchCount = 0;
+      for (const d of snap.docs) {
+         let currentPts = d.data().points || 0;
+         let earned = Math.floor(Math.random() * 50) + 30; // Simulates 30-80 points
+         await updateDoc(doc(db, "fantasy_squads", d.id), { points: currentPts + earned });
+         batchCount++;
+      }
+      alert(`✅ Successfully triggered live points for ${batchCount} global managers!`);
+      loadAdminFantasy();
     };
   </script>
 </body>
