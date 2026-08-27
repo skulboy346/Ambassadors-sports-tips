@@ -18,17 +18,18 @@
       border-top: 4px solid #0f172a;
     }
     
-    /* Out-of-box Breathing Avatar Animations */
+    /* Out-of-box Transparent Floating Avatars */
     @keyframes breathe {
       0% { transform: scale(1) translateY(0); }
-      50% { transform: scale(1.06) translateY(-4px); filter: drop-shadow(0 10px 10px rgba(0,0,0,0.5)); }
+      50% { transform: scale(1.06) translateY(-4px); filter: drop-shadow(0 15px 12px rgba(0,0,0,0.6)); }
       100% { transform: scale(1) translateY(0); }
     }
     .breathe {
       animation: breathe 3.5s infinite ease-in-out;
+      filter: drop-shadow(0 5px 8px rgba(0,0,0,0.4));
     }
     .sub-glow-effect {
-      filter: drop-shadow(0 0 12px #34d399);
+      filter: drop-shadow(0 0 15px #34d399) drop-shadow(0 5px 8px rgba(0,0,0,0.4));
       animation: pulse 1.5s infinite;
     }
     
@@ -153,17 +154,20 @@
 
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
       
-      <!-- LEFT: Virtual Pitch & Bench (Transparent Floating Avatars) -->
+      <!-- LEFT: Virtual Pitch & Bench -->
       <div class="lg:col-span-7 bg-slate-900 border border-slate-800 rounded-3xl overflow-hidden shadow-2xl flex flex-col relative">
         <div class="bg-slate-950 px-4 py-3 border-b border-slate-800 flex justify-between items-center z-10">
-          <div class="flex items-center gap-4">
+          <div class="flex items-center gap-3">
             <h2 class="text-sm font-black text-white uppercase tracking-widest flex items-center gap-2">🏟️ Tactical Pitch</h2>
-            <button onclick="togglePitchInfo()" id="infoToggleBtn" class="bg-slate-900 border border-slate-700 text-slate-300 text-[10px] font-bold px-3 py-1 rounded-lg hover:text-white transition">Data: Price</button>
+            <button onclick="autoPickSquad()" class="bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 font-black text-[10px] px-2.5 py-1 rounded-lg transition flex items-center gap-1 shadow">
+              ⚡ Auto Pick
+            </button>
+            <button onclick="togglePitchInfo()" id="infoToggleBtn" class="bg-slate-900 border border-slate-700 text-slate-300 text-[10px] font-bold px-2.5 py-1 rounded-lg hover:text-white transition">Data: Price</button>
           </div>
           <button onclick="saveSquad()" class="bg-emerald-400 hover:bg-emerald-300 text-slate-950 px-4 py-1.5 rounded-lg text-xs font-black shadow-lg transition" id="saveSquadBtn">💾 Save Squad</button>
         </div>
         
-        <div class="pitch-bg relative p-3 flex flex-col justify-around min-h-[400px]">
+        <div class="pitch-bg relative p-3 flex flex-col justify-around min-h-[440px]">
           <!-- SVG Pitch Lines -->
           <svg class="absolute inset-0 w-full h-full pointer-events-none opacity-20" preserveAspectRatio="none">
              <rect x="20%" y="-10" width="60%" height="15%" fill="none" stroke="#fff" stroke-width="2"/>
@@ -182,7 +186,7 @@
           <div class="flex justify-center gap-1 sm:gap-4 z-10 pb-2" id="pitch-gk"></div>
         </div>
 
-        <div class="bench-bg p-3 z-20">
+        <div class="bench-bg p-3 z-20 border-t border-slate-900">
           <div class="text-[10px] font-black text-slate-400 uppercase tracking-widest text-center mb-2">Substitutes Bench</div>
           <div class="flex justify-center gap-1 sm:gap-4" id="bench-slots"></div>
         </div>
@@ -235,7 +239,10 @@
 
         <!-- Global Leaderboard Panel -->
         <div id="panel-leaderboard" class="hidden bg-slate-900 border border-slate-800 rounded-3xl p-4 shadow-2xl flex flex-col h-[700px]">
-          <h3 class="text-sm font-black text-amber-400 uppercase tracking-widest text-center border-b border-slate-800 pb-3 mb-3">Global Rankings</h3>
+          <div class="flex justify-between items-center border-b border-slate-800 pb-3 mb-3">
+            <h3 class="text-sm font-black text-amber-400 uppercase tracking-widest">Global Rankings</h3>
+            <span id="leaderboardLeagueTag" class="text-[10px] font-black uppercase text-emerald-400 bg-emerald-500/10 px-2.5 py-0.5 rounded-full border border-emerald-500/20">🏴󠁧󠁢󠁥󠁮󠁧󠁿 EPL Leaderboard</span>
+          </div>
           <div id="leaderboardList" class="overflow-y-auto pr-1 space-y-2 flex-grow scrollbar-hide"></div>
         </div>
 
@@ -267,7 +274,7 @@
       <button onclick="closeActionModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white font-black text-lg">✕</button>
       
       <div class="w-24 h-24 mx-auto mb-2 flex items-end justify-center drop-shadow-2xl relative">
-         <img id="modalPlayerAvatar" src="" class="w-full h-full object-contain object-bottom" onerror="this.onerror=null; this.src='https://cdn-icons-png.flaticon.com/512/1077/1077063.png'; this.style.filter='invert(1) opacity(0.6)';" />
+         <img id="modalPlayerAvatar" src="" class="w-full h-full object-contain object-bottom" onerror="this.onerror=null; this.src='https://fantasy.premierleague.com/dist/img/shirts/standard/shirt_0-66.webp'; this.style.opacity='0.8';" />
       </div>
       <h3 id="modalPlayerName" class="text-lg font-black text-white">Player Name</h3>
       <div class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-6">
@@ -335,7 +342,6 @@
     const db = getFirestore(app);
     const auth = getAuth(app);
 
-    // REAL TEAM LOGOS MATRIX
     const teamBadges = {
       MCI: "https://media.api-sports.io/football/teams/50.png",
       LIV: "https://media.api-sports.io/football/teams/40.png",
@@ -368,8 +374,8 @@
 
     // GAMEWEEK SCHEDULE MATRIX (Strict 24h Deadline Logic)
     // Dynamic generation so the UI never locks out immediately during testing.
-    const mockDeadline = new Date(Date.now() + 86400000 * 1.5); // Opens market for 36 hours
-    const mockDeadlineUCL = new Date(Date.now() + 86400000 * 2.5); // Opens market for 60 hours
+    const mockDeadline = new Date(Date.now() + 86400000 * 1.5); 
+    const mockDeadlineUCL = new Date(Date.now() + 86400000 * 2.5); 
     
     const scheduleEPL = {
       2: {
@@ -417,87 +423,76 @@
       }
     };
 
-    // HELPER FUNCTION: Get Photo Avatar
-    function getPhoto(id) {
-      return `https://media.api-sports.io/football/players/${id}.png`;
-    }
-
-    // MASSIVE EXPANDED EPL DATABASE WITH 100M BUDGET TUNING
+    // EPL DATABASE (No Salah, Strict 100M Budget Support, Real FPL Transparent Headshots)
     const dbEPL = [
-      { id: 'e1', name: 'E. Haaland', pos: 'FWD', team: 'MCI', price: 14.0, photo: getPhoto(1100), opp: 'CRY (A)' },
-      { id: 'e2', name: 'M. Salah', pos: 'MID', team: 'LIV', price: 12.5, photo: getPhoto(306), opp: 'NFO (H)' },
-      { id: 'e3', name: 'B. Saka', pos: 'MID', team: 'ARS', price: 10.0, photo: getPhoto(146026), opp: 'AVL (A)' },
-      { id: 'e4', name: 'C. Palmer', pos: 'MID', team: 'CHE', price: 10.5, photo: getPhoto(152982), opp: 'BHA (H)' },
-      { id: 'e5', name: 'K. De Bruyne', pos: 'MID', team: 'MCI', price: 9.5, photo: getPhoto(627), opp: 'CRY (A)' },
-      { id: 'e6', name: 'P. Foden', pos: 'MID', team: 'MCI', price: 9.0, photo: getPhoto(636), opp: 'CRY (A)' },
-      { id: 'e7', name: 'H. Son', pos: 'MID', team: 'TOT', price: 9.5, photo: getPhoto(186), opp: 'NEW (A)' },
-      { id: 'e8', name: 'O. Watkins', pos: 'FWD', team: 'AVL', price: 9.0, photo: getPhoto(19150), opp: 'ARS (H)' },
-      { id: 'e9', name: 'A. Isak', pos: 'FWD', team: 'NEW', price: 8.5, photo: getPhoto(11467), opp: 'TOT (H)' },
-      { id: 'e10', name: 'M. Odegaard', pos: 'MID', team: 'ARS', price: 8.5, photo: getPhoto(41042), opp: 'AVL (A)' },
-      { id: 'e11', name: 'K. Havertz', pos: 'FWD', team: 'ARS', price: 8.0, photo: getPhoto(25615), opp: 'AVL (A)' },
-      { id: 'e12', name: 'L. Diaz', pos: 'MID', team: 'LIV', price: 7.5, photo: getPhoto(24893), opp: 'NFO (H)' },
-      { id: 'e13', name: 'D. Jota', pos: 'MID', team: 'LIV', price: 7.5, photo: getPhoto(2581), opp: 'NFO (H)' },
-      { id: 'e14', name: 'A. Gordon', pos: 'MID', team: 'NEW', price: 7.5, photo: getPhoto(153106), opp: 'TOT (H)' },
-      { id: 'e15', name: 'D. Solanke', pos: 'FWD', team: 'TOT', price: 7.5, photo: getPhoto(19035), opp: 'NEW (A)' },
-      { id: 'e16', name: 'N. Jackson', pos: 'FWD', team: 'CHE', price: 7.5, photo: getPhoto(284364), opp: 'BHA (H)' },
-      { id: 'e17', name: 'J. Bowen', pos: 'MID', team: 'WHU', price: 7.5, photo: getPhoto(18760), opp: 'MCI (A)' },
-      { id: 'e18', name: 'E. Eze', pos: 'MID', team: 'CRY', price: 7.0, photo: getPhoto(18898), opp: 'MCI (H)' },
-      { id: 'e19', name: 'T. Alexander-Arnold', pos: 'DEF', team: 'LIV', price: 7.0, photo: getPhoto(283), opp: 'NFO (H)' },
-      { id: 'e20', name: 'J. Gvardiol', pos: 'DEF', team: 'MCI', price: 6.0, photo: getPhoto(121081), opp: 'CRY (A)' },
-      { id: 'e21', name: 'W. Saliba', pos: 'DEF', team: 'ARS', price: 6.0, photo: getPhoto(131758), opp: 'AVL (A)' },
-      { id: 'e22', name: 'G. Gabriel', pos: 'DEF', team: 'ARS', price: 6.0, photo: getPhoto(22532), opp: 'AVL (A)' },
-      { id: 'e23', name: 'P. Porro', pos: 'DEF', team: 'TOT', price: 5.5, photo: getPhoto(135111), opp: 'NEW (A)' },
-      { id: 'e24', name: 'A. Becker', pos: 'GK', team: 'LIV', price: 5.5, photo: getPhoto(10609), opp: 'NFO (H)' },
-      { id: 'e25', name: 'Ederson', pos: 'GK', team: 'MCI', price: 5.5, photo: getPhoto(618), opp: 'CRY (A)' },
-      { id: 'e26', name: 'D. Raya', pos: 'GK', team: 'ARS', price: 5.5, photo: getPhoto(18850), opp: 'AVL (A)' },
-      { id: 'e27', name: 'M. Gusto', pos: 'DEF', team: 'CHE', price: 5.0, photo: getPhoto(162121), opp: 'BHA (H)' },
-      { id: 'e28', name: 'A. Onana', pos: 'GK', team: 'MUN', price: 5.0, photo: getPhoto(15286), opp: 'FUL (H)' },
-      { id: 'e29', name: 'J. Pickford', pos: 'GK', team: 'EVE', price: 5.0, photo: getPhoto(18758), opp: 'AVL (H)' },
-      
-      // Budget Enablers & Gems
-      { id: 'e30', name: 'B. Mbeumo', pos: 'MID', team: 'BRE', price: 7.0, photo: getPhoto(18884), opp: 'LIV (H)' },
-      { id: 'e31', name: 'M. Gibbs-White', pos: 'MID', team: 'NFO', price: 6.5, photo: getPhoto(18968), opp: 'LIV (A)' },
-      { id: 'e32', name: 'A. Garnacho', pos: 'MID', team: 'MUN', price: 6.5, photo: getPhoto(284322), opp: 'FUL (H)' },
-      { id: 'e33', name: 'C. Wood', pos: 'FWD', team: 'NFO', price: 6.0, photo: getPhoto(18837), opp: 'LIV (A)' },
-      { id: 'e34', name: 'J. Pedro', pos: 'FWD', team: 'BHA', price: 5.5, photo: getPhoto(163013), opp: 'CHE (A)' },
-      { id: 'e35', name: 'E. Konsa', pos: 'DEF', team: 'AVL', price: 4.5, photo: getPhoto(18973), opp: 'ARS (H)' },
-      { id: 'e36', name: 'A. Robinson', pos: 'DEF', team: 'FUL', price: 4.5, photo: getPhoto(19000), opp: 'MUN (A)' },
-      { id: 'e37', name: 'M. Guehi', pos: 'DEF', team: 'CRY', price: 4.5, photo: getPhoto(19231), opp: 'MCI (H)' },
-      { id: 'e38', name: 'A. Areola', pos: 'GK', team: 'WHU', price: 4.5, photo: getPhoto(266), opp: 'MCI (A)' },
-      { id: 'e39', name: 'D. Henderson', pos: 'GK', team: 'CRY', price: 4.5, photo: getPhoto(18755), opp: 'MCI (H)' },
-      { id: 'e40', name: 'T. Harwood-Bellis', pos: 'DEF', team: 'SOU', price: 4.0, photo: getPhoto(138809), opp: 'BRE (A)' },
-      { id: 'e41', name: 'W. Faes', pos: 'DEF', team: 'LEI', price: 4.0, photo: getPhoto(1116), opp: 'AVL (H)' },
-      { id: 'e42', name: 'M. Turner', pos: 'GK', team: 'NFO', price: 4.0, photo: getPhoto(17586), opp: 'LIV (A)' }
+      { id: 'e1', name: 'E. Haaland', pos: 'FWD', team: 'MCI', price: 15.0, photo: 'https://resources.premierleague.com/premierleague/photos/players/250x250/p223073.png', opp: 'CRY (A)' },
+      { id: 'e2', name: 'P. Foden', pos: 'MID', team: 'MCI', price: 9.5, photo: 'https://resources.premierleague.com/premierleague/photos/players/250x250/p209244.png', opp: 'CRY (A)' },
+      { id: 'e3', name: 'J. Doku', pos: 'MID', team: 'MCI', price: 8.5, photo: 'https://resources.premierleague.com/premierleague/photos/players/250x250/p461081.png', opp: 'CRY (A)' },
+      { id: 'e4', name: 'J. Gvardiol', pos: 'DEF', team: 'MCI', price: 6.0, photo: 'https://resources.premierleague.com/premierleague/photos/players/250x250/p443663.png', opp: 'CRY (A)' },
+      { id: 'e5', name: 'Ederson', pos: 'GK', team: 'MCI', price: 5.5, photo: 'https://resources.premierleague.com/premierleague/photos/players/250x250/p121160.png', opp: 'CRY (A)' },
+      { id: 'e6', name: 'B. Saka', pos: 'MID', team: 'ARS', price: 10.5, photo: 'https://resources.premierleague.com/premierleague/photos/players/250x250/p223340.png', opp: 'AVL (A)' },
+      { id: 'e7', name: 'M. Odegaard', pos: 'MID', team: 'ARS', price: 8.5, photo: 'https://resources.premierleague.com/premierleague/photos/players/250x250/p184029.png', opp: 'AVL (A)' },
+      { id: 'e8', name: 'K. Havertz', pos: 'FWD', team: 'ARS', price: 8.0, photo: 'https://resources.premierleague.com/premierleague/photos/players/250x250/p219847.png', opp: 'AVL (A)' },
+      { id: 'e9', name: 'W. Saliba', pos: 'DEF', team: 'ARS', price: 6.0, photo: 'https://resources.premierleague.com/premierleague/photos/players/250x250/p225321.png', opp: 'AVL (A)' },
+      { id: 'e10', name: 'G. Gabriel', pos: 'DEF', team: 'ARS', price: 6.0, photo: 'https://resources.premierleague.com/premierleague/photos/players/250x250/p226597.png', opp: 'AVL (A)' },
+      { id: 'e11', name: 'D. Raya', pos: 'GK', team: 'ARS', price: 5.5, photo: 'https://resources.premierleague.com/premierleague/photos/players/250x250/p154561.png', opp: 'AVL (A)' },
+      { id: 'e12', name: 'L. Diaz', pos: 'MID', team: 'LIV', price: 8.5, photo: 'https://resources.premierleague.com/premierleague/photos/players/250x250/p244731.png', opp: 'NFO (H)' },
+      { id: 'e13', name: 'D. Jota', pos: 'FWD', team: 'LIV', price: 8.0, photo: 'https://resources.premierleague.com/premierleague/photos/players/250x250/p194634.png', opp: 'NFO (H)' },
+      { id: 'e14', name: 'D. Szoboszlai', pos: 'MID', team: 'LIV', price: 7.5, photo: 'https://resources.premierleague.com/premierleague/photos/players/250x250/p418240.png', opp: 'NFO (H)' },
+      { id: 'e15', name: 'A. Mac Allister', pos: 'MID', team: 'LIV', price: 6.5, photo: 'https://resources.premierleague.com/premierleague/photos/players/250x250/p243016.png', opp: 'NFO (H)' },
+      { id: 'e16', name: 'T. Alexander-Arnold', pos: 'DEF', team: 'LIV', price: 7.0, photo: 'https://resources.premierleague.com/premierleague/photos/players/250x250/p169187.png', opp: 'NFO (H)' },
+      { id: 'e17', name: 'C. Palmer', pos: 'MID', team: 'CHE', price: 10.5, photo: 'https://resources.premierleague.com/premierleague/photos/players/250x250/p244856.png', opp: 'BHA (H)' },
+      { id: 'e18', name: 'N. Jackson', pos: 'FWD', team: 'CHE', price: 7.5, photo: 'https://resources.premierleague.com/premierleague/photos/players/250x250/p465225.png', opp: 'BHA (H)' },
+      { id: 'e19', name: 'M. Gusto', pos: 'DEF', team: 'CHE', price: 5.0, photo: 'https://resources.premierleague.com/premierleague/photos/players/250x250/p481454.png', opp: 'BHA (H)' },
+      { id: 'e20', name: 'H. Son', pos: 'MID', team: 'TOT', price: 9.5, photo: 'https://resources.premierleague.com/premierleague/photos/players/250x250/p85971.png', opp: 'NEW (A)' },
+      { id: 'e21', name: 'D. Solanke', pos: 'FWD', team: 'TOT', price: 7.5, photo: 'https://resources.premierleague.com/premierleague/photos/players/250x250/p155405.png', opp: 'NEW (A)' },
+      { id: 'e22', name: 'P. Porro', pos: 'DEF', team: 'TOT', price: 5.5, photo: 'https://resources.premierleague.com/premierleague/photos/players/250x250/p441164.png', opp: 'NEW (A)' },
+      { id: 'e23', name: 'B. Fernandes', pos: 'MID', team: 'MUN', price: 8.5, photo: 'https://resources.premierleague.com/premierleague/photos/players/250x250/p141746.png', opp: 'FUL (H)' },
+      { id: 'e24', name: 'K. Mainoo', pos: 'MID', team: 'MUN', price: 6.0, photo: 'https://resources.premierleague.com/premierleague/photos/players/250x250/p500049.png', opp: 'FUL (H)' },
+      { id: 'e25', name: 'A. Garnacho', pos: 'MID', team: 'MUN', price: 6.5, photo: 'https://resources.premierleague.com/premierleague/photos/players/250x250/p492504.png', opp: 'FUL (H)' },
+      { id: 'e26', name: 'A. Onana', pos: 'GK', team: 'MUN', price: 5.0, photo: 'https://resources.premierleague.com/premierleague/photos/players/250x250/p204052.png', opp: 'FUL (H)' },
+      { id: 'e27', name: 'A. Isak', pos: 'FWD', team: 'NEW', price: 8.5, photo: 'https://resources.premierleague.com/premierleague/photos/players/250x250/p219168.png', opp: 'TOT (H)' },
+      { id: 'e28', name: 'A. Gordon', pos: 'MID', team: 'NEW', price: 7.5, photo: 'https://resources.premierleague.com/premierleague/photos/players/250x250/p232826.png', opp: 'TOT (H)' },
+      { id: 'e29', name: 'O. Watkins', pos: 'FWD', team: 'AVL', price: 9.0, photo: 'https://resources.premierleague.com/premierleague/photos/players/250x250/p178301.png', opp: 'ARS (H)' },
+      { id: 'e30', name: 'E. Konsa', pos: 'DEF', team: 'AVL', price: 4.5, photo: 'https://resources.premierleague.com/premierleague/photos/players/250x250/p18973.png', opp: 'ARS (H)' },
+      { id: 'e31', name: 'J. Bowen', pos: 'MID', team: 'WHU', price: 7.5, photo: 'https://resources.premierleague.com/premierleague/photos/players/250x250/p178186.png', opp: 'MCI (A)' },
+      { id: 'e32', name: 'E. Eze', pos: 'MID', team: 'CRY', price: 7.0, photo: 'https://resources.premierleague.com/premierleague/photos/players/250x250/p204214.png', opp: 'MCI (H)' },
+      { id: 'e33', name: 'J. Mateta', pos: 'FWD', team: 'CRY', price: 7.5, photo: 'https://resources.premierleague.com/premierleague/photos/players/250x250/p220675.png', opp: 'MCI (H)' },
+      { id: 'e34', name: 'J. Pickford', pos: 'GK', team: 'EVE', price: 5.0, photo: 'https://resources.premierleague.com/premierleague/photos/players/250x250/p111234.png', opp: 'AVL (H)' },
+      { id: 'e35', name: 'J. Branthwaite', pos: 'DEF', team: 'EVE', price: 5.0, photo: 'https://resources.premierleague.com/premierleague/photos/players/250x250/p430871.png', opp: 'AVL (H)' },
+      { id: 'e36', name: 'M. Gibbs-White', pos: 'MID', team: 'NFO', price: 6.5, photo: 'https://resources.premierleague.com/premierleague/photos/players/250x250/p222531.png', opp: 'LIV (A)' },
+      { id: 'e37', name: 'A. Robinson', pos: 'DEF', team: 'FUL', price: 4.5, photo: 'https://resources.premierleague.com/premierleague/photos/players/250x250/p173686.png', opp: 'MUN (A)' },
+      { id: 'e38', name: 'B. Mbeumo', pos: 'MID', team: 'BRE', price: 7.0, photo: 'https://resources.premierleague.com/premierleague/photos/players/250x250/p234017.png', opp: 'LIV (H)' },
+      { id: 'e39', name: 'Y. Wissa', pos: 'FWD', team: 'BRE', price: 6.0, photo: 'https://resources.premierleague.com/premierleague/photos/players/250x250/p200109.png', opp: 'LIV (H)' },
+      { id: 'e40', name: 'C. Wood', pos: 'FWD', team: 'NFO', price: 6.0, photo: 'https://resources.premierleague.com/premierleague/photos/players/250x250/p106617.png', opp: 'LIV (A)' }
     ];
 
-    // MASSIVE EXPANDED UCL DATABASE
+    // EXPANDED UCL DATABASE
     const dbUCL = [
-      { id: 'u1', name: 'K. Mbappe', pos: 'FWD', team: 'RMA', price: 13.5, photo: getPhoto(278), opp: 'BAY (A)' },
-      { id: 'u2', name: 'V. Junior', pos: 'FWD', team: 'RMA', price: 12.0, photo: getPhoto(738), opp: 'BAY (A)' },
-      { id: 'u3', name: 'H. Kane', pos: 'FWD', team: 'BAY', price: 12.0, photo: getPhoto(184), opp: 'RMA (H)' },
-      { id: 'u4', name: 'J. Bellingham', pos: 'MID', team: 'RMA', price: 11.0, photo: getPhoto(163054), opp: 'BAY (A)' },
-      { id: 'u5', name: 'F. Wirtz', pos: 'MID', team: 'LEV', price: 9.5, photo: getPhoto(161994), opp: 'ATM (A)' },
-      { id: 'u6', name: 'L. Martinez', pos: 'FWD', team: 'INT', price: 10.0, photo: getPhoto(1054), opp: 'PSG (A)' },
-      { id: 'u7', name: 'J. Musiala', pos: 'MID', team: 'BAY', price: 9.5, photo: getPhoto(161860), opp: 'RMA (H)' },
-      { id: 'u8', name: 'M. Olise', pos: 'MID', team: 'BAY', price: 8.5, photo: getPhoto(158694), opp: 'RMA (H)' },
-      { id: 'u9', name: 'A. Davies', pos: 'DEF', team: 'BAY', price: 6.5, photo: getPhoto(51554), opp: 'RMA (H)' },
-      { id: 'u10', name: 'T. Courtois', pos: 'GK', team: 'RMA', price: 6.0, photo: getPhoto(732), opp: 'BAY (A)' },
-      { id: 'u11', name: 'G. Donnarumma', pos: 'GK', team: 'PSG', price: 5.5, photo: getPhoto(135), opp: 'INT (H)' },
-      { id: 'u12', name: 'R. Lewandowski', pos: 'FWD', team: 'BAR', price: 10.5, photo: getPhoto(120), opp: 'MCI (H)' },
-      { id: 'u13', name: 'L. Yamal', pos: 'MID', team: 'BAR', price: 9.0, photo: getPhoto(399066), opp: 'MCI (H)' },
-      { id: 'u14', name: 'Raphinha', pos: 'MID', team: 'BAR', price: 9.5, photo: getPhoto(1155), opp: 'MCI (H)' },
-      { id: 'u15', name: 'J. Kimmich', pos: 'DEF', team: 'BAY', price: 6.5, photo: getPhoto(170), opp: 'RMA (H)' },
-      { id: 'u16', name: 'Y. Sommer', pos: 'GK', team: 'INT', price: 5.0, photo: getPhoto(1039), opp: 'PSG (A)' },
-      { id: 'u17', name: 'A. Hakimi', pos: 'DEF', team: 'PSG', price: 6.5, photo: getPhoto(729), opp: 'INT (H)' },
-      { id: 'u18', name: 'J. Alvarez', pos: 'FWD', team: 'ATM', price: 9.5, photo: getPhoto(616), opp: 'LEV (H)' },
-      { id: 'u19', name: 'A. Griezmann', pos: 'FWD', team: 'ATM', price: 9.0, photo: getPhoto(133), opp: 'LEV (H)' },
-      { id: 'u20', name: 'A. Bastoni', pos: 'DEF', team: 'INT', price: 5.5, photo: getPhoto(31034), opp: 'PSG (A)' },
-      
-      // Budget Enablers for UCL
-      { id: 'u21', name: 'N. Schlotterbeck', pos: 'DEF', team: 'DOR', price: 5.0, photo: getPhoto(26500), opp: 'ARS (A)' },
-      { id: 'u22', name: 'P. Cubarsi', pos: 'DEF', team: 'BAR', price: 4.5, photo: getPhoto(422119), opp: 'MCI (H)' },
-      { id: 'u23', name: 'A. Lunin', pos: 'GK', team: 'RMA', price: 4.5, photo: getPhoto(733), opp: 'BAY (A)' },
-      { id: 'u24', name: 'Y. Bisseck', pos: 'DEF', team: 'INT', price: 4.5, photo: getPhoto(31256), opp: 'PSG (A)' }
+      { id: 'u1', name: 'K. Mbappe', pos: 'FWD', team: 'RMA', price: 13.5, photo: `https://media.api-sports.io/football/players/278.png`, opp: 'BAY (A)' },
+      { id: 'u2', name: 'V. Junior', pos: 'FWD', team: 'RMA', price: 12.0, photo: `https://media.api-sports.io/football/players/738.png`, opp: 'BAY (A)' },
+      { id: 'u3', name: 'H. Kane', pos: 'FWD', team: 'BAY', price: 12.0, photo: `https://media.api-sports.io/football/players/184.png`, opp: 'RMA (H)' },
+      { id: 'u4', name: 'J. Bellingham', pos: 'MID', team: 'RMA', price: 11.0, photo: `https://media.api-sports.io/football/players/163054.png`, opp: 'BAY (A)' },
+      { id: 'u5', name: 'F. Wirtz', pos: 'MID', team: 'LEV', price: 9.5, photo: `https://media.api-sports.io/football/players/161994.png`, opp: 'ATM (A)' },
+      { id: 'u6', name: 'L. Martinez', pos: 'FWD', team: 'INT', price: 10.0, photo: `https://media.api-sports.io/football/players/1054.png`, opp: 'PSG (A)' },
+      { id: 'u7', name: 'J. Musiala', pos: 'MID', team: 'BAY', price: 9.5, photo: `https://media.api-sports.io/football/players/161860.png`, opp: 'RMA (H)' },
+      { id: 'u8', name: 'M. Olise', pos: 'MID', team: 'BAY', price: 8.5, photo: `https://media.api-sports.io/football/players/158694.png`, opp: 'RMA (H)' },
+      { id: 'u9', name: 'A. Davies', pos: 'DEF', team: 'BAY', price: 6.5, photo: `https://media.api-sports.io/football/players/51554.png`, opp: 'RMA (H)' },
+      { id: 'u10', name: 'T. Courtois', pos: 'GK', team: 'RMA', price: 6.0, photo: `https://media.api-sports.io/football/players/732.png`, opp: 'BAY (A)' },
+      { id: 'u11', name: 'G. Donnarumma', pos: 'GK', team: 'PSG', price: 5.5, photo: `https://media.api-sports.io/football/players/135.png`, opp: 'INT (H)' },
+      { id: 'u12', name: 'R. Lewandowski', pos: 'FWD', team: 'BAR', price: 10.5, photo: `https://media.api-sports.io/football/players/120.png`, opp: 'MCI (H)' },
+      { id: 'u13', name: 'L. Yamal', pos: 'MID', team: 'BAR', price: 9.0, photo: `https://media.api-sports.io/football/players/399066.png`, opp: 'MCI (H)' },
+      { id: 'u14', name: 'Raphinha', pos: 'MID', team: 'BAR', price: 9.5, photo: `https://media.api-sports.io/football/players/1155.png`, opp: 'MCI (H)' },
+      { id: 'u15', name: 'J. Kimmich', pos: 'DEF', team: 'BAY', price: 6.5, photo: `https://media.api-sports.io/football/players/170.png`, opp: 'RMA (H)' },
+      { id: 'u16', name: 'Y. Sommer', pos: 'GK', team: 'INT', price: 5.0, photo: `https://media.api-sports.io/football/players/1039.png`, opp: 'PSG (A)' },
+      { id: 'u17', name: 'A. Hakimi', pos: 'DEF', team: 'PSG', price: 6.5, photo: `https://media.api-sports.io/football/players/729.png`, opp: 'INT (H)' },
+      { id: 'u18', name: 'J. Alvarez', pos: 'FWD', team: 'ATM', price: 9.5, photo: `https://media.api-sports.io/football/players/616.png`, opp: 'LEV (H)' },
+      { id: 'u19', name: 'A. Griezmann', pos: 'FWD', team: 'ATM', price: 9.0, photo: `https://media.api-sports.io/football/players/133.png`, opp: 'LEV (H)' },
+      { id: 'u20', name: 'A. Bastoni', pos: 'DEF', team: 'INT', price: 5.5, photo: `https://media.api-sports.io/football/players/31034.png`, opp: 'PSG (A)' },
+      { id: 'u21', name: 'N. Schlotterbeck', pos: 'DEF', team: 'DOR', price: 5.0, photo: `https://media.api-sports.io/football/players/26500.png`, opp: 'ARS (A)' },
+      { id: 'u22', name: 'P. Cubarsi', pos: 'DEF', team: 'BAR', price: 4.5, photo: `https://media.api-sports.io/football/players/422119.png`, opp: 'MCI (H)' },
+      { id: 'u23', name: 'A. Lunin', pos: 'GK', team: 'RMA', price: 4.5, photo: `https://media.api-sports.io/football/players/733.png`, opp: 'BAY (A)' },
+      { id: 'u24', name: 'Y. Bisseck', pos: 'DEF', team: 'INT', price: 4.5, photo: `https://media.api-sports.io/football/players/31256.png`, opp: 'PSG (A)' }
     ];
 
     let currentLeague = 'EPL';
@@ -612,11 +607,100 @@
       }
     }
 
-    // GAMEWEEK DEADLINE ENGINE
+    // AUTO-PICK COMPLETE SQUAD ALGORITHM
+    window.autoPickSquad = function() {
+      if (!isTransferMarketOpen()) {
+        alert("The Gameweek deadline has passed. Squad is locked!");
+        return;
+      }
+
+      const dbSource = currentLeague === 'EPL' ? dbEPL : dbUCL;
+      let newSquad = [];
+      let currentBudget = INITIAL_BUDGET;
+      let clubCounts = {};
+
+      const canSelect = (p) => {
+        if (newSquad.some(s => s.id === p.id)) return false;
+        if ((clubCounts[p.team] || 0) >= 3) return false;
+        if (currentBudget - p.price < 0) return false;
+        return true;
+      };
+
+      const addP = (p, isStarting) => {
+        newSquad.push({ ...p, isStarting });
+        currentBudget -= p.price;
+        clubCounts[p.team] = (clubCounts[p.team] || 0) + 1;
+      };
+
+      const gks = dbSource.filter(p => p.pos === 'GK').sort((a, b) => b.price - a.price);
+      const defs = dbSource.filter(p => p.pos === 'DEF').sort((a, b) => b.price - a.price);
+      const mids = dbSource.filter(p => p.pos === 'MID').sort((a, b) => b.price - a.price);
+      const fwds = dbSource.filter(p => p.pos === 'FWD').sort((a, b) => b.price - a.price);
+
+      // 1. Pick GKs
+      const starterGK = gks.find(p => canSelect(p));
+      if (starterGK) addP(starterGK, true);
+      const benchGK = gks.slice().reverse().find(p => canSelect(p));
+      if (benchGK) addP(benchGK, false);
+
+      // 2. Pick Forwards
+      const premiumFWD = fwds.find(p => canSelect(p));
+      if (premiumFWD) addP(premiumFWD, true);
+      const midFWD = fwds.find(p => canSelect(p) && p.price <= 8.5);
+      if (midFWD) addP(midFWD, true);
+      const budgetFWD = fwds.slice().reverse().find(p => canSelect(p));
+      if (budgetFWD) addP(budgetFWD, true);
+
+      // 3. Pick Midfielders
+      const premiumMID = mids.find(p => canSelect(p));
+      if (premiumMID) addP(premiumMID, true);
+      for (let i = 0; i < 3; i++) {
+        const m = mids.find(p => canSelect(p) && p.price <= 8.5);
+        if (m) addP(m, true);
+      }
+      const benchMID = mids.slice().reverse().find(p => canSelect(p));
+      if (benchMID) addP(benchMID, false);
+
+      // 4. Pick Defenders
+      for (let i = 0; i < 3; i++) {
+        const d = defs.find(p => canSelect(p) && p.price <= 6.5);
+        if (d) addP(d, true);
+      }
+      for (let i = 0; i < 2; i++) {
+        const bd = defs.slice().reverse().find(p => canSelect(p));
+        if (bd) addP(bd, false);
+      }
+
+      // 5. Fill remaining if tight
+      const remainingPool = dbSource.slice().sort((a, b) => a.price - b.price);
+      while (newSquad.length < 15) {
+        const neededCounts = { GK: 2, DEF: 5, MID: 5, FWD: 3 };
+        newSquad.forEach(p => neededCounts[p.pos]--);
+        const neededPos = Object.keys(neededCounts).find(k => neededCounts[k] > 0);
+        const fillP = remainingPool.find(p => p.pos === neededPos && canSelect(p));
+        if (fillP) {
+          addP(fillP, false);
+        } else {
+          break;
+        }
+      }
+
+      squad = newSquad;
+      budget = currentBudget;
+
+      const startingStarters = squad.filter(p => p.isStarting).sort((a, b) => b.price - a.price);
+      if (startingStarters.length > 0) captainId = startingStarters[0].id;
+      if (startingStarters.length > 1) viceCaptainId = startingStarters[1].id;
+
+      updateUI();
+      alert(`⚡ 15-Man ${currentLeague} Squad Automatically Selected!\nFormation: 3-4-3 • Captain: ${startingStarters[0]?.name}`);
+    };
+
+    // GAMEWEEK DEADLINE ENGINE (Locks 24hrs before kickoff)
     function isTransferMarketOpen() {
       const scheduleMap = currentLeague === 'EPL' ? scheduleEPL : scheduleUCL;
       const currentGW = scheduleMap[activeGameweekView];
-      if (!currentGW || !currentGW.deadline) return false;
+      if (!currentGW || !currentGW.deadline) return true;
       return Date.now() < currentGW.deadline.getTime();
     }
 
@@ -762,7 +846,8 @@
       document.getElementById('rtab-leaderboard').className = tab === 'leaderboard' ? activeClass : unactiveClass;
       document.getElementById('rtab-leagues').className = tab === 'leagues' ? activeClass : unactiveClass;
 
-      if(tab === 'points') renderPointsTab();
+      if (tab === 'points') renderPointsTab();
+      if (tab === 'leaderboard') loadLeaderboard();
     };
 
     window.togglePitchInfo = function() {
@@ -806,7 +891,7 @@
         <div class="flex justify-between items-center bg-slate-950 border border-slate-800 p-3 rounded-xl hover:border-emerald-500/30 transition">
           <div class="flex items-center gap-3">
             <div class="w-10 h-10 flex items-end justify-center drop-shadow-md">
-               <img src="${p.photo}" class="w-full h-full object-contain object-bottom" onerror="this.onerror=null; this.src='https://cdn-icons-png.flaticon.com/512/1077/1077063.png'; this.style.filter='invert(1) opacity(0.6)';" />
+               <img src="${p.photo}" class="w-full h-full object-contain object-bottom" onerror="this.onerror=null; this.src='https://fantasy.premierleague.com/dist/img/shirts/standard/shirt_0-66.webp'; this.style.opacity='0.8';" />
             </div>
             <div class="flex flex-col">
               <span class="font-bold text-white text-xs">${p.name}</span>
@@ -857,7 +942,7 @@
            <div class="flex justify-between items-center bg-slate-950 border border-slate-800 p-2.5 rounded-xl ${isBench && !chipsState.benchBoost.active ? 'opacity-50' : ''}">
              <div class="flex items-center gap-3">
                <div class="w-8 h-8 flex items-end justify-center drop-shadow-md">
-                  <img src="${p.photo}" class="w-full h-full object-contain object-bottom" onerror="this.onerror=null; this.src='https://cdn-icons-png.flaticon.com/512/1077/1077063.png'; this.style.filter='invert(1) opacity(0.6)';" />
+                  <img src="${p.photo}" class="w-full h-full object-contain object-bottom" onerror="this.onerror=null; this.src='https://fantasy.premierleague.com/dist/img/shirts/standard/shirt_0-66.webp'; this.style.opacity='0.8';" />
                </div>
                <div>
                  <div class="text-white font-bold text-xs">${p.name} <span class="text-emerald-400 font-black">${suffix}</span></div>
@@ -1052,10 +1137,10 @@
       return `
         <div onclick="openActionModal('${p.id}')" class="relative group cursor-pointer flex flex-col items-center">
           <div class="relative w-12 h-14 md:w-16 md:h-20 mx-auto flex items-end justify-center breathe ${isSubHighlight ? 'sub-glow-effect' : ''} drop-shadow-2xl">
-             <img src="${p.photo}" class="w-full h-full object-contain object-bottom" onerror="this.onerror=null; this.src='https://cdn-icons-png.flaticon.com/512/1077/1077063.png'; this.style.filter='invert(1) opacity(0.6)';" />
+             <img src="${p.photo}" class="w-full h-full object-contain object-bottom drop-shadow-2xl" onerror="this.onerror=null; this.src='https://fantasy.premierleague.com/dist/img/shirts/standard/shirt_0-66.webp'; this.style.opacity='0.9';" />
              ${badges}
           </div>
-          <div class="bg-[#0b1015]/95 border border-slate-700 rounded text-center px-1.5 py-0.5 mt-1 min-w-[70px] shadow-lg z-10">
+          <div class="bg-[#0b1015]/95 border border-slate-700 rounded text-center px-1.5 py-0.5 mt-0 min-w-[70px] shadow-lg z-10">
             <div class="text-[9px] font-bold text-white truncate max-w-[75px] mx-auto">${p.name}</div>
             <div class="text-[8px] ${dataColor} font-black">${dataLabel}</div>
           </div>
@@ -1084,9 +1169,9 @@
              emptyHtml += `
                <div class="relative opacity-30 flex flex-col items-center">
                  <div class="w-12 h-14 md:w-16 md:h-20 mx-auto flex items-end justify-center drop-shadow-md">
-                   <img src="https://cdn-icons-png.flaticon.com/512/1077/1077063.png" class="w-[80%] h-[80%] object-contain object-bottom" style="filter: invert(1);" />
+                   <img src="https://fantasy.premierleague.com/dist/img/shirts/standard/shirt_0-66.webp" class="w-[85%] h-[85%] object-contain object-bottom opacity-70" />
                  </div>
-                 <div class="bg-slate-900/50 border border-slate-800 rounded text-center px-1.5 py-0.5 mt-1 min-w-[70px] z-10">
+                 <div class="bg-slate-900/50 border border-slate-800 rounded text-center px-1.5 py-0.5 mt-0 min-w-[70px] z-10">
                    <div class="text-[8px] font-bold text-slate-500 uppercase">${pos}</div>
                  </div>
                </div>
@@ -1109,9 +1194,9 @@
          benchHtml += `
             <div class="relative opacity-30 flex flex-col items-center">
               <div class="w-12 h-14 md:w-16 md:h-20 mx-auto flex items-end justify-center drop-shadow-md">
-                <img src="https://cdn-icons-png.flaticon.com/512/1077/1077063.png" class="w-[80%] h-[80%] object-contain object-bottom" style="filter: invert(1);" />
+                <img src="https://fantasy.premierleague.com/dist/img/shirts/standard/shirt_0-66.webp" class="w-[85%] h-[85%] object-contain object-bottom opacity-70" />
               </div>
-              <div class="bg-slate-900/50 border border-slate-800 rounded text-center px-1.5 py-0.5 mt-1 min-w-[70px] z-10">
+              <div class="bg-slate-900/50 border border-slate-800 rounded text-center px-1.5 py-0.5 mt-0 min-w-[70px] z-10">
                 <div class="text-[8px] font-bold text-slate-500 uppercase">${typeLabel}</div>
               </div>
             </div>
@@ -1161,19 +1246,27 @@
       }
     };
 
+    // LEADERBOARD RESOLVER WITHOUT INDEX ERRORS
     async function loadLeaderboard() {
       const container = document.getElementById("leaderboardList");
-      container.innerHTML = `<div class="text-center py-10 text-slate-500 text-xs">Syncing ranks...</div>`;
+      const tag = document.getElementById("leaderboardLeagueTag");
+      if (tag) tag.textContent = currentLeague === 'EPL' ? "🏴󠁧󠁢󠁥󠁮󠁧󠁿 EPL Leaderboard" : "🇪🇺 UCL Leaderboard";
+      container.innerHTML = `<div class="text-center py-10 text-slate-500 text-xs">Syncing real-time global ranks...</div>`;
       
       try {
-        const q = query(collection(db, "fantasy_squads"), where("league", "==", currentLeague), orderBy("points", "desc"), limit(50));
-        const snapshot = await getDocs(q);
-        
+        const snapshot = await getDocs(collection(db, "fantasy_squads"));
         let ranks = [];
-        snapshot.forEach(doc => { ranks.push(doc.data()); });
+        snapshot.forEach(docSnap => {
+          const d = docSnap.data();
+          if (d.league === currentLeague) {
+            ranks.push(d);
+          }
+        });
+
+        ranks.sort((a, b) => (b.points || 0) - (a.points || 0));
 
         if (ranks.length === 0) {
-          container.innerHTML = `<div class="text-center py-10 text-slate-500 text-xs">No managers have submitted a complete squad for ${currentLeague} yet. Be the first!</div>`;
+          container.innerHTML = `<div class="text-center py-10 text-slate-500 text-xs">No managers have registered a squad for ${currentLeague} yet. Be the first!</div>`;
           return;
         }
 
@@ -1185,15 +1278,16 @@
               <div class="w-6 text-center text-lg">${medal}</div>
               <div class="flex flex-col">
                 <span class="font-black text-white text-xs">${r.manager}</span>
+                <span class="text-[9px] text-slate-500 font-semibold">${currentLeague} Division</span>
               </div>
             </div>
             <div class="flex flex-col items-end">
-              <span class="text-emerald-400 font-black text-sm">${r.points} <span class="text-[9px] text-slate-500 uppercase">Pts</span></span>
+              <span class="text-emerald-400 font-black text-sm">${r.points || 0} <span class="text-[9px] text-slate-500 uppercase">Pts</span></span>
             </div>
           </div>
         `}).join('');
       } catch (err) {
-        container.innerHTML = `<div class="text-rose-400 text-xs text-center py-8">Ranks compiling... please wait.</div>`;
+        container.innerHTML = `<div class="text-rose-400 text-xs text-center py-8">Failed to sync leaderboard. Check connection.</div>`;
       }
     }
 
@@ -1271,22 +1365,23 @@
     window.loadMiniLeagues = async function() {
        if (!currentUser) return;
        try {
-         const q = query(collection(db, "mini_leagues"), where("members", "array-contains", currentUser.uid));
-         const snap = await getDocs(q);
+         const snap = await getDocs(collection(db, "mini_leagues"));
          let html = '';
          snap.forEach(d => {
             let l = d.data();
-            html += `
-            <div class="bg-slate-950 border border-slate-800 p-3 rounded-xl flex justify-between items-center cursor-pointer hover:border-cyan-500/50 transition mb-2" onclick="viewLeague('${l.code}', '${l.name}')">
-               <div>
-                  <div class="text-white font-bold text-xs">${l.name}</div>
-                  <div class="text-[9px] text-cyan-400 mt-0.5">Code: ${l.code} • ${l.members.length} Members</div>
-               </div>
-               <div class="flex items-center gap-2">
-                 <button onclick="shareLeagueLink(event, '${l.code}', '${l.name}')" class="bg-slate-900 border border-slate-700 text-slate-300 hover:text-emerald-400 text-[10px] font-bold px-2 py-1 rounded-lg">🔗 Share</button>
-                 <span class="text-xs text-slate-500">➔</span>
-               </div>
-            </div>`;
+            if (l.members && l.members.includes(currentUser.uid)) {
+              html += `
+              <div class="bg-slate-950 border border-slate-800 p-3 rounded-xl flex justify-between items-center cursor-pointer hover:border-cyan-500/50 transition mb-2" onclick="viewLeague('${l.code}', '${l.name}')">
+                 <div>
+                    <div class="text-white font-bold text-xs">${l.name}</div>
+                    <div class="text-[9px] text-cyan-400 mt-0.5">Code: ${l.code} • ${l.members.length} Members</div>
+                 </div>
+                 <div class="flex items-center gap-2">
+                   <button onclick="shareLeagueLink(event, '${l.code}', '${l.name}')" class="bg-slate-900 border border-slate-700 text-slate-300 hover:text-emerald-400 text-[10px] font-bold px-2 py-1 rounded-lg">🔗 Share</button>
+                   <span class="text-xs text-slate-500">➔</span>
+                 </div>
+              </div>`;
+            }
          });
          document.getElementById('myLeaguesList').innerHTML = html || "<div class='text-xs text-slate-500 text-center py-4'>You haven't joined any private leagues yet.</div>";
        } catch (err) {
@@ -1311,7 +1406,7 @@
             if (s.league === currentLeague && members.includes(s.userId)) ranks.push(s);
          });
          
-         ranks.sort((a,b) => b.points - a.points);
+         ranks.sort((a,b) => (b.points || 0) - (a.points || 0));
          
          if (ranks.length === 0) {
             list.innerHTML = `<div class="text-center py-6 text-slate-500 text-[10px]">No members have set their ${currentLeague} squad yet.</div>`;
@@ -1325,7 +1420,7 @@
                 <div class="text-[10px] text-slate-500 font-black w-4">${index+1}</div>
                 <div class="font-bold text-white text-[11px]">${r.manager}</div>
               </div>
-              <span class="text-emerald-400 font-black text-xs">${r.points} <span class="text-[8px] text-slate-500">PTS</span></span>
+              <span class="text-emerald-400 font-black text-xs">${r.points || 0} <span class="text-[8px] text-slate-500">PTS</span></span>
             </div>
           `}).join('');
        } catch (e) {
