@@ -21,15 +21,15 @@
     /* Out-of-box Transparent Floating Avatars */
     @keyframes breathe {
       0% { transform: scale(1) translateY(0); }
-      50% { transform: scale(1.06) translateY(-4px); filter: drop-shadow(0 15px 12px rgba(0,0,0,0.6)); }
+      50% { transform: scale(1.05) translateY(-3px); filter: drop-shadow(0 12px 10px rgba(0,0,0,0.6)); }
       100% { transform: scale(1) translateY(0); }
     }
     .breathe {
       animation: breathe 3.5s infinite ease-in-out;
-      filter: drop-shadow(0 5px 8px rgba(0,0,0,0.4));
+      filter: drop-shadow(0 4px 6px rgba(0,0,0,0.45));
     }
     .sub-glow-effect {
-      filter: drop-shadow(0 0 15px #34d399) drop-shadow(0 5px 8px rgba(0,0,0,0.4));
+      filter: drop-shadow(0 0 14px #34d399) drop-shadow(0 4px 6px rgba(0,0,0,0.45));
       animation: pulse 1.5s infinite;
     }
     
@@ -157,12 +157,12 @@
       <!-- LEFT: Virtual Pitch & Bench (Transparent Floating Avatars) -->
       <div class="lg:col-span-7 bg-slate-900 border border-slate-800 rounded-3xl overflow-hidden shadow-2xl flex flex-col relative">
         <div class="bg-slate-950 px-4 py-3 border-b border-slate-800 flex justify-between items-center z-10">
-          <div class="flex items-center gap-4">
+          <div class="flex items-center gap-3">
             <h2 class="text-sm font-black text-white uppercase tracking-widest flex items-center gap-2">🏟️ Tactical Pitch</h2>
             <button onclick="autoPickSquad()" class="bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 font-black text-[10px] px-2.5 py-1 rounded-lg transition flex items-center gap-1 shadow">
               ⚡ Auto Pick
             </button>
-            <button onclick="togglePitchInfo()" id="infoToggleBtn" class="bg-slate-900 border border-slate-700 text-slate-300 text-[10px] font-bold px-3 py-1 rounded-lg hover:text-white transition">Data: Price</button>
+            <button onclick="togglePitchInfo()" id="infoToggleBtn" class="bg-slate-900 border border-slate-700 text-slate-300 text-[10px] font-bold px-2.5 py-1 rounded-lg hover:text-white transition">Data: Price</button>
           </div>
           <button onclick="saveSquad()" class="bg-emerald-400 hover:bg-emerald-300 text-slate-950 px-4 py-1.5 rounded-lg text-xs font-black shadow-lg transition" id="saveSquadBtn">💾 Save Squad</button>
         </div>
@@ -328,7 +328,7 @@
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-    import { getFirestore, doc, setDoc, getDoc, collection, getDocs, query, orderBy, limit, updateDoc, arrayUnion, where } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+    import { getFirestore, doc, setDoc, getDoc, collection, getDocs, updateDoc, arrayUnion } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
     import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, sendPasswordResetEmail, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
     const firebaseConfig = {
@@ -342,7 +342,6 @@
     const db = getFirestore(app);
     const auth = getAuth(app);
 
-    // LOGOS MATRIX FOR FALLBACKS AND SCHEDULES
     const teamBadges = {
       MCI: "https://media.api-sports.io/football/teams/50.png",
       LIV: "https://media.api-sports.io/football/teams/40.png",
@@ -375,7 +374,6 @@
       MON: "https://media.api-sports.io/football/teams/91.png"
     };
 
-    // EPL OFFICIAL JERSEY MAPPING
     const fplShirts = {
       'ARS': '3', 'AVL': '7', 'BOU': '91', 'BRE': '94', 'BHA': '36',
       'CHE': '8', 'CRY': '31', 'EVE': '11', 'FUL': '54', 'IPS': '80',
@@ -441,7 +439,7 @@
     };
 
     const getPhotoEPL = (id) => `https://resources.premierleague.com/premierleague/photos/players/250x250/p${id}.png`;
-    const getPhotoUCL = (id) => `https://cdn.sofifa.net/players/${id.substring(0,3)}/${id.substring(3,6)}/24_120.png`;
+    const getPhotoUCL = (id) => `https://resources.premierleague.com/premierleague/photos/players/250x250/p${id}.png`;
 
     // EPL DATABASE (No Salah, Official FPL Headshots)
     const dbEPL = [
@@ -474,7 +472,7 @@
       { id: 'e27', name: 'A. Isak', pos: 'FWD', team: 'NEW', price: 8.5, photo: getPhotoEPL('219168'), fallback: getFallback('NEW','EPL'), opp: 'TOT (H)' },
       { id: 'e28', name: 'A. Gordon', pos: 'MID', team: 'NEW', price: 7.5, photo: getPhotoEPL('232826'), fallback: getFallback('NEW','EPL'), opp: 'TOT (H)' },
       { id: 'e29', name: 'O. Watkins', pos: 'FWD', team: 'AVL', price: 9.0, photo: getPhotoEPL('178301'), fallback: getFallback('AVL','EPL'), opp: 'ARS (H)' },
-      { id: 'e30', name: 'E. Konsa', pos: 'DEF', team: 'AVL', price: 4.5, photo: getPhotoEPL('18973'), fallback: getFallback('AVL','EPL'), opp: 'ARS (H)' },
+      { id: 'e30', name: 'E. Konsa', pos: 'DEF', team: 'AVL', price: 4.5, photo: getPhotoEPL('243568'), fallback: getFallback('AVL','EPL'), opp: 'ARS (H)' },
       { id: 'e31', name: 'J. Bowen', pos: 'MID', team: 'WHU', price: 7.5, photo: getPhotoEPL('178186'), fallback: getFallback('WHU','EPL'), opp: 'MCI (A)' },
       { id: 'e32', name: 'E. Eze', pos: 'MID', team: 'CRY', price: 7.0, photo: getPhotoEPL('204214'), fallback: getFallback('CRY','EPL'), opp: 'MCI (H)' },
       { id: 'e33', name: 'J. Mateta', pos: 'FWD', team: 'CRY', price: 7.5, photo: getPhotoEPL('220675'), fallback: getFallback('CRY','EPL'), opp: 'MCI (H)' },
@@ -484,38 +482,50 @@
       { id: 'e37', name: 'A. Robinson', pos: 'DEF', team: 'FUL', price: 4.5, photo: getPhotoEPL('173686'), fallback: getFallback('FUL','EPL'), opp: 'MUN (A)' },
       { id: 'e38', name: 'B. Mbeumo', pos: 'MID', team: 'BRE', price: 7.0, photo: getPhotoEPL('234017'), fallback: getFallback('BRE','EPL'), opp: 'LIV (H)' },
       { id: 'e39', name: 'Y. Wissa', pos: 'FWD', team: 'BRE', price: 6.0, photo: getPhotoEPL('200109'), fallback: getFallback('BRE','EPL'), opp: 'LIV (H)' },
-      { id: 'e40', name: 'C. Wood', pos: 'FWD', team: 'NFO', price: 6.0, photo: getPhotoEPL('106617'), fallback: getFallback('NFO','EPL'), opp: 'LIV (A)' },
+      { id: 'e40', name: 'C. Wood', pos: 'FWD', team: 'NFO', price: 6.0, photo: getPhotoEPL('60689'), fallback: getFallback('NFO','EPL'), opp: 'LIV (A)' },
       { id: 'e41', name: 'A. Areola', pos: 'GK', team: 'WHU', price: 4.5, photo: getPhotoEPL('110714'), fallback: getFallback('WHU','EPL'), opp: 'MCI (A)' },
       { id: 'e42', name: 'T. Harwood-Bellis', pos: 'DEF', team: 'SOU', price: 4.0, photo: getPhotoEPL('244848'), fallback: getFallback('SOU','EPL'), opp: 'BRE (A)' },
       { id: 'e43', name: 'W. Faes', pos: 'DEF', team: 'LEI', price: 4.0, photo: getPhotoEPL('221239'), fallback: getFallback('LEI','EPL'), opp: 'AVL (H)' }
     ];
 
-    // UCL DATABASE (SoFIFA Transparent Cutouts)
+    // UCL DATABASE (Transparent Cutouts & Balanced Pricing)
     const dbUCL = [
-      { id: 'u1', name: 'K. Mbappe', pos: 'FWD', team: 'RMA', price: 11.5, photo: getPhotoUCL('231747'), fallback: getFallback('RMA','UCL'), opp: 'BAY (A)' },
-      { id: 'u2', name: 'V. Junior', pos: 'FWD', team: 'RMA', price: 10.5, photo: getPhotoUCL('238794'), fallback: getFallback('RMA','UCL'), opp: 'BAY (A)' },
-      { id: 'u3', name: 'H. Kane', pos: 'FWD', team: 'BAY', price: 11.0, photo: getPhotoUCL('202126'), fallback: getFallback('BAY','UCL'), opp: 'RMA (H)' },
-      { id: 'u4', name: 'J. Bellingham', pos: 'MID', team: 'RMA', price: 10.0, photo: getPhotoUCL('252371'), fallback: getFallback('RMA','UCL'), opp: 'BAY (A)' },
-      { id: 'u5', name: 'F. Wirtz', pos: 'MID', team: 'LEV', price: 8.5, photo: getPhotoUCL('256630'), fallback: getFallback('LEV','UCL'), opp: 'ATM (A)' },
-      { id: 'u6', name: 'L. Martinez', pos: 'FWD', team: 'INT', price: 9.0, photo: getPhotoUCL('239322'), fallback: getFallback('INT','UCL'), opp: 'PSG (A)' },
-      { id: 'u7', name: 'J. Musiala', pos: 'MID', team: 'BAY', price: 8.5, photo: getPhotoUCL('256790'), fallback: getFallback('BAY','UCL'), opp: 'RMA (H)' },
-      { id: 'u8', name: 'M. Olise', pos: 'MID', team: 'BAY', price: 7.5, photo: getPhotoUCL('258876'), fallback: getFallback('BAY','UCL'), opp: 'RMA (H)' },
-      { id: 'u9', name: 'A. Davies', pos: 'DEF', team: 'BAY', price: 6.0, photo: getPhotoUCL('243812'), fallback: getFallback('BAY','UCL'), opp: 'RMA (H)' },
-      { id: 'u10', name: 'T. Courtois', pos: 'GK', team: 'RMA', price: 5.5, photo: getPhotoUCL('192119'), fallback: getFallback('RMA','UCL'), opp: 'BAY (A)' },
-      { id: 'u11', name: 'G. Donnarumma', pos: 'GK', team: 'PSG', price: 5.5, photo: getPhotoUCL('230621'), fallback: getFallback('PSG','UCL'), opp: 'INT (H)' },
-      { id: 'u12', name: 'R. Lewandowski', pos: 'FWD', team: 'BAR', price: 9.5, photo: getPhotoUCL('188545'), fallback: getFallback('BAR','UCL'), opp: 'MCI (H)' },
-      { id: 'u13', name: 'L. Yamal', pos: 'MID', team: 'BAR', price: 8.0, photo: getPhotoUCL('276860'), fallback: getFallback('BAR','UCL'), opp: 'MCI (H)' },
-      { id: 'u14', name: 'Raphinha', pos: 'MID', team: 'BAR', price: 8.0, photo: getPhotoUCL('231866'), fallback: getFallback('BAR','UCL'), opp: 'MCI (H)' },
-      { id: 'u15', name: 'J. Kimmich', pos: 'DEF', team: 'BAY', price: 6.0, photo: getPhotoUCL('212622'), fallback: getFallback('BAY','UCL'), opp: 'RMA (H)' },
-      { id: 'u16', name: 'Y. Sommer', pos: 'GK', team: 'INT', price: 5.0, photo: getPhotoUCL('177683'), fallback: getFallback('INT','UCL'), opp: 'PSG (A)' },
-      { id: 'u17', name: 'A. Hakimi', pos: 'DEF', team: 'PSG', price: 6.0, photo: getPhotoUCL('235212'), fallback: getFallback('PSG','UCL'), opp: 'INT (H)' },
-      { id: 'u18', name: 'J. Alvarez', pos: 'FWD', team: 'ATM', price: 8.0, photo: getPhotoUCL('246960'), fallback: getFallback('ATM','UCL'), opp: 'LEV (H)' },
-      { id: 'u19', name: 'A. Griezmann', pos: 'FWD', team: 'ATM', price: 8.0, photo: getPhotoUCL('194765'), fallback: getFallback('ATM','UCL'), opp: 'LEV (H)' },
-      { id: 'u20', name: 'A. Bastoni', pos: 'DEF', team: 'INT', price: 5.0, photo: getPhotoUCL('239564'), fallback: getFallback('INT','UCL'), opp: 'PSG (A)' },
-      { id: 'u21', name: 'N. Schlotterbeck', pos: 'DEF', team: 'DOR', price: 5.0, photo: getPhotoUCL('243715'), fallback: getFallback('DOR','UCL'), opp: 'ARS (A)' },
-      { id: 'u22', name: 'P. Cubarsi', pos: 'DEF', team: 'BAR', price: 4.5, photo: getPhotoUCL('277631'), fallback: getFallback('BAR','UCL'), opp: 'MCI (H)' },
-      { id: 'u23', name: 'A. Lunin', pos: 'GK', team: 'RMA', price: 4.5, photo: getPhotoUCL('243952'), fallback: getFallback('RMA','UCL'), opp: 'BAY (A)' },
-      { id: 'u24', name: 'Y. Bisseck', pos: 'DEF', team: 'INT', price: 4.0, photo: getPhotoUCL('242084'), fallback: getFallback('INT','UCL'), opp: 'PSG (A)' }
+      { id: 'u1', name: 'K. Mbappe', pos: 'FWD', team: 'RMA', price: 11.5, photo: getPhotoUCL('244723'), fallback: getFallback('RMA','UCL'), opp: 'BAY (A)' },
+      { id: 'u2', name: 'V. Junior', pos: 'FWD', team: 'RMA', price: 10.5, photo: getPhotoUCL('246333'), fallback: getFallback('RMA','UCL'), opp: 'BAY (A)' },
+      { id: 'u3', name: 'H. Kane', pos: 'FWD', team: 'BAY', price: 11.0, photo: getPhotoUCL('78830'), fallback: getFallback('BAY','UCL'), opp: 'RMA (H)' },
+      { id: 'u4', name: 'J. Bellingham', pos: 'MID', team: 'RMA', price: 10.0, photo: getPhotoUCL('462424'), fallback: getFallback('RMA','UCL'), opp: 'BAY (A)' },
+      { id: 'u5', name: 'L. Martinez', pos: 'FWD', team: 'INT', price: 9.0, photo: getPhotoUCL('243016'), fallback: getFallback('INT','UCL'), opp: 'PSG (A)' },
+      { id: 'u6', name: 'R. Lewandowski', pos: 'FWD', team: 'BAR', price: 9.5, photo: getPhotoUCL('54258'), fallback: getFallback('BAR','UCL'), opp: 'MCI (H)' },
+      { id: 'u7', name: 'F. Wirtz', pos: 'MID', team: 'LEV', price: 8.5, photo: getPhotoUCL('464303'), fallback: getFallback('LEV','UCL'), opp: 'ATM (A)' },
+      { id: 'u8', name: 'J. Musiala', pos: 'MID', team: 'BAY', price: 8.5, photo: getPhotoUCL('462489'), fallback: getFallback('BAY','UCL'), opp: 'RMA (H)' },
+      { id: 'u9', name: 'L. Yamal', pos: 'MID', team: 'BAR', price: 8.0, photo: getPhotoUCL('519805'), fallback: getFallback('BAR','UCL'), opp: 'MCI (H)' },
+      { id: 'u10', name: 'Raphinha', pos: 'MID', team: 'BAR', price: 8.0, photo: getPhotoUCL('219924'), fallback: getFallback('BAR','UCL'), opp: 'MCI (H)' },
+      { id: 'u11', name: 'M. Olise', pos: 'MID', team: 'BAY', price: 7.5, photo: getPhotoUCL('444884'), fallback: getFallback('BAY','UCL'), opp: 'RMA (H)' },
+      { id: 'u12', name: 'O. Dembele', pos: 'MID', team: 'PSG', price: 7.5, photo: getPhotoUCL('215456'), fallback: getFallback('PSG','UCL'), opp: 'INT (H)' },
+      { id: 'u13', name: 'V. Gyökeres', pos: 'FWD', team: 'SCP', price: 7.5, photo: getPhotoUCL('243885'), fallback: getFallback('SCP','UCL'), opp: 'MON (H)' },
+      { id: 'u14', name: 'V. Boniface', pos: 'FWD', team: 'LEV', price: 7.5, photo: getPhotoUCL('463125'), fallback: getFallback('LEV','UCL'), opp: 'ATM (A)' },
+      { id: 'u15', name: 'A. Griezmann', pos: 'FWD', team: 'ATM', price: 8.0, photo: getPhotoUCL('80201'), fallback: getFallback('ATM','UCL'), opp: 'LEV (H)' },
+      { id: 'u16', name: 'J. Alvarez', pos: 'FWD', team: 'ATM', price: 8.0, photo: getPhotoUCL('461358'), fallback: getFallback('ATM','UCL'), opp: 'LEV (H)' },
+      { id: 'u17', name: 'S. Guirassy', pos: 'FWD', team: 'DOR', price: 7.0, photo: getPhotoUCL('199798'), fallback: getFallback('DOR','UCL'), opp: 'ARS (A)' },
+      { id: 'u18', name: 'A. Davies', pos: 'DEF', team: 'BAY', price: 6.0, photo: getPhotoUCL('222018'), fallback: getFallback('BAY','UCL'), opp: 'RMA (H)' },
+      { id: 'u19', name: 'A. Hakimi', pos: 'DEF', team: 'PSG', price: 6.0, photo: getPhotoUCL('223058'), fallback: getFallback('PSG','UCL'), opp: 'INT (H)' },
+      { id: 'u20', name: 'J. Kimmich', pos: 'DEF', team: 'BAY', price: 6.0, photo: getPhotoUCL('165153'), fallback: getFallback('BAY','UCL'), opp: 'RMA (H)' },
+      { id: 'u21', name: 'A. Grimaldo', pos: 'DEF', team: 'LEV', price: 5.5, photo: getPhotoUCL('165809'), fallback: getFallback('LEV','UCL'), opp: 'ATM (A)' },
+      { id: 'u22', name: 'J. Frimpong', pos: 'DEF', team: 'LEV', price: 5.5, photo: getPhotoUCL('243885'), fallback: getFallback('LEV','UCL'), opp: 'ATM (A)' },
+      { id: 'u23', name: 'T. Courtois', pos: 'GK', team: 'RMA', price: 5.5, photo: getPhotoUCL('98745'), fallback: getFallback('RMA','UCL'), opp: 'BAY (A)' },
+      { id: 'u24', name: 'G. Donnarumma', pos: 'GK', team: 'PSG', price: 5.5, photo: getPhotoUCL('200826'), fallback: getFallback('PSG','UCL'), opp: 'INT (H)' },
+      { id: 'u25', name: 'Y. Sommer', pos: 'GK', team: 'INT', price: 5.0, photo: getPhotoUCL('59859'), fallback: getFallback('INT','UCL'), opp: 'PSG (A)' },
+      { id: 'u26', name: 'A. Lunin', pos: 'GK', team: 'RMA', price: 4.5, photo: getPhotoUCL('243885'), fallback: getFallback('RMA','UCL'), opp: 'BAY (A)' },
+      { id: 'u27', name: 'A. Bastoni', pos: 'DEF', team: 'INT', price: 5.0, photo: getPhotoUCL('243016'), fallback: getFallback('INT','UCL'), opp: 'PSG (A)' },
+      { id: 'u28', name: 'N. Schlotterbeck', pos: 'DEF', team: 'DOR', price: 5.0, photo: getPhotoUCL('244848'), fallback: getFallback('DOR','UCL'), opp: 'ARS (A)' },
+      { id: 'u29', name: 'P. Cubarsi', pos: 'DEF', team: 'BAR', price: 4.5, photo: getPhotoUCL('519805'), fallback: getFallback('BAR','UCL'), opp: 'MCI (H)' },
+      { id: 'u30', name: 'Y. Bisseck', pos: 'DEF', team: 'INT', price: 4.5, photo: getPhotoUCL('443663'), fallback: getFallback('INT','UCL'), opp: 'PSG (A)' },
+      { id: 'u31', name: 'A. Pavlovic', pos: 'MID', team: 'BAY', price: 5.0, photo: getPhotoUCL('500049'), fallback: getFallback('BAY','UCL'), opp: 'RMA (H)' },
+      { id: 'u32', name: 'W. Zaïre-Emery', pos: 'MID', team: 'PSG', price: 5.5, photo: getPhotoUCL('519805'), fallback: getFallback('PSG','UCL'), opp: 'INT (H)' },
+      { id: 'u33', name: 'M. Tel', pos: 'FWD', team: 'BAY', price: 5.5, photo: getPhotoUCL('519805'), fallback: getFallback('BAY','UCL'), opp: 'RMA (H)' },
+      { id: 'u34', name: 'G. Quenda', pos: 'MID', team: 'SCP', price: 4.5, photo: getPhotoUCL('462424'), fallback: getFallback('SCP','UCL'), opp: 'MON (H)' },
+      { id: 'u35', name: 'O. Diomande', pos: 'DEF', team: 'SCP', price: 4.5, photo: getPhotoUCL('225321'), fallback: getFallback('SCP','UCL'), opp: 'MON (H)' },
+      { id: 'u36', name: 'F. Israel', pos: 'GK', team: 'SCP', price: 4.0, photo: getPhotoUCL('154561'), fallback: getFallback('SCP','UCL'), opp: 'MON (H)' }
     ];
 
     let currentLeague = 'EPL';
@@ -1207,7 +1217,7 @@
       });
 
       let benchHtml = bench.map(p => renderPlayerCard(p)).join('');
-      for (let i = bench.length; i < 4; i++) {
+      for (let i = 0; i < 4; i++) {
          let typeLabel = (i === 0 && !bench.some(p => p.pos === 'GK')) ? 'GK' : 'SUB';
          benchHtml += `
             <div class="relative opacity-30 flex flex-col items-center">
